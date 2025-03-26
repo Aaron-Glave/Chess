@@ -1,6 +1,6 @@
 I am trying to make a command-line Chess program. There's still a ton of stuff to do. I want to:
 - Detect whether it is possible to get out of check when I am in check
-- Turn the possibility to checkmate on while maintaining the ability for kings to hug.
+- Turn the possibility to checkmate on while maintaining the ability for kings to hug. That will probably involve editing Chess.cpp.
 
 The code is written in the Chess_code folder and files to help me edit the program with Visual Studio are in the Visual Studio folder.
 
