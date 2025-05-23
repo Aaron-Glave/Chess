@@ -147,6 +147,7 @@
     <ClCompile Include="..\..\Chess_code\Queen.cpp" />
     <ClCompile Include="..\..\Chess_code\Rook.cpp" />
     <ClCompile Include="..\..\Chess_code\Safety.cpp" />
+    <ClCompile Include="..\..\Chess_code\Saver.cpp" />
     <ClCompile Include="..\..\Chess_code\Space.cpp" />
     <ClCompile Include="..\..\Chess_code\Team.cpp" />
     <ClCompile Include="..\..\Play_Chess.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="..\..\Chess_code\Queen.h" />
     <ClInclude Include="..\..\Chess_code\Rook.h" />
     <ClInclude Include="..\..\Chess_code\Safety.h" />
+    <ClInclude Include="..\..\Chess_code\Saver.h" />
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />
