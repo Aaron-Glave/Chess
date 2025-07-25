@@ -32,7 +32,7 @@ const unsigned char g_cBlacksTurn = (unsigned char)0x04;
 const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
 const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 
-bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam, int current_turn_count)
+bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team *blackteam)
 {
     int i;
     FILE* fp = fopen(Saver_savefile, "w");
@@ -40,8 +40,11 @@ bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam, 
     if (fp == NULL)
         return false;
 
+    int current_turn_count = active_board->current_turn();
     //Save the current turn number first, and remember to load it before anything else.
     fwrite(&current_turn_count, sizeof(int), 1, fp);
+
+    //Save the current passant pawn, saving a null pointer if there is no passant pawn.
 
     // Save standard pieces (which also includes promoted pawns)
     for (i = 0; i < 16; i++)
@@ -74,7 +77,7 @@ bool Saver::Dads_SaveGame(Team* current_team, Team* whiteteam, Team *blackteam, 
     return true;
 }
 
-bool Saver::Dads_LoadGame(Team* whiteteam, Team* blackteam, Board* mainboard, Team** current_team_p, Board* current_turn_counter)
+bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p)
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");

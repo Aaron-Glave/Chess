@@ -21,7 +21,7 @@
 #include "Chess_code\Teamname.h"
 #include "Chess_code\diagnoal_direction.h"
 #include "Chess_code\InvalidPiece.h"
-#include "Chess_code\Chess_non_main.h"
+#include "Chess_code\Saver.h"
 #include <iostream>
 #include <tuple>
 #include "Chess_code/CastleMove.h"
@@ -29,6 +29,20 @@
 void kill_piece(Board* mainboard, Piece* piece) {
     piece->alive = false;
     mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
+}
+
+TEST_CASE("Test loading a passant pawn", "[passant][load]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Saver saver = Saver();
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    Move pawn1 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
+    mainboard.human_move_piece(&pawn1);
+    mainboard.print_board();
+    
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
 }
 
 TEST_CASE("Dad found this bug", "[pieces][pawns]") {

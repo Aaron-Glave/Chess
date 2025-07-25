@@ -23,6 +23,7 @@ public:
     Piece* threatens_black;
     PassantPawn passantpawn;
     PassantPawn prevepassant;
+    PassantPawn killed_passant;
 
     // int column;
     // int row;

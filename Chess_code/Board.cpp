@@ -18,7 +18,8 @@ Board::Board() {
     threatens_white = NULL;
     threatens_black = NULL;
     previous_move = Move();
-    passantpawn = PassantPawn();
+    //NOTE: The PassantPawn fields are automatically initialized in the PassantPawn constructor.
+
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             spaces[i][j] = NULL;
@@ -100,6 +101,7 @@ Move Board::make_move(Piece* piece_that_moved, int erow, int ecolumn) {
     //Pawn* passantpawnpiece = NULL;
     int passantrow = -1;
     int passantcolumn = -1;
+    /* DELETE THIS BEFORE MERGING
     bool createnewpassant = false;
     /*if (piece_that_moved->piecetype == PAWN) {
         if (piece_that_moved->team == WHITE && piece_that_moved->row == 2 && erow == 4) {
@@ -286,6 +288,7 @@ bool Board::human_move_piece(Move* move_to_make) {
 }
 
 void Board::kill_passant() {
+    //TODO: Save the deleted passant pawn in case an undo is made.
     passantpawn.get_piece()->alive = false;
     spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
     //This is safe because doing a passant will NEVER be followed by a passant.
@@ -302,6 +305,7 @@ int Board::current_turn() const
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
 // THEN SET IT TO NULL RIGHT AFTER!
 // Note: IT IS VERY IMPORTANT IN THE LIVE GAME TO ALWAYS PASS THE TEAM THAT MOVED!
+//BUG: Undoing an en passant does not reset the passant pawn.
 void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
     passantpawn = prevepassant;
     prevepassant = PassantPawn();
@@ -336,7 +340,6 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
                 piecenum = (9 - movedpawn->get_start_column()) + 7;
             }
             if (team_that_moved->pieces[piecenum] != NULL) {
-                //TODO TEST DELETING UPGRADED PAWNS!
                 if (team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] != NULL) {
                     delete team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1];
                     team_that_moved->upgraded_pieces[movedpawn->get_start_column() - 1] = NULL;

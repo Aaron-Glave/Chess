@@ -9,8 +9,8 @@ private:
 public:
     Saver();
     int GetPieceCount(Piece* pPc);
-    bool Dads_SaveGame(Team* current_team, Team* whiteteam, Team* blackteam, int current_turn);
+    bool Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team* blackteam);
     bool Dads_LoadStandardPieces(FILE *fp, Team* pTeam, Board* mainboard);
-    bool Dads_LoadGame(Team* whiteteam, Team* blackteam, Board* mainboard, Team** current_team_p, Board* current_turn_counter);
+    bool Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p);
     const char* GetPieceName(Piece* pExistingPiece);
 };
