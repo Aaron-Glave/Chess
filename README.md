@@ -1,6 +1,8 @@
 Made by Aaron Glave.
 
-I am trying to make a command-line Chess program. It's done!
+I am trying to make a command-line Chess program.
+
+In another branch I'm working on saving the "en passant" pawns, so when you reload the game an "en passant" move is still possible.
 
 The code is written in the Chess_code folder and files to help me edit the program with Visual Studio are in the Visual Studio folder.
 
