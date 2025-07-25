@@ -435,4 +435,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#Save file
 Chess2/PlayChess/Saved_Game.chess
