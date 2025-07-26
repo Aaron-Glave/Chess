@@ -33,6 +33,7 @@ const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
 const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 
 bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team *blackteam)
+//NOTE: A VARIABLE NUMBER OF 
 {
     int i;
     FILE* fp = fopen(Saver_savefile, "w");
@@ -44,7 +45,9 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     //Save the current turn number first, and remember to load it before anything else.
     fwrite(&current_turn_count, sizeof(int), 1, fp);
 
-    //Save the current passant pawn, saving a null pointer if there is no passant pawn.
+    //Save the current passant pawn, saving a PassantPawn() if there is no real passant pawn.
+    //Note that you'll need the pawn's get_start_column() because it is foolish to save memory ADDRESSES of pieces. 
+    //It will be a valid value iff the pawn is not NULL.
 
     // Save standard pieces (which also includes promoted pawns)
     for (i = 0; i < 16; i++)
@@ -53,7 +56,8 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     for (i = 0; i < 16; i++)
         fwrite(blackteam->pieces[i], sizeof(Piece), 1, fp);
 
-    // Save whose turn it was & whether a king was in check
+    // Save whose turn it was & whether a king was in check.
+    // This is done AFTER saving the pieces, but BEFORE saving the upgraded pawns.
     unsigned char cStatus = (unsigned char)0x00000000;
 
     if (current_team == whiteteam)        cStatus |= (unsigned char)g_cWhitesTurn;
@@ -143,13 +147,17 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
         }
     }
 
-    // And now read in & create any promoted pawns ...
+    // And now read in & create any promoted pawns..
+    // This HAS to be the last step, since we DON'T know how many promoted pawns there are.
+    // We only save upgraded pawns we actually made.
     while (!feof(fp))
     {
         memset(data, 0, sizeof(data));
         nRC = fread(data, sizeof(Piece), 1, fp);
-        if (nRC != 1)
+        if (nRC != 1) {
+            //This happens when the file is empty or EOF is reached.
             break;
+        }
 
         pPc = (Piece*)&data;
 

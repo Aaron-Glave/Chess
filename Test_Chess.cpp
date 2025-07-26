@@ -259,7 +259,7 @@ TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move tha
     REQUIRE(whiteteam.pieces[8] != NULL);
     bool undidwhiteupgrade = whiteteam.pawns[0].alive && whiteteam.pawns[0].row == 7 && whiteteam.pawns[0].column == 1;
     REQUIRE(undidwhiteupgrade);
-    printf("All done with chess!\n");
+    printf("Upgraded pieces deleted correctly.\n");
 }
 
 TEST_CASE("Castling in or through check should fail", "[castle][check]") {
@@ -446,6 +446,35 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     mainboard.undo_move(&secondmove);
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
 }
+
+TEST_CASE("Loading a game with a passant pawn works", "[load][passant]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Saver saver = Saver();
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    Move pawn1 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
+    mainboard.human_move_piece(&pawn1);
+    mainboard.print_board();
+    
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
+    
+    //Save the game.
+    Team* current_team_pointer = &blackteam;
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+
+    //Pretend I made a turn.
+    current_team_pointer = current_team_pointer->enemy_team;
+    mainboard.passantpawn.test_kill_passant();
+    REQUIRE(current_team_pointer == &whiteteam);
+    
+    //Load the game.
+    saver.Dads_LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer);
+    
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
+}
+
 TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);

@@ -289,6 +289,9 @@ bool Board::human_move_piece(Move* move_to_make) {
 
 void Board::kill_passant() {
     //TODO: Save the deleted passant pawn in case an undo is made.
+    if (passantpawn.get_piece() == NULL) {
+        throw InvalidMove("No passant pawn to kill.");
+    }
     passantpawn.get_piece()->alive = false;
     spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
     //This is safe because doing a passant will NEVER be followed by a passant.
