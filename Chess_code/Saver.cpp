@@ -33,7 +33,7 @@ const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
 const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 
 bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team *blackteam)
-//NOTE: A VARIABLE NUMBER OF 
+//NOTE: A VARIABLE NUMBER OF UPGRADED PAWNS IS SAVED, AND I COUNT HOW MANY THERE ARE BEFORE I SAVE THEM.
 {
     int i;
     FILE* fp = fopen(Saver_savefile, "w");
@@ -45,6 +45,19 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     //Save the current turn number first, and remember to load it before anything else.
     fwrite(&current_turn_count, sizeof(int), 1, fp);
 
+    //Count the number of upgraded pawns and save the number.
+    int upgraded_pawn_count = 0;
+    for (i = 0; i < 8; i++)
+    {
+        if (whiteteam->upgraded_pieces[i] != NULL) {
+            upgraded_pawn_count++;
+        }
+
+        if (blackteam->upgraded_pieces[i] != NULL) {
+            upgraded_pawn_count++;
+        }
+    }
+    fwrite(&upgraded_pawn_count, sizeof(int), 1, fp);
     //Save the current passant pawn, saving a PassantPawn() if there is no real passant pawn.
     //Note that you'll need the pawn's get_start_column() because it is foolish to save memory ADDRESSES of pieces. 
     //It will be a valid value iff the pawn is not NULL.
@@ -68,7 +81,7 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     //    printf("Final Status = %d\n", cStatus);
     fwrite(&cStatus, sizeof(cStatus), 1, fp);
 
-    // Upgraded pawns
+    // Save the Upgraded pawns
     for (i = 0; i < 8; i++)
     {
         if (whiteteam->upgraded_pieces[i] != NULL)
@@ -115,6 +128,15 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
     }
     mainboard->set_turn(current_turn_count);
 
+    //Then load the number of upgraded pawns.
+    int upgraded_pawn_count = 0;
+    nRC = fread(&upgraded_pawn_count, sizeof(int), 1, fp);
+    if (nRC != 1)
+    {
+        fclose(fp);
+        return false;
+    }
+
     if (false == Dads_LoadStandardPieces(fp, whiteteam, mainboard)) return false;
     if (false == Dads_LoadStandardPieces(fp, blackteam, mainboard)) return false;
 
@@ -148,9 +170,9 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
     }
 
     // And now read in & create any promoted pawns..
-    // This HAS to be the last step, since we DON'T know how many promoted pawns there are.
     // We only save upgraded pawns we actually made.
-    while (!feof(fp))
+    // Because we saved how many upgraded pawns there are, we know exactly how many pieces we have to read in.
+    for (int i = 0; i < upgraded_pawn_count; i++)
     {
         memset(data, 0, sizeof(data));
         nRC = fread(data, sizeof(Piece), 1, fp);
@@ -217,8 +239,11 @@ bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
         // Since upgraded pawns are assigned to the pieces array we may be reading in a promoted pawn;
         if (pPc->piecetype != pTeam->pieces[i]->piecetype)
         {
+            /* Dad wrote this line, but it breaks the game when you load over an upgraded piece.
             if (pTeam->pieces[i]->piecetype != TYPE::PAWN)
                 return false;
+            */
+
 
             pTeam->pieces[i]->alive = false; // If it's a promoted pawn we kill the original pawn
             continue;
