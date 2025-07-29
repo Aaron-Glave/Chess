@@ -90,11 +90,18 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
         if (blackteam->upgraded_pieces[i] != NULL)
             fwrite(blackteam->upgraded_pieces[i], sizeof(Piece), 1, fp);
     }
+
+    //After that, now we can save an en passant!
+    //Our saved pointer is totally junk, but when we save the en passant piece, we save the column it is in.
+    fwrite(&active_board->passantpawn, sizeof(PassantPawn), 1, fp);
+
+    int test = 1; // Dummy variable to test saving/loading
+    fwrite(&test, sizeof(int), 1, fp); 
     fclose(fp);
     return true;
 }
 
-bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p)
+bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p, int* test)
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");
@@ -214,6 +221,34 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
             if (pPc->alive)
                 mainboard->spaces[pPc->row - 1][pPc->column - 1] = pNewPiece;
         }
+    }
+
+    //After that, now we can load an en passant!
+    //We don't save the en passant piece, but we save the column it is in.
+    PassantPawn saved_passant;
+    fread(&saved_passant, sizeof(PassantPawn), 1, fp);
+    int passant_column = saved_passant.get_column();
+    int passant_row = saved_passant.get_row();
+
+    if(saved_passant.get_row() != -1)
+    {
+        
+        if (passant_row == 3) { //We know this is a white passant pawn.
+            saved_passant = PassantPawn(&whiteteam->pawns[passant_column - 1], passant_row, passant_column, saved_passant.get_turn_made());
+        }
+        else { //Since we know this passant pawn is real and not white, it's a black passant pawn.
+            saved_passant = PassantPawn(&blackteam->pawns[8 - passant_column], passant_row, passant_column, saved_passant.get_turn_made());
+        }
+    }
+    mainboard->passantpawn = saved_passant; // Set the mainboard's passant pawn to the saved one.
+    
+
+    //Or run a test to prove that the upgraded pieces do not half to be saved last.
+    int score = 0;
+    fread(&score, sizeof(int), 1, fp); // Load the a dummy value for the test.
+    if (test != NULL)
+    {
+        *test = score; // This is just a test to prove that the upgraded pieces do not half to be saved last.
     }
     
     fclose(fp);

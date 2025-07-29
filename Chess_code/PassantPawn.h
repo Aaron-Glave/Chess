@@ -39,6 +39,7 @@ struct PassantPawn {
         passant_column = -1;
         turn_made = -1;
     }
+
 private:
     int passant_row;
     int passant_column;
