@@ -135,6 +135,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         clearinput();
 
         //Alternative commands other than moving 1 piece
+        //TODO: Make options to kill a selected piece.
         if (should_load_man) {
             if (strcmp(nameofpiecetomove, "cTeam") == 0) {
                 if (done_loading_man) {
@@ -166,7 +167,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         }
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
-            if (game_saver.Dads_SaveGame(current_team, &whiteteam, &blackteam, mainboard.current_turn())) {
+            if (game_saver.Dads_SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
                 printf("Game saved.\n");
             }
             else {
@@ -180,7 +181,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 did_fail_loading = true;
             }
             else {
-                if (game_saver.Dads_LoadGame(&whiteteam, &blackteam, &mainboard, &current_team, &mainboard)) {
+                if (game_saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team)) {
                     printf("Game loaded.\n");
                     has_loaded_file = true;
                 }

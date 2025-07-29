@@ -3,7 +3,7 @@
 #include "Pawn.h"
 #include <stdio.h>
 struct PassantPawn {
-    
+    //Note: This struct is read-only.
     int get_row() const {
         return passant_row;
     }
@@ -32,6 +32,14 @@ struct PassantPawn {
         passant_column = b_passant_column;
         turn_made = passant_turn;
     }
+
+    void test_kill_passant() {
+        pawnthatjustmoved2 = NULL;
+        passant_row = -1;
+        passant_column = -1;
+        turn_made = -1;
+    }
+
 private:
     int passant_row;
     int passant_column;

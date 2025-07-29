@@ -21,7 +21,7 @@
 #include "Chess_code\Teamname.h"
 #include "Chess_code\diagnoal_direction.h"
 #include "Chess_code\InvalidPiece.h"
-#include "Chess_code\Chess_non_main.h"
+#include "Chess_code\Saver.h"
 #include <iostream>
 #include <tuple>
 #include "Chess_code/CastleMove.h"
@@ -245,7 +245,7 @@ TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move tha
     REQUIRE(whiteteam.pieces[8] != NULL);
     bool undidwhiteupgrade = whiteteam.pawns[0].alive && whiteteam.pawns[0].row == 7 && whiteteam.pawns[0].column == 1;
     REQUIRE(undidwhiteupgrade);
-    printf("All done with chess!\n");
+    printf("Upgraded pieces deleted correctly.\n");
 }
 
 TEST_CASE("Castling in or through check should fail", "[castle][check]") {
@@ -432,6 +432,119 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     mainboard.undo_move(&secondmove);
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
 }
+
+TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Saver saver = Saver();
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    Move pawn1 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
+    mainboard.human_move_piece(&pawn1);
+    kill_piece(&mainboard, &blackteam.pawns[0]);
+    mainboard.place(&whiteteam.pawns[0], 8, 1);
+    upgrade_pawn_if_needed(&whiteteam.pawns[0], &whiteteam, &mainboard, TYPE::QUEEN);
+    mainboard.print_board();
+    
+    
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
+    
+    //Save the game.
+    Team* current_team_pointer = &blackteam;
+
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+
+
+
+    //Pretend I made a turn.
+    current_team_pointer = current_team_pointer->enemy_team;
+    mainboard.passantpawn.test_kill_passant();
+    REQUIRE(current_team_pointer == &whiteteam);
+    REQUIRE(mainboard.spaces[7][0] != NULL);
+    kill_piece(&mainboard, mainboard.spaces[7][0]);
+    printf("Pretend the black team took a magical move resulting in this board.\n");
+    mainboard.print_board();
+    
+    //Load the game.
+    int test_val = 2;
+    int* test_ptr = &test_val;
+    printf("If you pass a pointer to the load function, the variable you point at should be updated\n");
+    printf("Currently, it's %d\n", test_val);
+    saver.Dads_LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer, test_ptr);
+    REQUIRE(test_val == 1);
+    printf("Now it's %d!\n", test_val);
+    REQUIRE(mainboard.spaces[7][0]->alive);
+    printf("After loading, the upgraded pawn is still alive.\n");
+    mainboard.print_board();
+}
+
+TEST_CASE("The passant pawn status is saved and loaded correctly with a white pawn", "[load][passant][white]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Saver saver = Saver();
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    Move bpawn2m1 = Move(7, 2, 5, 2, &blackteam.pawns[8 - 2], NULL);
+    Move bpawn2m2 = Move(5, 2, 4, 2, &blackteam.pawns[8 - 2], NULL);
+    mainboard.human_move_piece(&bpawn2m1);
+    mainboard.human_move_piece(&bpawn2m2);
+    Move wpawn1 = Move(2, 1, 4, 1, &whiteteam.pawns[1 - 1], NULL);
+    mainboard.human_move_piece(&wpawn1);
+    mainboard.print_board();
+    
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[1 - 1]);
+    
+    //Save the game.
+    Team* current_team_pointer = &blackteam;
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    mainboard.passantpawn.test_kill_passant();
+    //Load the game.
+    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[1 - 1]);
+    
+    //Perform a passant;
+    Move passant_move = Move(4, 2, 3, 1, &blackteam.pawns[8 - 2], NULL);
+    mainboard.human_move_piece(&passant_move);
+    mainboard.print_board();
+    printf("Works for white pawns!\n");
+}
+
+TEST_CASE("The passant pawn status is saved and loaded correctly with a black pawn", "[load][passant][black]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Saver saver = Saver();
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    Move wpawn2m1 = Move(2, 2, 4, 2, &whiteteam.pawns[2 - 1], NULL);
+    Move wpawn2m2 = Move(4, 2, 5, 2, &whiteteam.pawns[2 - 1], NULL);
+    mainboard.human_move_piece(&wpawn2m1);
+    mainboard.human_move_piece(&wpawn2m2);
+    Move bpawn1 = Move(7, 1, 5, 1, &blackteam.pawns[8 - 1], NULL);
+    mainboard.human_move_piece(&bpawn1);
+    mainboard.print_board();
+
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 1]);
+
+    //Save the game.
+    Team* current_team_pointer = &blackteam;
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    mainboard.passantpawn.test_kill_passant();
+    //Load the game.
+    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 1]);
+
+    //Perform a passant;
+    Move passant_move = Move(5, 2, 6, 1, &whiteteam.pawns[2 - 1], NULL);
+    mainboard.human_move_piece(&passant_move);
+    mainboard.print_board();
+    printf("Works for black pawns!\n");
+}
+
 TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);

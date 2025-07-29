@@ -440,3 +440,7 @@ FodyWeavers.xsd
 Chess2/PlayChess/Saved_Game.chess
 Chess2/PlayChess/x64/Debug/Saved_Game.chess
 Chess2/PlayChess/x64/Release/Saved_Game.chess
+BackupSaves
+Chess2/TestChess/Saved_Game.chess
+Chess2/TestChess/x64/Debug/Saved_Game.chess
+Chess2/TestChess/x64/Release/Saved_Game.chess
