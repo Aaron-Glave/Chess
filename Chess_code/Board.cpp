@@ -139,6 +139,7 @@ That means setting the pawn and SS both to NULL after making a move on the oppon
 Check if you did the passant before clearing it and hopefully everything will work.
 
 Note that this function  but DOESN'T UPGRADE Pawns.
+TODO: SAVE WHEN A PASSANT PAWN IS CAPTURED SO IT CAN BE REVIVED WHEN THE MOVE IS UNDONE.
 */
 bool Board::human_move_piece(Move* move_to_make) {
     if (move_to_make == NULL) {
@@ -303,7 +304,8 @@ int Board::current_turn() const
     return turn_number;
 }
 
-//IF UNDO You might have to downgrade a pawn.
+// TODO: Undoing a passant does not bring the killed passant pawn back.
+// IF UNDO You might have to downgrade a pawn.
 // Check if the piece that moved was a pawn and if it moved to the end of the board.
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
 // THEN SET IT TO NULL RIGHT AFTER!
@@ -319,6 +321,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         throw InvalidPiece(NULL);
     }
 
+    //Undo upgrades here.
     if (move_i_made->piece_that_moved->piecetype == TYPE::PAWN) {
         Pawn* movedpawn = (Pawn*)move_i_made->piece_that_moved;
         bool did_upgrade = false;
@@ -332,6 +335,9 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
             break;
         }
 
+        //TODO: Use information from the move and the memory you should have about the en passant pawn to undo the passant.
+
+        //Undo the upgrade.
         if (team_that_moved != NULL && did_upgrade) {
             // Assume we're the white team.
             int piecenum = movedpawn->get_start_column() + 7;
