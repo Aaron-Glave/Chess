@@ -306,7 +306,6 @@ int Board::current_turn() const
     return turn_number;
 }
 
-// TODO: Undoing a passant does not bring the killed passant pawn back.
 // IF UNDO You might have to downgrade a pawn.
 // Check if the piece that moved was a pawn and if it moved to the end of the board.
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
