@@ -343,8 +343,6 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
             break;
         }
 
-        //TODO: Use information from the move and the memory you should have about the en passant pawn to undo the passant.
-
         //Undo the upgrade.
         if (team_that_moved != NULL && did_upgrade) {
             // Assume we're the white team.
