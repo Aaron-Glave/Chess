@@ -49,7 +49,17 @@ Team::~Team() {
     }
 }
 
-Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE)
+Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /* Sets up the team on the board.
+ * The team_color is the color of the team, either WHITE or BLACK.
+ * the_board_shared is a pointer to the board on which the game will be played.
+ * The black team looks at the board facing the opposite direction that the white team does,
+ * so at the start of the game,
+ * the white team's pawn n is the black team's pawn 9-n, where n is the visible pawn number, NOT the index.
+ * NOTE: With i as the visible column number,
+ *       the index in the white team's pawn array of the pawn that starts in column i is i-1,
+ *       and the index in the black team's pawn array of the pawn that starts in column i is 8-i.
+ */
+
 {
     //NOTE THE QUEEN AND KING SHOULD SWAP
     enemy_team = nullptr;
@@ -91,7 +101,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE)
         queen = Queen(team_color, 8, 4, 0);
         for (int i = 1; i <= 8; i++) {
             /*The black king looks at his pawns from the opposite angle, so he calls the
-            * pawn in the absolute top left pawn corner pawn 8. That means pawns[8-1], (or in other words pawns[7]) is in row 7 column 1.
+            * pawn in the absolute top left pawn corner is pawn 8. That means pawns[8-1], (or in other words pawns[7]) is in row 7 column 1.
             * I know it's kinda confusing that the pawns are created from the team's perspective while the other pieces are created from the top-down perspective,
             * but to make it easier, just think of the pawn's index as the 8 - the pawn's column.
               */

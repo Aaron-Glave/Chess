@@ -289,13 +289,14 @@ bool Board::human_move_piece(Move* move_to_make) {
 }
 
 void Board::kill_passant() {
-    //TODO: Save the deleted passant pawn in case an undo is made.
     if (passantpawn.get_piece() == NULL) {
         throw InvalidMove("No passant pawn to kill.");
     }
     passantpawn.get_piece()->alive = false;
     spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
     //This is safe because doing a passant will NEVER be followed by a passant.
+    //Save the deleted passant pawn in case an undo is made.
+    prevepassant = passantpawn;
     passantpawn = PassantPawn();
 }
 
@@ -312,7 +313,14 @@ int Board::current_turn() const
 // Note: IT IS VERY IMPORTANT IN THE LIVE GAME TO ALWAYS PASS THE TEAM THAT MOVED!
 //BUG: Undoing an en passant does not reset the passant pawn.
 void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
+    
     passantpawn = prevepassant;
+    //Revive the passant pawn if he was killed.
+    Pawn* last_passant = passantpawn.get_piece();
+    if (last_passant != NULL) {
+        last_passant->alive = true;
+        spaces[last_passant->row - 1][last_passant->column - 1] = last_passant;
+    }
     prevepassant = PassantPawn();
     int previousrow = move_i_made->end_row;
     int previouscolumn = move_i_made->end_column;
