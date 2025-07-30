@@ -136,7 +136,7 @@ If pawn moves 2, I save a Piece pointer to the pawn and the spot that it would h
 been in if it moved 1 in a special PassantPawn object. I call that object SS in this example.
 If the opponent lands on SS THE EXACT TURN AFTER the pawn moved, the pawn dies.
 That means killing the pawn and setting SS's pointer to NULL after making a move on the opponent's turn.
-If an en passant is made, the passant status of the killed pawn is saved in the prevepassant variable,
+If an en passant move is made, the passant status of the killed pawn is saved in the prevepassant variable,
 so that it can be revived if the move is undone.
 
 Note that this function DOESN'T UPGRADE Pawns. The function to upgrade pawns is called upgrade_pawn_if_needed,
