@@ -545,6 +545,31 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a black pa
     printf("Works for black pawns!\n");
 }
 
+TEST_CASE("Undoing a successful en passant keeps the victim alive", "[undo][passant]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Move firstmove = mainboard.make_move(&whiteteam.pawns[5 - 1], 4, 5);
+    Move secondmove = mainboard.make_move(&whiteteam.pawns[5 - 1], 5, 5);
+    Move thirdmove = mainboard.make_move(&blackteam.pawns[8 - 6], 5, 6);
+    mainboard.human_move_piece(&firstmove);
+    mainboard.print_board();
+    mainboard.human_move_piece(&secondmove);
+    mainboard.print_board();
+    mainboard.human_move_piece(&thirdmove);
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 6]);
+    Move passantmove = mainboard.make_move(&whiteteam.pawns[5 - 1], 6, 6);
+    mainboard.human_move_piece(&passantmove);
+    REQUIRE_FALSE(blackteam.pawns[8-6].alive);
+    mainboard.print_board();
+    mainboard.undo_move(&passantmove, &whiteteam);
+    mainboard.print_board();
+    REQUIRE(blackteam.pawns[6 - 1].alive);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 6]);
+    REQUIRE(mainboard.spaces[5 - 1][6 - 1] == &blackteam.pawns[8 - 6]);
+}
+
 TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);

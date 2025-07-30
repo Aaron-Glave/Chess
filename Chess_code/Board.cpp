@@ -133,12 +133,14 @@ That's because a person starts counting spaces with 1 but the computer starts co
 Detects if the move lands on an enemy piece and stores the enemy piece in the move in case it is un-done.
 
 If pawn moves 2, I save a Piece pointer to the pawn and the spot that it would have
-been in if it moved 1. I call that space SS in this example.
+been in if it moved 1 in a special PassantPawn object. I call that object SS in this example.
 If the opponent lands on SS THE EXACT TURN AFTER the pawn moved, the pawn dies.
-That means setting the pawn and SS both to NULL after making a move on the opponent's turn.
-Check if you did the passant before clearing it and hopefully everything will work.
+That means killing the pawn and setting SS's pointer to NULL after making a move on the opponent's turn.
+If an en passant move is made, the passant status of the killed pawn is saved in the prevepassant variable,
+so that it can be revived if the move is undone.
 
-Note that this function  but DOESN'T UPGRADE Pawns.
+Note that this function DOESN'T UPGRADE Pawns. The function to upgrade pawns is called upgrade_pawn_if_needed,
+and it's called after this function is called in Chess.cpp.
 */
 bool Board::human_move_piece(Move* move_to_make) {
     if (move_to_make == NULL) {
@@ -288,13 +290,14 @@ bool Board::human_move_piece(Move* move_to_make) {
 }
 
 void Board::kill_passant() {
-    //TODO: Save the deleted passant pawn in case an undo is made.
     if (passantpawn.get_piece() == NULL) {
         throw InvalidMove("No passant pawn to kill.");
     }
     passantpawn.get_piece()->alive = false;
     spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
     //This is safe because doing a passant will NEVER be followed by a passant.
+    //Save the deleted passant pawn in case an undo is made.
+    prevepassant = passantpawn;
     passantpawn = PassantPawn();
 }
 
@@ -303,14 +306,21 @@ int Board::current_turn() const
     return turn_number;
 }
 
-//IF UNDO You might have to downgrade a pawn.
+// IF UNDO You might have to downgrade a pawn.
 // Check if the piece that moved was a pawn and if it moved to the end of the board.
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
 // THEN SET IT TO NULL RIGHT AFTER!
 // Note: IT IS VERY IMPORTANT IN THE LIVE GAME TO ALWAYS PASS THE TEAM THAT MOVED!
 //BUG: Undoing an en passant does not reset the passant pawn.
 void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
+    
     passantpawn = prevepassant;
+    //Revive the passant pawn if he was killed.
+    Pawn* last_passant = passantpawn.get_piece();
+    if (last_passant != NULL) {
+        last_passant->alive = true;
+        spaces[last_passant->row - 1][last_passant->column - 1] = last_passant;
+    }
     prevepassant = PassantPawn();
     int previousrow = move_i_made->end_row;
     int previouscolumn = move_i_made->end_column;
@@ -319,6 +329,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         throw InvalidPiece(NULL);
     }
 
+    //Undo upgrades here.
     if (move_i_made->piece_that_moved->piecetype == TYPE::PAWN) {
         Pawn* movedpawn = (Pawn*)move_i_made->piece_that_moved;
         bool did_upgrade = false;
@@ -332,6 +343,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
             break;
         }
 
+        //Undo the upgrade.
         if (team_that_moved != NULL && did_upgrade) {
             // Assume we're the white team.
             int piecenum = movedpawn->get_start_column() + 7;
