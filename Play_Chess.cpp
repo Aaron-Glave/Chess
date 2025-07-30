@@ -16,9 +16,9 @@ int main(int argc, char*argv[]) {
                 talk_hug = true;
             }
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
-                printf("In-game command load: Load the file from an automatically saved game.\n");
+                printf("In-game command load: Load the file from a saved game.\n");
                 printf("> To save a game, type save\n");
-                printf("> Your game will be saved in the same directory as this exe\n> with the name Saved_Game.chess\n");
+                printf("> Your game will be saved in the same directory that you run this exe in\n> with the name Saved_Game.chess\n");
                
                 printf("\nSpace numbering:\nThe top right square is row 8 column 8,\n and the bottom left square is row 1 column 1.\n");
                 printf("> Note that when I ask for the row and column,\n> I read the numbers top-down with the white team on the bottom.\n");
