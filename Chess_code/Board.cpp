@@ -133,13 +133,13 @@ That's because a person starts counting spaces with 1 but the computer starts co
 Detects if the move lands on an enemy piece and stores the enemy piece in the move in case it is un-done.
 
 If pawn moves 2, I save a Piece pointer to the pawn and the spot that it would have
-been in if it moved 1. I call that space SS in this example.
+been in if it moved 1 in a special PassantPawn object. I call that object SS in this example.
 If the opponent lands on SS THE EXACT TURN AFTER the pawn moved, the pawn dies.
-That means setting the pawn and SS both to NULL after making a move on the opponent's turn.
-Check if you did the passant before clearing it and hopefully everything will work.
+That means killing the pawn and setting SS's pointer to NULL after making a move on the opponent's turn.
+If an en passant is made, the pre
 
-Note that this function  but DOESN'T UPGRADE Pawns.
-TODO: SAVE WHEN A PASSANT PAWN IS CAPTURED SO IT CAN BE REVIVED WHEN THE MOVE IS UNDONE.
+Note that this function DOESN'T UPGRADE Pawns. The function to upgrade pawns is called upgrade_pawn_if_needed,
+and it's called after this function is called in Chess.cpp.
 */
 bool Board::human_move_piece(Move* move_to_make) {
     if (move_to_make == NULL) {
