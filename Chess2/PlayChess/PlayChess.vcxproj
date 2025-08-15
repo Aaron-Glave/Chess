@@ -130,14 +130,12 @@
     <ClCompile Include="..\..\Chess_code\Bishop.cpp" />
     <ClCompile Include="..\..\Chess_code\Board.cpp" />
     <ClCompile Include="..\..\Chess_code\CastleMove.cpp" />
-    <ClCompile Include="..\..\Chess_code\Check_for_checkmate.cpp" />
     <ClCompile Include="..\..\Chess_code\Chess.cpp" />
     <ClCompile Include="..\..\Chess_code\Chess_non_main.cpp" />
     <ClCompile Include="..\..\Chess_code\diagnoal_direction.cpp" />
     <ClCompile Include="..\..\Chess_code\King.cpp" />
     <ClCompile Include="..\..\Chess_code\Knight.cpp" />
     <ClCompile Include="..\..\Chess_code\Move.cpp" />
-    <ClCompile Include="..\..\Chess_code\Move_diag.cpp" />
     <ClCompile Include="..\..\Chess_code\move_diagnolly.cpp" />
     <ClCompile Include="..\..\Chess_code\Move_horizontally.cpp" />
     <ClCompile Include="..\..\Chess_code\Move_safety.cpp" />
@@ -148,7 +146,8 @@
     <ClCompile Include="..\..\Chess_code\Rook.cpp" />
     <ClCompile Include="..\..\Chess_code\Safety.cpp" />
     <ClCompile Include="..\..\Chess_code\Saver.cpp" />
-    <ClCompile Include="..\..\Chess_code\Space.cpp" />
+    <ClCompile Include="..\..\Chess_code\SpacelessChessInput.cpp" />
+    <ClCompile Include="..\..\Chess_code\SpacelessName.cpp" />
     <ClCompile Include="..\..\Chess_code\Team.cpp" />
     <ClCompile Include="..\..\Play_Chess.cpp" />
   </ItemGroup>
@@ -164,7 +163,6 @@
     <ClInclude Include="..\..\Chess_code\King.h" />
     <ClInclude Include="..\..\Chess_code\Knight.h" />
     <ClInclude Include="..\..\Chess_code\Move.h" />
-    <ClInclude Include="..\..\Chess_code\Move_diag.h" />
     <ClInclude Include="..\..\Chess_code\move_diagnolly.h" />
     <ClInclude Include="..\..\Chess_code\Move_horizontally.h" />
     <ClInclude Include="..\..\Chess_code\Move_safety.h" />
@@ -177,6 +175,8 @@
     <ClInclude Include="..\..\Chess_code\Rook.h" />
     <ClInclude Include="..\..\Chess_code\Safety.h" />
     <ClInclude Include="..\..\Chess_code\Saver.h" />
+    <ClInclude Include="..\..\Chess_code\SpacelessChessInput.h" />
+    <ClInclude Include="..\..\Chess_code\SpacelessName.h" />
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />

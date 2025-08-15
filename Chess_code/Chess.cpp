@@ -95,6 +95,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         //You start the turn with no piece selected.
         piecetomove = NULL;
         mainboard.print_board();
+        std::string correct_input = "%" + std::to_string(Piece::name_length - 1) + "s";
         if (show_debugging) {
             printf("DEBUG: Turn %d\n", mainboard.current_turn());
         }
@@ -124,7 +125,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             }
         }
         printf("Which piece no you want to move? ");
-        std::ignore = scanf("%9s", nameofpiecetomove);
+        std::ignore = scanf(correct_input.c_str(), nameofpiecetomove);
         nameofpiecetomove[9] = '\0';
         //Make the name all lowercase.
         nameofpiecetomove[0] = tolower(nameofpiecetomove[0]);
