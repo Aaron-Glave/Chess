@@ -1,6 +1,7 @@
 /*
 * Credit to Catch2 for making it easy to run tests!
 */
+//Disable errors caused by scanf
 #pragma warning(disable:4996)
 
 
@@ -50,6 +51,14 @@ TEST_CASE("Space-only strings can be made into empty strings", "[spaceless]") {
     printf("Space-only string is empty as it should be.\n");
 }
 
+TEST_CASE("Names are good after cleaning", "[spaceless]") {
+    char myentry[128] = " \n\t WPAWN7 \n \t ";
+    char correctedentry[Piece::name_length];
+    clean_chess_input(myentry, correctedentry);
+    //REQUIRE(strcmp(myentry, "wPawn7") == 0);
+    printf("Spaces and newlines before and after a piece name are removed correctly.\n");
+}
+
 
 //*
 TEST_CASE("Newlines and spaces entered before a piece name are treated correctly", "[spaceless]") {
@@ -63,24 +72,71 @@ TEST_CASE("Newlines and spaces entered before a piece name are treated correctly
 // */
 
 TEST_CASE("Better input methods work", "[spaceless]") {
+    //Clean the name and find a matching piece.
     Board mainboard = Board();
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
     bool had_spaces_and_named = false;
+    bool real_piece = false;
     printf("White pieces:\n");
-    printf("Either team, enter a piece name with spaces and newlines before and after it:\n");
-    char myentry[128];
-    char correctedentry[Piece::name_length];
-    
-    while(!had_spaces_and_named) {
-        bool had_spaces = false;
-        printf("Enter a dirty but technically correct piece name for some piece:\n");
-        get_name(myentry);
-        for (int i = 0; myentry[i] != 0;);
-        //TODO Verify that the entered name is messy.
-
-        //TODO Clean the name and find a matching piece.
+    for(int i = 0; i < 16; i++) {
+        printf("%s\n", whiteteam.pieces[i]->name);
     }
+    printf("Black pieces:\n");
+    for (int i = 0; i < 16; i++) {
+        printf("%s\n", blackteam.pieces[i]->name);
+    }
+    printf("Enter a piece name with spaces and newlines before and after it.\n");
+    printf("Also, the name MUST be dirty in capitalism.\n");
+
+    char myentry[128];
+    char correctedentry[Piece::name_length];;
+    
+
+    //Verify that the entered name is messy.
+    while (!had_spaces_and_named) {
+        get_name(myentry);
+        bool start_spaces = false;
+        bool anychars = false;
+        for (int i = 0; myentry[i] != 0; i++) {
+            if (is_space(myentry[i]) && !start_spaces) start_spaces = true;
+            if (!is_space(myentry[i])) {
+                anychars = true;
+            }
+            if (is_space(myentry[i]) && anychars && start_spaces) {
+                had_spaces_and_named = true;
+                break;
+            }
+        }
+    }
+    
+    REQUIRE(had_spaces_and_named);
+    remove_spaces(myentry, myentry);
+    //We end in a period to make sure the name doesn't have any whitespace anymore.
+    printf("Simplified to %s.\n", myentry);
+
+    bool typed_invalid = false;
+    while (!typed_invalid) {
+        for (int i = 0; i < 16; i++) {
+            if ((strcmp(myentry, whiteteam.pieces[i]->name) == 0)
+                || (strcmp(myentry, blackteam.pieces[i]->name) == 0)) {
+                real_piece = true;
+                break;
+            }
+        }
+        if (real_piece) {
+            //TODO GET ANOTHER PIECE NAME
+        }
+        else {
+            typed_invalid = true;
+        }
+    }
+    
+    clean_chess_input(myentry, correctedentry);
+
+    //TODO Verify that the corrected name is a valid piece.
+    
+
     printf("Input cleaned correctly.\n");
 }
 

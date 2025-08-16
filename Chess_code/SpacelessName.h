@@ -1,3 +1,4 @@
-#ifndef SPACELESSNAME_H
+#pragma once
 void remove_spaces(const char* source, char* dest);
-#endif
+bool is_space(char c);
+
