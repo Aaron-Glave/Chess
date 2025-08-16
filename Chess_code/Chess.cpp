@@ -1,5 +1,6 @@
 // Chess.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // I grant credit for Dad. He helped a lot.
+//Not even sure this is better than my old code.
 #pragma warning(disable:4996)
 #include "Chess_non_main.h"
 #include <ctype.h>
