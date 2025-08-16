@@ -33,28 +33,8 @@ void sleep5() {
     std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-void get_name(char* long_input) 
-//NOTE: long_input should be at least 128 characters long.
-{
-    std::ignore = scanf("%127[^\n]", long_input);
-    clearinput();
-}
 
-void standardize_name(char* in_name) {
-    char long_input[128];
-    get_name(long_input);
-    clean_chess_input(long_input, in_name);
-    //Stabilize the input.
-    //Make the name all lowercase.
-    in_name[9] = '\0';
-    
-    in_name[0] = tolower(in_name[0]);
-    in_name[1] = toupper(in_name[1]);
-    for (int i = 2; i < 10; i++) {
-        in_name[i] = tolower(in_name[i]);
-    }
-    clearinput();
-}
+
 
 int chess(bool should_load_man, bool show_debugging, bool show_hugging)
 {
@@ -150,7 +130,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         }
         printf("Which piece no you want to move? ");
         
-        standardize_name(nameofpiecetomove);
+        clean_chess_input(nameofpiecetomove);
         //Alternative commands other than moving 1 piece
         //TODO: Make options to kill a selected piece.
         if (should_load_man) {
@@ -244,7 +224,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             did_try_castle = true;
             while (!have_decided_direction) {
                 printf("Which side do you want to castle? ");
-                std::ignore = scanf("%5s", nameofpiecetomove);
+                get_with_length(nameofpiecetomove, 5);
                 clearinput();
                 nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                 for (int i = 1; i < 5; i++) {
@@ -359,6 +339,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         bool landonokplace = false;
         bool enteredexactly1row = false;
         if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && !did_load) {
+            char spacenum[2] = { '\0','\0' };
             printf("Where do you want to move %s?\n", nameofpiecetomove);
             printf("Enter your move.\n");
             char cspace = '\0';
@@ -367,19 +348,26 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             }
             
             printf("Row: ");
-            std::ignore = scanf("%c", &cspace);
+            get_with_length(spacenum, 1);
+            cspace = spacenum[0];
+            enteredexactly1row = true;
+            /*
             if (getchar() != '\n') {
                 printf("Invalid row.\n");
                 clearinput();
             }
             else {
                 enteredexactly1row = true;
-            }
+            } 
+            // */
             m_row = atoi(&cspace);
             if ((m_row >= 1) && (m_row <= 8) && enteredexactly1row) {
                 bool enteredexactly1column = false;
                 printf("Column: ");
-                std::ignore = scanf("%c", &cspace);
+                get_with_length(spacenum, 1);
+                cspace = spacenum[0];
+                enteredexactly1column = true;
+                /*
                 if (getchar() != '\n') {
                     printf("Invalid column.\n");
                     clearinput();
@@ -387,6 +375,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 else {
                     enteredexactly1column = true;
                 }
+                // */
 
                 m_column = atoi(&cspace);
                 if (((m_column >= 1) && (m_column <= 8) && enteredexactly1column)) {
@@ -440,8 +429,8 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 if (player_who_just_moved_still_in_check != Game_Status::NEUTRAL) {
                     printf("That's check, silly!\n");
                     printf("Do you want to undo that move? Type Yes if so.\n");
-                    std::ignore = scanf("%3s", nameofpiecetomove);
-                    clearinput();
+                    get_with_length(nameofpiecetomove, 3);
+                    
                     nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                     for (int i = 1; i < 3; i++) {
                         nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
@@ -497,7 +486,6 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         && whiteteam.the_king.column == blackteam.the_king.column) {
         print_how_to_hug();
         std::ignore = scanf("%3s", nameofpiecetomove);
-        nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
         clearinput();
         nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
         for (int i = 1; i < 3; i++) {

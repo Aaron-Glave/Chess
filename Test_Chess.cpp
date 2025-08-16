@@ -54,7 +54,7 @@ TEST_CASE("Space-only strings can be made into empty strings", "[spaceless]") {
 TEST_CASE("Names are good after cleaning", "[spaceless]") {
     char myentry[128] = " \n\t WPAWN7 \n \t ";
     char correctedentry[Piece::name_length];
-    clean_chess_input(myentry, correctedentry);
+    get_standardized_name(myentry, correctedentry);
     //REQUIRE(strcmp(myentry, "wPawn7") == 0);
     printf("Spaces and newlines before and after a piece name are removed correctly.\n");
 }
@@ -65,19 +65,17 @@ TEST_CASE("Newlines and spaces entered before a piece name are treated correctly
     char myentry[128] = "\n  \t  wPawn7                     \t \n\t \n ";
 
     char correctedentry[Piece::name_length];
-    clean_chess_input(myentry, correctedentry);
+    get_standardized_name(myentry, correctedentry);
     REQUIRE(strcmp(myentry, "wPawn7") == 0);
     printf("Spaces and newlines before a piece name are removed correctly.\n");
 }
 // */
 
-TEST_CASE("Better input methods work", "[spaceless]") {
-    //Clean the name and find a matching piece.
+TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     Board mainboard = Board();
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
-    bool had_spaces_and_named = false;
-    bool real_piece = false;
+
     printf("White pieces:\n");
     for(int i = 0; i < 16; i++) {
         printf("%s\n", whiteteam.pieces[i]->name);
@@ -91,9 +89,9 @@ TEST_CASE("Better input methods work", "[spaceless]") {
 
     char myentry[128];
     char correctedentry[Piece::name_length];;
-    
 
     //Verify that the entered name is messy.
+    bool had_spaces_and_named = false;
     while (!had_spaces_and_named) {
         get_name(myentry);
         bool start_spaces = false;
@@ -108,6 +106,9 @@ TEST_CASE("Better input methods work", "[spaceless]") {
                 break;
             }
         }
+        if (!had_spaces_and_named) {
+            printf("Remember, to test this you have to add spaces or tabs before AND after.\n");
+        }
     }
     
     REQUIRE(had_spaces_and_named);
@@ -116,6 +117,7 @@ TEST_CASE("Better input methods work", "[spaceless]") {
     printf("Simplified to %s.\n", myentry);
 
     bool typed_invalid = false;
+    bool real_piece = false;
     while (!typed_invalid) {
         for (int i = 0; i < 16; i++) {
             if ((strcmp(myentry, whiteteam.pieces[i]->name) == 0)
@@ -125,19 +127,29 @@ TEST_CASE("Better input methods work", "[spaceless]") {
             }
         }
         if (real_piece) {
-            //TODO GET ANOTHER PIECE NAME
+            //GET ANOTHER PIECE NAME
+            printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
+            printf("Try again.\n");
+            get_name(myentry);
+            remove_spaces(myentry, myentry);
+            real_piece = false;
         }
         else {
             typed_invalid = true;
         }
     }
     
-    clean_chess_input(myentry, correctedentry);
+    get_standardized_name(myentry, correctedentry);
+    for (int i = 0; i < 16; i++) {
+        if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
+            || (strcmp(myentry, blackteam.pieces[i]->name) == 0)) {
+            real_piece = true;
+            break;
+        }
+    }
+    REQUIRE(real_piece);
 
-    //TODO Verify that the corrected name is a valid piece.
-    
-
-    printf("Input cleaned correctly.\n");
+    printf("Input parsed to %s.\n", correctedentry);
 }
 
 TEST_CASE("First turn pawns can't move like knights #dad", "[pieces][pawns]") {
