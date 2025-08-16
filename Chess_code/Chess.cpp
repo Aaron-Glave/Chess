@@ -14,6 +14,7 @@
 #include <thread>
 #include "InvalidPiece.h"
 #include "Saver.h"
+#include "SpacelessChessInput.h"
 
 using namespace std;
 
@@ -30,6 +31,28 @@ bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
 
 void sleep5() {
     std::this_thread::sleep_for(std::chrono::seconds(5));
+}
+
+void get_name(char* long_input) 
+//NOTE: long_input should be at least 128 characters long.
+{
+    std::ignore = scanf("%127s", long_input);
+}
+
+void standardize_name(char* in_name) {
+    char long_input[128];
+    get_name(long_input);
+    clean_chess_input(long_input, in_name);
+    //Stabilize the input.
+    //Make the name all lowercase.
+    in_name[9] = '\0';
+    
+    in_name[0] = tolower(in_name[0]);
+    in_name[1] = toupper(in_name[1]);
+    for (int i = 2; i < 10; i++) {
+        in_name[i] = tolower(in_name[i]);
+    }
+    clearinput();
 }
 
 int chess(bool should_load_man, bool show_debugging, bool show_hugging)
@@ -95,7 +118,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         //You start the turn with no piece selected.
         piecetomove = NULL;
         mainboard.print_board();
-        std::string correct_input = "%" + std::to_string(Piece::name_length - 1) + "s";
+        
         if (show_debugging) {
             printf("DEBUG: Turn %d\n", mainboard.current_turn());
         }
@@ -125,16 +148,8 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             }
         }
         printf("Which piece no you want to move? ");
-        std::ignore = scanf(correct_input.c_str(), nameofpiecetomove);
-        nameofpiecetomove[9] = '\0';
-        //Make the name all lowercase.
-        nameofpiecetomove[0] = tolower(nameofpiecetomove[0]);
-        nameofpiecetomove[1] = toupper(nameofpiecetomove[1]);
-        for (int i = 2; i < 10; i++) {
-            nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
-        }
-        clearinput();
-
+        
+        standardize_name(nameofpiecetomove);
         //Alternative commands other than moving 1 piece
         //TODO: Make options to kill a selected piece.
         if (should_load_man) {

@@ -53,13 +53,36 @@ TEST_CASE("Space-only strings can be made into empty strings", "[spaceless]") {
 
 //*
 TEST_CASE("Newlines and spaces entered before a piece name are treated correctly", "[spaceless]") {
-    char myentry[128] = "\n  \t  wPawn7                     \t \n";
+    char myentry[128] = "\n  \t  wPawn7                     \t \n\t \n ";
+
     char correctedentry[Piece::name_length];
     clean_chess_input(myentry, correctedentry);
     REQUIRE(strcmp(myentry, "wPawn7") == 0);
     printf("Spaces and newlines before a piece name are removed correctly.\n");
 }
 // */
+
+TEST_CASE("Better input methods work", "[spaceless]") {
+    Board mainboard = Board();
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    bool had_spaces_and_named = false;
+    printf("White pieces:\n");
+    printf("Either team, enter a piece name with spaces and newlines before and after it:\n");
+    char myentry[128];
+    char correctedentry[Piece::name_length];
+    
+    while(!had_spaces_and_named) {
+        bool had_spaces = false;
+        printf("Enter a dirty but technically correct piece name for some piece:\n");
+        get_name(myentry);
+        for (int i = 0; myentry[i] != 0;);
+        //TODO Verify that the entered name is messy.
+
+        //TODO Clean the name and find a matching piece.
+    }
+    printf("Input cleaned correctly.\n");
+}
 
 TEST_CASE("First turn pawns can't move like knights #dad", "[pieces][pawns]") {
     Board mainboard;
