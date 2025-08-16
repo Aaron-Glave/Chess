@@ -37,6 +37,7 @@ void get_name(char* long_input)
 //NOTE: long_input should be at least 128 characters long.
 {
     std::ignore = scanf("%127s", long_input);
+    clearinput();
 }
 
 void standardize_name(char* in_name) {
