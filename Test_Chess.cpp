@@ -61,13 +61,13 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
 
 
 //*
-TEST_CASE("Newlines and spaces entered before a piece name are treated correctly", "[spaceless]") {
+TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[spaceless]") {
     char myentry[128] = "\n  \t  wPawn7                     \t \n\t \n ";
 
     char correctedentry[Piece::name_length];
     get_standardized_name(myentry, correctedentry);
     REQUIRE(strcmp(correctedentry, "wPawn7") == 0);
-    printf("Spaces and newlines before a piece name are removed correctly.\n");
+    printf("Spaces and tabs before a piece name are removed correctly.\n");
 }
 // */
 
@@ -84,7 +84,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     for (int i = 0; i < 16; i++) {
         printf("%s\n", blackteam.pieces[i]->name);
     }
-    printf("Enter a piece name with spaces and newlines before and after it.\n");
+    printf("Enter a piece name with spaces and tabs before and after it.\n");
     printf("Also, the name MUST be dirty in capitalization.\n");
     char myentry[128] = "         ";
     char correctedentry[Piece::name_length];
