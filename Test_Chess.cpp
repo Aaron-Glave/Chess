@@ -56,7 +56,7 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
     char correctedentry[Piece::name_length];
     get_standardized_name(myentry, correctedentry);
     //REQUIRE(strcmp(myentry, "wPawn7") == 0);
-    printf("Spaces and newlines before and after a piece name are removed correctly.\n");
+    printf("Spaces and tabs before and after a piece name are removed correctly.\n");
 }
 
 
