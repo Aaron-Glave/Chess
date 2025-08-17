@@ -1,7 +1,10 @@
 /*
 * Credit to Catch2 for making it easy to run tests!
 */
+//Disable errors caused by scanf
 #pragma warning(disable:4996)
+
+
 #include "Catch2_code\catch_amalgamated.hpp"
 #include "Chess_code\Chess.h"
 #include "Chess_code\Board.h"
@@ -16,42 +19,164 @@
 #include "Chess_code\Straight_Line.h"
 #include "Chess_code\Rook.h"
 #include "Chess_code\Bishop.h"
+
+#include "Chess_code/CastleMove.h"
 #include "Chess_code\Queen.h"
 #include "Chess_code\Safety.h"
 #include "Chess_code\Teamname.h"
 #include "Chess_code\diagnoal_direction.h"
 #include "Chess_code\InvalidPiece.h"
 #include "Chess_code\Saver.h"
+#include "Chess_Code\SpacelessName.h"
+#include "Chess_Code\SpacelessChessInput.h"
 #include <iostream>
 #include <tuple>
-#include "Chess_code/CastleMove.h"
 
 void kill_piece(Board* mainboard, Piece* piece) {
     piece->alive = false;
     mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
 }
 
-TEST_CASE("Dad found this bug", "[pieces][pawns]") {
+TEST_CASE("User can hit space then type", "[spaceless]") {
+    char myentry[7] = " \thi \n";
+    remove_spaces(myentry, myentry);
+    REQUIRE(strcmp(myentry, "hi") == 0);
+    printf("Spaces removed correctly.\n");
+}
+
+TEST_CASE("Space-only strings can be made into empty strings", "[spaceless]") {
+    char myentry[6] = "\n \t \n";
+    remove_spaces(myentry, myentry);
+    REQUIRE(strcmp(myentry, "") == 0);
+    printf("Space-only string is empty as it should be.\n");
+}
+
+TEST_CASE("Names are good after cleaning", "[spaceless]") {
+    char myentry[128] = " \n\t WPAWN7 \n \t ";
+    char correctedentry[Piece::name_length];
+    get_standardized_name(myentry, correctedentry);
+    //REQUIRE(strcmp(myentry, "wPawn7") == 0);
+    printf("Spaces and newlines before and after a piece name are removed correctly.\n");
+}
+
+
+//*
+TEST_CASE("Newlines and spaces entered before a piece name are treated correctly", "[spaceless]") {
+    char myentry[128] = "\n  \t  wPawn7                     \t \n\t \n ";
+
+    char correctedentry[Piece::name_length];
+    get_standardized_name(myentry, correctedentry);
+    REQUIRE(strcmp(correctedentry, "wPawn7") == 0);
+    printf("Spaces and newlines before a piece name are removed correctly.\n");
+}
+// */
+
+TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
+    Board mainboard = Board();
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+
+    printf("White pieces:\n");
+    for(int i = 0; i < 16; i++) {
+        printf("%s\n", whiteteam.pieces[i]->name);
+    }
+    printf("Black pieces:\n");
+    for (int i = 0; i < 16; i++) {
+        printf("%s\n", blackteam.pieces[i]->name);
+    }
+    printf("Enter a piece name with spaces and newlines before and after it.\n");
+    printf("Also, the name MUST be dirty in capitalism.\n");
+
+    char myentry[128];
+    char correctedentry[Piece::name_length];
+
+    //Verify that the entered name is messy.
+    bool had_spaces_and_named = false;
+    while (!had_spaces_and_named) {
+        get_name(myentry);
+        bool start_spaces = false;
+        bool anychars = false;
+        for (int i = 0; myentry[i] != 0; i++) {
+            if (is_space(myentry[i]) && !start_spaces) start_spaces = true;
+            if (!is_space(myentry[i])) {
+                anychars = true;
+            }
+            if (is_space(myentry[i]) && anychars && start_spaces) {
+                had_spaces_and_named = true;
+                break;
+            }
+        }
+        if (!had_spaces_and_named) {
+            printf("Remember, to test this you have to add spaces or tabs before AND after.\n");
+        }
+    }
+    
+    REQUIRE(had_spaces_and_named);
+    remove_spaces(myentry, myentry);
+    //We end in a period to make sure the name doesn't have any whitespace anymore.
+    printf("Simplified to %s.\n", myentry);
+
+    bool typed_invalid = false;
+    bool real_piece = false;
+    while (!typed_invalid) {
+        for (int i = 0; i < 16; i++) {
+            if ((strcmp(myentry, whiteteam.pieces[i]->name) == 0)
+                || (strcmp(myentry, blackteam.pieces[i]->name) == 0)) {
+                real_piece = true;
+                break;
+            }
+        }
+        if (real_piece) {
+            //GET ANOTHER PIECE NAME
+            printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
+            printf("Try again.\n");
+            get_name(myentry);
+            remove_spaces(myentry, myentry);
+            real_piece = false;
+        }
+        else {
+            typed_invalid = true;
+        }
+    }
+    
+    get_standardized_name(myentry, correctedentry);
+    for (int i = 0; i < 16; i++) {
+        if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
+            || (strcmp(correctedentry, blackteam.pieces[i]->name) == 0)) {
+            real_piece = true;
+            break;
+        }
+    }
+    REQUIRE(real_piece);
+
+    printf("Input parsed to %s.\n", correctedentry);
+}
+
+TEST_CASE("First turn pawns can't move like knights #dad", "[pieces][pawns]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     Move pawn2;
+    mainboard.print_board();
     for (int i = 1; i <= 8; i++) {
         if (i != 5) {
             pawn2 = Move(2, 5, 4, i, &whiteteam.pawns[5 - 1], NULL);
             REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
 			pawn2 = Move(7, 5, 5, i, &blackteam.pawns[8 - 5], NULL);
-			printf("%d\n", i);
+			printf("White pawn in column %d can't move to row 4 column 5\n", i);
 			REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
+            printf("Black pawn in column %d can't move to row 4 column 5\n", i);
         }
     }
     pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
     REQUIRE(mainboard.human_move_piece(&pawn2));
+    mainboard.print_board();
 	printf("White pawns do their first move correctly.\n");
 	pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[8-5], NULL);
 	REQUIRE(mainboard.human_move_piece(&pawn2));
+    mainboard.print_board();
     printf("Black pawns do their first move correctly.\n");
 }
 

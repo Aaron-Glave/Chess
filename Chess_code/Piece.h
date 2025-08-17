@@ -8,10 +8,11 @@ protected:
     int first_turn;
 public: // public variables
     //The longest name is 9 characters and the last one is \0.
+    const static int name_length = 10;
     COLOR team;
     char chess_class[8];
     //Printed when the board is printed. Important: Length of name.
-    char name[10];
+    char name[name_length];
     //Important. This decides whether or not the piece should stay on the board.
     bool alive;
     int count;
