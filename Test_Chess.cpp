@@ -66,7 +66,7 @@ TEST_CASE("Newlines and spaces entered before a piece name are treated correctly
 
     char correctedentry[Piece::name_length];
     get_standardized_name(myentry, correctedentry);
-    REQUIRE(strcmp(myentry, "wPawn7") == 0);
+    REQUIRE(strcmp(correctedentry, "wPawn7") == 0);
     printf("Spaces and newlines before a piece name are removed correctly.\n");
 }
 // */
@@ -88,7 +88,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     printf("Also, the name MUST be dirty in capitalism.\n");
 
     char myentry[128];
-    char correctedentry[Piece::name_length];;
+    char correctedentry[Piece::name_length];
 
     //Verify that the entered name is messy.
     bool had_spaces_and_named = false;
@@ -142,7 +142,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     get_standardized_name(myentry, correctedentry);
     for (int i = 0; i < 16; i++) {
         if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
-            || (strcmp(myentry, blackteam.pieces[i]->name) == 0)) {
+            || (strcmp(correctedentry, blackteam.pieces[i]->name) == 0)) {
             real_piece = true;
             break;
         }

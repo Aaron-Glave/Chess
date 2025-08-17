@@ -198,8 +198,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         }
         if (strcmp(nameofpiecetomove, "tIe") == 0) {
             printf("Opponent: Do you agree that this match should be called a tie? ");
-            std::ignore = scanf("%3s", nameofpiecetomove);
-            clearinput();
+            get_with_length(nameofpiecetomove, 3);
             nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
             for (int i = 1; i < 3; i++) {
                 nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
@@ -226,7 +225,6 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             while (!have_decided_direction) {
                 printf("Which side do you want to castle? ");
                 get_with_length(nameofpiecetomove, 5);
-                clearinput();
                 nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                 for (int i = 1; i < 5; i++) {
                     nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
@@ -477,17 +475,13 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         did_fail_loading = false;
         swapped_or_done = false;
         did_load = false;
-        /* Maybe don't need this? 
-        if (did_load && !done_loading_man) {
-            done_loading_man = true;
-        }
-        // */
     }
+
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {
         print_how_to_hug();
-        std::ignore = scanf("%3s", nameofpiecetomove);
-        clearinput();
+        get_with_length(nameofpiecetomove, 3);
+
         nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
         for (int i = 1; i < 3; i++) {
             nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
