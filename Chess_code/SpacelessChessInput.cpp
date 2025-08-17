@@ -12,16 +12,6 @@
 //Disable errors caused by scanf
 #pragma warning(disable:4996)
 
-void get_name(char* long_input)
-//NOTE: this function clears the input buffer.
-{
-    size_t length = strlen(long_input);
-    std::string input_size = std::to_string(length);
-    std::string scanf_string = "%" + input_size + "[^\n]";
-    std::ignore = scanf(scanf_string.c_str(), long_input);
-    clearinput();
-}
-
 void get_name_string(std::string& long_input) {
     std::getline(std::cin, long_input);
 }
