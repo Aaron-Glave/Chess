@@ -85,15 +85,16 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
         printf("%s\n", blackteam.pieces[i]->name);
     }
     printf("Enter a piece name with spaces and newlines before and after it.\n");
-    printf("Also, the name MUST be dirty in capitalism.\n");
-
-    char myentry[128];
+    printf("Also, the name MUST be dirty in capitalization.\n");
+    char myentry[128] = "         ";
     char correctedentry[Piece::name_length];
 
     //Verify that the entered name is messy.
     bool had_spaces_and_named = false;
     while (!had_spaces_and_named) {
-        get_name(myentry);
+        //NOTE: I use manual imput here to verify that the user entered a MESSY name.
+        std::ignore = scanf("%128[^\n]", myentry);
+        clearinput();
         bool start_spaces = false;
         bool anychars = false;
         for (int i = 0; myentry[i] != 0; i++) {
@@ -130,7 +131,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
             //GET ANOTHER PIECE NAME
             printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
             printf("Try again.\n");
-            get_name(myentry);
+            get_with_length(myentry, 10);
             remove_spaces(myentry, myentry);
             real_piece = false;
         }
