@@ -13,7 +13,7 @@ void remove_spaces(const char* source, char* dest, const int max_length) {
     ///That means max_length-1 should be the index of the null character.
     int source_start = 0;
     bool found_first_nonspace = false;
-    for (int i = 0; (source[i] != '\0') && (i < max_length); i++) {
+    for (int i = 0; (source[i] != '\0') /*&& (i < max_length)*/ ; i++) {
         if (!is_space(source[i])) {
             found_first_nonspace = true;
             source_start = i;
@@ -27,6 +27,9 @@ void remove_spaces(const char* source, char* dest, const int max_length) {
     int end = current_wccount - source_start;
     if (end >= max_length) {
         end = max_length - 1;
+        if(source[end] != '\0') {
+            dest[0] = '\0'; //If we truncated, return an empty string.
+        }
     }
     dest[end] = '\0';
 }

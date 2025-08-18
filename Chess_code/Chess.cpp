@@ -198,7 +198,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         }
         if (strcmp(nameofpiecetomove, "tIe") == 0) {
             printf("Opponent: Do you agree that this match should be called a tie? ");
-            get_with_length(nameofpiecetomove, 3);
+            get_with_number_of_chars_including_null(nameofpiecetomove, 4);
             nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
             for (int i = 1; i < 3; i++) {
                 nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
@@ -224,7 +224,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             did_try_castle = true;
             while (!have_decided_direction) {
                 printf("Which side do you want to castle?\nYou can name a direction (Left or Right) or say Stop to change your mind.\n");
-                get_with_length(nameofpiecetomove, 5);
+                get_with_number_of_chars_including_null(nameofpiecetomove, 6);
                 nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                 for (int i = 1; i < 5; i++) {
                     nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
@@ -347,7 +347,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             }
             
             printf("Row: ");
-            get_with_length(spacenum, 1);
+            get_with_number_of_chars_including_null(spacenum, 2);
             cspace = spacenum[0];
             enteredexactly1row = true;
             /*
@@ -363,7 +363,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             if ((m_row >= 1) && (m_row <= 8) && enteredexactly1row) {
                 bool enteredexactly1column = false;
                 printf("Column: ");
-                get_with_length(spacenum, 1);
+                get_with_number_of_chars_including_null(spacenum, 2);
                 cspace = spacenum[0];
                 enteredexactly1column = true;
                 /*
@@ -428,7 +428,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 if (player_who_just_moved_still_in_check != Game_Status::NEUTRAL) {
                     printf("That's check, silly!\n");
                     printf("Do you want to undo that move? Type Yes if so.\n");
-                    get_with_length(nameofpiecetomove, 3);
+                    get_with_number_of_chars_including_null(nameofpiecetomove, 3);
                     
                     nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                     for (int i = 1; i < 3; i++) {
@@ -480,7 +480,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {
         print_how_to_hug();
-        get_with_length(nameofpiecetomove, 3);
+        get_with_number_of_chars_including_null(nameofpiecetomove, 3);
 
         nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
         for (int i = 1; i < 3; i++) {

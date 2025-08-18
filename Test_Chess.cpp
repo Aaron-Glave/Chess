@@ -59,6 +59,24 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
     printf("Spaces and tabs before and after a piece name are removed correctly.\n");
 }
 
+TEST_CASE("Truncated names are made empty", "[spaceless]") {
+    char myentry[3] = "";
+    std::string input_str = std::string(myentry);
+    bool typed_too_long = false;
+    while (!typed_too_long) {
+        printf("Type at least 2 characters.\n");
+        get_name_string(input_str);
+        if (input_str.length() < 2) {
+            printf("That name was too short I read %s. Try again.\n", input_str.c_str());
+        }
+        else {
+            typed_too_long = true;
+        }
+    }
+    correct_with_length(input_str, myentry, 2);
+    REQUIRE(strcmp(myentry, "") == 0);
+}
+
 
 //*
 TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[spaceless]") {
@@ -131,7 +149,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
             //GET ANOTHER PIECE NAME
             printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
             printf("Try again.\n");
-            get_with_length(myentry, PIECE_NAME_LENGTH);
+            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
             remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
             real_piece = false;
         }
@@ -151,7 +169,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
         }
         if (!real_piece) {
             printf("That wasn't a valid piece name. Try again.\n");
-            get_with_length(myentry, PIECE_NAME_LENGTH);
+            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
         }
     }
     
@@ -952,21 +970,32 @@ TEST_CASE("White pawn moving up, black pawns moving down", "[pawn]") {
     Board mainboard;
     mainboard.place(&wpawn, 2, 2);
     mainboard.place(&bpawn, 7, 2);
+    printf("Testing to make sure these pawns can only move up or down and they can only move 1 or 2 spaces.\n");
+    mainboard.print_board();
     int bcolumn = 1;
     while (bcolumn != 4) {
-        //printf("Pawn column %d\n", bcolumn);
         if (bcolumn != 2) {
             REQUIRE_FALSE(wpawn.can_classmove(3, bcolumn, &mainboard));
             REQUIRE_FALSE(bpawn.can_classmove(6, bcolumn, &mainboard));
         }
         else
         {
-            REQUIRE(wpawn.can_classmove(3, bcolumn, &mainboard));
-            REQUIRE(bpawn.can_classmove(6, bcolumn, &mainboard));
+            for(int m_row = 1; m_row <= 8; m_row++) {
+                if(m_row == 3 || m_row == 4) {
+                    REQUIRE(wpawn.can_classmove(m_row, bcolumn, &mainboard));
+                    REQUIRE_FALSE(bpawn.can_classmove(m_row, bcolumn, &mainboard));
+                } else if(m_row == 6 || m_row == 5) {
+                    REQUIRE(bpawn.can_classmove(m_row, bcolumn, &mainboard));
+                    REQUIRE_FALSE(wpawn.can_classmove(m_row, bcolumn, &mainboard));
+                } else {
+                    REQUIRE_FALSE(wpawn.can_classmove(m_row, bcolumn, &mainboard));
+                    REQUIRE_FALSE(bpawn.can_classmove(m_row, bcolumn, &mainboard));
+                }
+            }
         }
         bcolumn++;
     }
-    printf("Pawns are moving the way they should.\n");
+    printf("Pawns can't normally change their columns.\n");
 }
 
 TEST_CASE("Pieces getting blocked by their own team", "[diag][bishop]") {
