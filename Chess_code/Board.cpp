@@ -114,15 +114,21 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
                 tried_move.end_column = trycolumn;
                 // We know we can go here, so we might as well try.
                 //TODO CHECK THAT YOU REALLY CAN MOVE HERE!
-                if(tried_move.piece_that_moved)
-                human_move_piece(&tried_move);
-                after_trying_escape = is_in_check(my_team, enemy_team, false);
-                if (after_trying_escape == Game_Status::NEUTRAL) {
-                    undo_move(&tried_move, my_team);
-                    return Game_Status::CHECK;
+                if (tried_move.piece_that_moved->can_classmove(tryrow, trycolumn, this)) {
+                    bool did_i_move = human_move_piece(&tried_move);
+                    //No matter whether we're in check or not, this move still has to be undone.
+                    after_trying_escape = is_in_check(my_team, enemy_team, false);
+                    if (did_i_move) {
+                        undo_move(&tried_move, my_team);
+                    }
+                    
+                    if (after_trying_escape == Game_Status::NEUTRAL) {
+                        return Game_Status::CHECK;
+                    }
                 }
             }
         }
+        return Game_Status::CHECKMATE;
     }
 
     /* 
