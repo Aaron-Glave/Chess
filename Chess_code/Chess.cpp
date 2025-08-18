@@ -58,7 +58,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
     bool okmove = false;
     bool piecefound = false;
     bool isgameover = false;
-    char nameofpiecetomove[10];
+    char nameofpiecetomove[PIECE_NAME_LENGTH];
     int piece = 1;
     //char current_team = 'w';
     Team* current_team = &whiteteam;
@@ -223,7 +223,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             bool have_decided_direction = false;
             did_try_castle = true;
             while (!have_decided_direction) {
-                printf("Which side do you want to castle? ");
+                printf("Which side do you want to castle?\nYou can name a direction (Left or Right) or say Stop to change your mind.\n");
                 get_with_length(nameofpiecetomove, 5);
                 nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                 for (int i = 1; i < 5; i++) {
