@@ -224,7 +224,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             did_try_castle = true;
             while (!have_decided_direction) {
                 printf("Which side do you want to castle?\nYou can name a direction (Left or Right) or say Stop to change your mind.\n");
-                get_with_number_of_chars_including_null(nameofpiecetomove, 5);
+                get_with_number_of_chars_including_null(nameofpiecetomove, 6);
                 nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                 for (int i = 1; i < 5; i++) {
                     nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);

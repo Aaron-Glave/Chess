@@ -6,6 +6,7 @@
 #include "Pawn_Upgrader.h"
 #include "Board.h"
 #include "InvalidPiece.h"
+#include "SpacelessChessInput.h"
 #pragma warning(disable:4996)
 bool is_pawn(Piece* shouldbepawn) {
     return shouldbepawn->piecetype == TYPE::PAWN;
@@ -55,7 +56,7 @@ TYPE get_valid_upgrade_type() {
     }
     while (!valid_type) {
         printf("What kind of piece do you want? ");
-        std::ignore = scanf("%9s", typewanted);
+        get_with_number_of_chars_including_null(typewanted, 10);
         typewanted[0] = toupper(typewanted[0]);
         for (int i = 1; i < 10; i++) {
             typewanted[i] = tolower(typewanted[i]);
