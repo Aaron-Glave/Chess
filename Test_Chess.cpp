@@ -62,8 +62,8 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
 TEST_CASE("Truncated names are made empty", "[spaceless]") {
     char myentry[3] = "ab";
     bool typed_too_long = false;
-    while (!typed_too_long) {
-    }
+    /*while (!typed_too_long) {
+    }*/
 }
 
 
