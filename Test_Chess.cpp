@@ -60,10 +60,21 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
 }
 
 TEST_CASE("Truncated names are made empty", "[spaceless]") {
-    char myentry[3] = "ab";
+    char myentry[3] = "";
+    std::string input_str = std::string(myentry);
     bool typed_too_long = false;
-    /*while (!typed_too_long) {
-    }*/
+    while (!typed_too_long) {
+        printf("Type at least 2 characters.\n");
+        get_name_string(input_str);
+        if (input_str.length() < 2) {
+            printf("That name was too short I read %s. Try again.\n", input_str.c_str());
+        }
+        else {
+            typed_too_long = true;
+        }
+    }
+    correct_with_length(input_str, myentry, 2);
+    REQUIRE(strcmp(myentry, "") == 0);
 }
 
 
@@ -138,7 +149,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
             //GET ANOTHER PIECE NAME
             printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
             printf("Try again.\n");
-            get_with_length(myentry, PIECE_NAME_LENGTH);
+            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
             remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
             real_piece = false;
         }
@@ -158,7 +169,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
         }
         if (!real_piece) {
             printf("That wasn't a valid piece name. Try again.\n");
-            get_with_length(myentry, PIECE_NAME_LENGTH);
+            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
         }
     }
     

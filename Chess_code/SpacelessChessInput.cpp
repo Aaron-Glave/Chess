@@ -75,7 +75,21 @@ void remove_spaces_string(std::string& source, std::string& dest, const int dest
     dest[end] = '\0';
 }
 
-void get_with_length(char* enter_input, const int max_length) {
+void correct_with_length(std::string& input_string, char* enter_input, const int max_length) {
+    remove_spaces_string(input_string, input_string, max_length);
+
+    for (int i = 0; (input_string[i] != '\0') && (i < max_length); i++) {
+        enter_input[i] = input_string[i];
+    }
+    size_t end_location = strlen(input_string.c_str());
+    if (end_location > max_length) {
+        end_location = 0;
+    }
+
+    enter_input[end_location] = '\0';
+}
+
+void get_with_number_of_chars_including_null(char* enter_input, const int max_length) {
     /*Gets user input, clears spaces, and makes sure it's no longer than max_length.
     WARNING: enter_input must have at least max_length characters, counting the null character!
       Since the max_length character is always set to the null character,
@@ -85,18 +99,10 @@ void get_with_length(char* enter_input, const int max_length) {
 
     std::string input_string = std::string(enter_input);
     get_name_string(input_string);
-    remove_spaces_string(input_string, input_string, max_length);
-    
-    for(int i = 0; (input_string[i] != '\0') && (i < max_length); i++) {
-        enter_input[i] = input_string[i];
-    }
-    size_t end_location = strlen(input_string.c_str());
-    if (end_location > max_length) {
-        end_location = max_length;
-    }
-    
-    enter_input[end_location] = '\0';
+    correct_with_length(input_string, enter_input, max_length);
 }
+
+
 
 void clean_chess_input(char* in_name) {
     const size_t input_length = strlen(in_name);
