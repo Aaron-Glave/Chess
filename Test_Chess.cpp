@@ -39,21 +39,21 @@ void kill_piece(Board* mainboard, Piece* piece) {
 
 TEST_CASE("User can hit space then type", "[spaceless]") {
     char myentry[7] = " \thi \n";
-    remove_spaces(myentry, myentry);
+    remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
     REQUIRE(strcmp(myentry, "hi") == 0);
     printf("Spaces removed correctly.\n");
 }
 
 TEST_CASE("Space-only strings can be made into empty strings", "[spaceless]") {
     char myentry[6] = "\n \t \n";
-    remove_spaces(myentry, myentry);
+    remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
     REQUIRE(strcmp(myentry, "") == 0);
     printf("Space-only string is empty as it should be.\n");
 }
 
 TEST_CASE("Names are good after cleaning", "[spaceless]") {
     char myentry[128] = " \n\t WPAWN7 \n \t ";
-    char correctedentry[Piece::name_length];
+    char correctedentry[PIECE_NAME_LENGTH];
     get_standardized_name(myentry, correctedentry);
     //REQUIRE(strcmp(myentry, "wPawn7") == 0);
     printf("Spaces and tabs before and after a piece name are removed correctly.\n");
@@ -64,7 +64,7 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
 TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[spaceless]") {
     char myentry[128] = "\n  \t  wPawn7                     \t \n\t \n ";
 
-    char correctedentry[Piece::name_length];
+    char correctedentry[PIECE_NAME_LENGTH];
     get_standardized_name(myentry, correctedentry);
     REQUIRE(strcmp(correctedentry, "wPawn7") == 0);
     printf("Spaces and tabs before a piece name are removed correctly.\n");
@@ -87,7 +87,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     printf("Enter a piece name with spaces and tabs before and after it.\n");
     printf("Also, the name MUST be dirty in capitalization.\n");
     char myentry[128] = "         ";
-    char correctedentry[Piece::name_length];
+    char correctedentry[PIECE_NAME_LENGTH];
 
     //Verify that the entered name is messy.
     bool had_spaces_and_named = false;
@@ -113,7 +113,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     }
     
     REQUIRE(had_spaces_and_named);
-    remove_spaces(myentry, myentry);
+    remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
     //We end in a period to make sure the name doesn't have any whitespace anymore.
     printf("Simplified to %s.\n", myentry);
 
@@ -131,8 +131,8 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
             //GET ANOTHER PIECE NAME
             printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
             printf("Try again.\n");
-            get_with_length(myentry, 10);
-            remove_spaces(myentry, myentry);
+            get_with_length(myentry, PIECE_NAME_LENGTH);
+            remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
             real_piece = false;
         }
         else {
@@ -140,14 +140,21 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
         }
     }
     
-    get_standardized_name(myentry, correctedentry);
-    for (int i = 0; i < 16; i++) {
-        if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
-            || (strcmp(correctedentry, blackteam.pieces[i]->name) == 0)) {
-            real_piece = true;
-            break;
+    while (!real_piece) {
+        get_standardized_name(myentry, correctedentry);
+        for (int i = 0; i < 16; i++) {
+            if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
+                || (strcmp(correctedentry, blackteam.pieces[i]->name) == 0)) {
+                real_piece = true;
+                break;
+            }
+        }
+        if (!real_piece) {
+            printf("That wasn't a valid piece name. Try again.\n");
+            get_with_length(myentry, PIECE_NAME_LENGTH);
         }
     }
+    
     REQUIRE(real_piece);
 
     printf("Input parsed to %s.\n", correctedentry);
