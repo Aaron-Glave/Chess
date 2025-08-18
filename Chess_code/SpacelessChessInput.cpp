@@ -43,8 +43,12 @@ void get_standardized_name(const char* messy_input, char* command_to_run)
     command_to_run[PIECE_NAME_LENGTH - 1] = '\0';
 }
 
-void remove_spaces_string(std::string& source, std::string& dest) {
-    //Converts an input with spaces to one without spaces. Nothing after the first word is kept.
+void remove_spaces_string(std::string& source, std::string& dest, const int dest_max_length) {
+    /*Converts an input with spaces to one without spaces.Nothing after the first word is kept.
+      Since the dest_max_length character is always set to the null character,
+        if you enter a word with more than max_length characters,
+        every character with an index >= dest_max_length is ignored!
+    // */
     int source_start = 0;
     bool found_first_nonspace = false;
     for (int i = 0; source[i] != '\0'; i++) {
@@ -62,7 +66,13 @@ void remove_spaces_string(std::string& source, std::string& dest) {
     for (int i = 0; !is_space(source[current_wccount]); i++, current_wccount++) {
         dest[i] = source[current_wccount];
     }
-    dest[current_wccount - source_start] = '\0';
+    int end = current_wccount - source_start;
+    if(end >= dest_max_length) {
+        dest[0] = '\0'; //If we truncated, empty the dest string.
+        return;
+    }
+    //We know end < dest_max_length so this is safe.
+    dest[end] = '\0';
 }
 
 void get_with_length(char* enter_input, const int max_length) {
@@ -75,7 +85,7 @@ void get_with_length(char* enter_input, const int max_length) {
 
     std::string input_string = std::string(enter_input);
     get_name_string(input_string);
-    remove_spaces_string(input_string, input_string);
+    remove_spaces_string(input_string, input_string, max_length);
     
     for(int i = 0; (input_string[i] != '\0') && (i < max_length); i++) {
         enter_input[i] = input_string[i];

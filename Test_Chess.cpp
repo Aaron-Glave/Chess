@@ -59,6 +59,13 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
     printf("Spaces and tabs before and after a piece name are removed correctly.\n");
 }
 
+TEST_CASE("Truncated names are made empty", "[spaceless]") {
+    char myentry[3] = "ab";
+    bool typed_too_long = false;
+    while (!typed_too_long) {
+    }
+}
+
 
 //*
 TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[spaceless]") {
