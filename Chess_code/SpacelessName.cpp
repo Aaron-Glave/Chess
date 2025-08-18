@@ -18,10 +18,10 @@ void remove_spaces(const char* source, char* dest) {
             break;
         }
     }
-    int current_wccount = source_start;
-    for(int i = 0; !is_space(source[current_wccount]); i++, current_wccount++) {
-        dest[i] = source[current_wccount];
+    int current_nonblank_index = source_start;
+    for(int i = 0; !is_space(source[current_nonblank_index]); i++, current_nonblank_index++) {
+        dest[i] = source[current_nonblank_index];
     }
-    dest[current_wccount - source_start] = '\0';
+    dest[current_nonblank_index - source_start] = '\0';
 }
 #endif // !SPACELESSNAME_CPP
