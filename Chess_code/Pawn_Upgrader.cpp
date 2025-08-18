@@ -55,7 +55,7 @@ TYPE get_valid_upgrade_type() {
         typewanted[i] = '\0';
     }
     while (!valid_type) {
-        printf("What kind of piece do you want? ");
+        printf("What kind of piece do you want?\nThe valid types are Rook, Knight, Bishop, and Queen. ");
         get_with_number_of_chars_including_null(typewanted, 10);
         typewanted[0] = toupper(typewanted[0]);
         for (int i = 1; i < 10; i++) {
@@ -79,7 +79,7 @@ TYPE get_valid_upgrade_type() {
         }
         // */
         if (!valid_type) {
-            printf("%s is not a valid type to upgrade a pawn to. Try again.\n", typewanted);
+            printf("That was not a valid type to upgrade a pawn to.\n");
         }
     }
     return to_upgrade_to;
