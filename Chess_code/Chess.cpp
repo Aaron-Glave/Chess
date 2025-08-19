@@ -105,7 +105,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             printf("DEBUG: Turn %d\n", mainboard.current_turn());
         }
 
-        printf("%s turn.\n", team_name(current_team->color));
+        
         if (current_team->color == COLOR::WHITE) {
             //We already checked if we are in check or checkmate at the end of our opponent's turn.
             if (whiteteam.current_status == Game_Status::CHECK) {
@@ -129,6 +129,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 return 0;
             }
         }
+        printf("%s turn.\n", team_name(current_team->color));
         printf("Which piece no you want to move? ");
         
         clean_chess_input(nameofpiecetomove);
