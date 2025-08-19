@@ -8,7 +8,6 @@ int main(int argc, char*argv[]) {
     // There are command line args now.
     bool talk_hug = false;
     bool should_load_man = false;
-    bool should_load_save = false;
     bool show_debugging = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
@@ -52,22 +51,12 @@ int main(int argc, char*argv[]) {
             if (strcmp("--printdebug", argv[i]) == 0) {
                 show_debugging = true;
             }
-            if (strcmp("--loadsave", argv[i]) == 0) {
-                should_load_save = true;
-                if (i < argc - 1) {
-                    printf("Error: No savefile name.");
-                }
-               
-            }
         }
         if (talk_hug) {
             printf("You can make kings hug by helping them land on the same space and meet, or by typing the word hug instead of selecting a piece.\n");
         }
     }
-    if (should_load_man && should_load_save) {
-        printf("Do you want to load from a save file or re-create the game by hand?\nMake up your mind!\n");
-        return 2;
-    }
+    
     printf("Note that when I ask for the row and column,\nI read the numbers from a top-down perspective with the white team on the bottom.\n");
     printf("I'll tell you this exactly once:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
     printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number character.\n");

@@ -113,9 +113,9 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 printf("You are in check!\n");
             }
             if (whiteteam.current_status == Game_Status::CHECKMATE) {
-                printf("Black team wins. Good game.\n");
+                printf("Black team wins wins with a checkmate. Good game.\n");
                 wKing->alive = false;
-                break;
+                return 0;
             }
         }
         else if (current_team->color == COLOR::BLACK) {
@@ -124,9 +124,9 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 printf("You are in check!\n");
             }
             if (blackteam.current_status == Game_Status::CHECKMATE) {
-                printf("White team wins. Good game.\n");
+                printf("White team wins with a checkmate. Good game.\n");
                 bKing->alive = false;
-                break;
+                return 0;
             }
         }
         printf("Which piece no you want to move? ");
@@ -288,6 +288,10 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             if (okmove) {
                 try {
                     mainboard.human_move_piece(&castle_move);
+
+                    /* UPDATE THE BOARD'S KNOWLEDGE OF BOTH TEAM'S CHECK HERE. */
+                    current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, true);
+                    current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team, false);
                     /* NOTE: THE TEAMS SWAP ON THIS LINE. */
                     current_team = current_team->enemy_team;
                 }
@@ -297,12 +301,6 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                     okmove = false;
                 }
             }
-            //You can't castle when you're in check so in this block we know you didn't get in check.
- 
-            /* UPDATE THE BOARD'S KNOWLEDGE OF BOTH TEAM'S CHECK HERE. */
-            current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team);
-            current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team);
-            // END
             // */
         }
 
@@ -350,31 +348,14 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
             get_with_number_of_chars_including_null(spacenum, 2);
             cspace = spacenum[0];
             enteredexactly1row = true;
-            /*
-            if (getchar() != '\n') {
-                printf("Invalid row.\n");
-                clearinput();
-            }
-            else {
-                enteredexactly1row = true;
-            } 
-            // */
             m_row = atoi(&cspace);
-            if ((m_row >= 1) && (m_row <= 8) && enteredexactly1row) {
+            bool valid_row = (m_row >= 1) && (m_row <= 8) && enteredexactly1row;
+            if (valid_row) {
                 bool enteredexactly1column = false;
                 printf("Column: ");
                 get_with_number_of_chars_including_null(spacenum, 2);
                 cspace = spacenum[0];
                 enteredexactly1column = true;
-                /*
-                if (getchar() != '\n') {
-                    printf("Invalid column.\n");
-                    clearinput();
-                }
-                else {
-                    enteredexactly1column = true;
-                }
-                // */
 
                 m_column = atoi(&cspace);
                 if (((m_column >= 1) && (m_column <= 8) && enteredexactly1column)) {
@@ -384,7 +365,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                     printf("Invalid column.\n");
                 }
             }
-            else if (!((m_row >= 1) && (m_row <= 8)) && enteredexactly1row) /*assume valid single int*/ {
+            else {
                 printf("Invalid row.\n");
             }
         }
@@ -444,7 +425,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
 
 
                 current_team->current_status = mainboard.is_in_check(current_team, current_team->enemy_team);
-                current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team);
+                current_team->enemy_team->current_status = mainboard.is_in_check(current_team->enemy_team, current_team, true);
                 //NOTE: THE TEAMS SWAP ON THIS LINE
                 current_team = current_team->enemy_team;
                 // END

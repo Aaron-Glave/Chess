@@ -71,20 +71,99 @@ void Board::set_turn(int turn) {
 }
 
 //Make sure the correct argument is passed each time!
-Game_Status Board::is_in_check(Team* my_team, Team* enemy_team) {
-    int mkcolumn = my_team->the_king.column;
-    int mkrow = my_team->the_king.row;
+Game_Status Board::is_in_check(Team* my_team, Team* enemy_team, bool look_for_checkmate) {
     bool is_hugging_allowed = false;
+    bool is_in_check = false;
     for (int i = 0; i < 16; i++) {
         if (enemy_team->pieces[i] != 0) {
-            if (enemy_team->pieces[i]->can_classmove(mkrow, mkcolumn, this)) {
+            //Failing around here?
+            if (enemy_team->pieces[i]->can_classmove(my_team->the_king.row, my_team->the_king.column, this)) {
                 //Intentionally allow Kings to risk their lives
-                return Game_Status::CHECK;
+                is_in_check = true;
+                break;
+                
             }
+        }
+    }
+    if (is_in_check) {
+        if(look_for_checkmate) {
+            return try_to_escape(my_team, enemy_team, this);
+        }
+        else {
+            return Game_Status::CHECK;
         }
     }
     return Game_Status::NEUTRAL;
 }
+
+Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard) {
+    //See if the player currently in check can make any move that gets them out of check.
+    Piece* one_of_my_pieces;
+    Move tried_move;
+    Game_Status after_trying_escape = Game_Status::CHECK;
+    for (int i = 0; i < 16; i++)
+    {
+        one_of_my_pieces = my_team->pieces[i];
+        if (!one_of_my_pieces->alive) continue;
+        tried_move.piece_that_moved = my_team->pieces[i];
+        tried_move.start_row = my_team->pieces[i]->row;
+        tried_move.start_column = my_team->pieces[i]->column;
+        for (int tryrow = 1; tryrow <= 8; tryrow++) {
+            tried_move.end_row = tryrow;
+            for (int trycolumn = 1; trycolumn <= 8; trycolumn++) {
+                tried_move.end_column = trycolumn;
+                // We know we can go here, so we might as well try.
+                //TODO CHECK THAT YOU REALLY CAN MOVE HERE!
+                if (tried_move.piece_that_moved->can_classmove(tryrow, trycolumn, this)) {
+                    bool did_i_move = human_move_piece(&tried_move);
+                    //No matter whether we're in check or not, this move still has to be undone.
+                    after_trying_escape = is_in_check(my_team, enemy_team, false);
+                    if (did_i_move) {
+                        undo_move(&tried_move, my_team);
+                    }
+                    
+                    if (after_trying_escape == Game_Status::NEUTRAL) {
+                        return Game_Status::CHECK;
+                    }
+                }
+            }
+        }
+    }
+    return Game_Status::CHECKMATE;
+
+    /* 
+    //Check upgraded pieces too.
+    for (int i = 0; i < 8; i++) {
+        if (my_team->upgraded_pieces[i] != NULL) {
+            one_of_my_pieces = my_team->upgraded_pieces[i];
+            if (!one_of_my_pieces->alive) {
+                continue;
+            }
+            tried_move.piece_that_moved = one_of_my_pieces;
+            tried_move.start_row = one_of_my_pieces->row;
+            tried_move.start_column = one_of_my_pieces->column;
+            for (int tryrow = 1; tryrow <= 8; tryrow++) {
+                tried_move.end_row = tryrow;
+                for (int trycolumn = 1; trycolumn <= 8; trycolumn++) {
+                    tried_move.end_column = trycolumn;
+                    // We know we can go here, so we might as well try.
+                    human_move_piece(&tried_move);
+                    if (is_in_check(my_team, enemy_team) == Game_Status::NEUTRAL) {
+                        undo_move(&tried_move, my_team);
+                        return Game_Status::CHECKMATE;
+                    }
+                }
+            }
+        }
+    }
+    //Maybe that isn't neeeded. */
+
+    //Here I know the move that saved me and I haven't actually made it on purpose yet,
+    // so I need to undo the move before exiting the loop.
+    undo_move(&tried_move, my_team);
+    // END OF IMAGINARY LOOP
+    return Game_Status::CHECKMATE;
+};
 
 bool Board::is_on_board(int b_row, int b_column) {
     if (b_row < 1 || b_column < 1 || b_row > 8 || b_column > 8) {
@@ -101,32 +180,13 @@ Move Board::make_move(Piece* piece_that_moved, int erow, int ecolumn) {
     //Pawn* passantpawnpiece = NULL;
     int passantrow = -1;
     int passantcolumn = -1;
-    /* DELETE THIS BEFORE MERGING
-    bool createnewpassant = false;
-    /*if (piece_that_moved->piecetype == PAWN) {
-        if (piece_that_moved->team == WHITE && piece_that_moved->row == 2 && erow == 4) {
-            passantpawnpiece = (Pawn*)piece_that_moved;
-            passantrow = 4;
-            passantcolumn = piece_that_moved->column;
-            createnewpassant = true;
-        }
-        else if(piece_that_moved->team == BLACK && piece_that_moved->row == 7 && erow == 5)
-        {
-            passantpawnpiece = (Pawn*)piece_that_moved;
-            passantrow = 5;
-            passantcolumn = piece_that_moved->column;
-            createnewpassant = true;
-        }
-        if (createnewpassant) {
-            passantpawn = PassantPawn(passantpawnpiece, passantrow, passantcolumn);
-        }
-    }*/
     
     Move nextmove = Move(piece_that_moved->row, piece_that_moved->column, erow, ecolumn, 
         piece_that_moved, spaces[erow - 1][ecolumn - 1],
         false);
     return nextmove;
 }
+
 /*
 b_column and b_row range from 1 to 8. We subtract 1 whenever we reference a space on the board.
 That's because a person starts counting spaces with 1 but the computer starts counting with 0.
@@ -240,7 +300,7 @@ bool Board::human_move_piece(Move* move_to_make) {
             }
             
             if (passantpawn.get_piece() != NULL) {
-                if (passantpawn.get_turn_made() < turn_number) {
+                if ((passantpawn.get_turn_made() < turn_number) && (passantpawn.get_piece() != NULL)) {
                     prevepassant = passantpawn;
                     passantpawn = PassantPawn();
                 }
@@ -507,32 +567,3 @@ void Board::print_passant(bool* testprinted) {
         *testprinted = true;
     }
 }
-
-Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboard) {
-    Piece* one_of_my_pieces;
-    Move tried_move;
-    for (int i = 0; i < 16; i++)
-    {
-        one_of_my_pieces = my_team->pieces[i];
-        if (!one_of_my_pieces->alive) continue;
-        tried_move.piece_that_moved = my_team->pieces[i];
-        tried_move.start_row = my_team->pieces[i]->row;
-        tried_move.start_column = my_team->pieces[i]->column;
-        for (int tryrow = 1; tryrow <= 8; tryrow++) {
-            tried_move.end_row = tryrow;
-            for (int trycolumn = 1; trycolumn <= 8; trycolumn++) {
-                tried_move.end_column = trycolumn;
-                // We know we can go here, so we might as well try.
-                human_move_piece(&tried_move);
-                if (is_in_check(my_team, enemy_team) == Game_Status::NEUTRAL) {
-                    undo_move(&tried_move, my_team);
-                    return Game_Status::CHECK;
-                }
-            }
-        }
-    }
-    //TEMP Here I know the move that saved me and I haven't actually made it on purpose yet,
-    // so I need to undo the move before exiting the loop/
-    // END OF IMAGINARY LOOP
-    return Game_Status::CHECK;
-};

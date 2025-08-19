@@ -77,6 +77,98 @@ TEST_CASE("Truncated names are made empty", "[spaceless]") {
     REQUIRE(strcmp(myentry, "") == 0);
 }
 
+TEST_CASE("Checkmate is detected correctly", "[checkmate]") {
+    Board mainboard = Board();
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    printf("Aaron: Starting board:\n");
+    mainboard.print_board();
+    //Delete all black pieces except the king.
+    for (int i = 0; i < 16; i++) {
+        if (blackteam.pieces[i]->piecetype != TYPE::KING) {
+            kill_piece(&mainboard, blackteam.pieces[i]);
+        }
+    }
+
+    mainboard.place(&whiteteam.rook2, 7, 1);
+    // Upgrade the white team's pawn into a rook so that it puts the black king in check.
+    mainboard.place(&whiteteam.pawns[0], 8, 1);
+    really_perform_upgrade(&whiteteam.pawns[0], TYPE::ROOK, &whiteteam, &mainboard);
+    //Also place a black bishop in a place to capture the checking rook.
+    blackteam.bishop1.alive = true;
+    mainboard.place(&blackteam.bishop1, 7, 2);
+    printf("Board setup for check test:\n");
+    mainboard.print_board();
+
+    Game_Status black_in_checkmate = mainboard.is_in_check(&blackteam, &whiteteam, true);
+    printf("Should just be a check.\n");
+    REQUIRE(black_in_checkmate == Game_Status::CHECK);
+    printf("Check detected correctly.\n");
+
+    printf("But if that bishop wasn't there, it would be checkmate.\n");
+    kill_piece(&mainboard, &blackteam.bishop1);
+    mainboard.print_board();
+    black_in_checkmate = mainboard.is_in_check(&blackteam, &whiteteam, true);
+    printf("Should be a checkmate.\n");
+    REQUIRE(black_in_checkmate == Game_Status::CHECKMATE);
+    printf("Checkmate detected correctly.\n");
+}
+
+TEST_CASE("Checkmate can be blocked by guarding your king", "[checkmate]") {
+    Board mainboard = Board();
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+    printf("Aaron: Starting board:\n");
+    mainboard.print_board();
+    //Delete all black pieces except the king.
+    for (int i = 0; i < 16; i++) {
+        if (blackteam.pieces[i]->piecetype != TYPE::KING) {
+            kill_piece(&mainboard, blackteam.pieces[i]);
+        }
+    }
+
+    //Delete the white pawn blocking the rook.
+    kill_piece(&mainboard, &whiteteam.pawns[1]);
+    
+    //Because I going to place a pawn in the space where the blackteam.rook2 (called that because it's in the same column as whiiteteam.rook2),
+    //I need to move the black rook to a safe space first.
+    blackteam.rook2.alive = true;
+    mainboard.place(&blackteam.rook2, 1, 2);
+    
+    //Now I can safely place the white pawn in the same row as the black king.
+    mainboard.place(&whiteteam.rook1, 7, 1);
+    mainboard.place(&whiteteam.pawns[0], 8, 1);
+    printf("Before I upgrade a pawn:\n");
+    mainboard.print_board();
+
+    // Upgrade the white team's pawn into a rook so that it puts the black king in check.
+    really_perform_upgrade(&whiteteam.pawns[0], TYPE::ROOK, &whiteteam, &mainboard);
+    printf("Upgraded a pawn:\n");
+    mainboard.print_board();
+    Piece* upgraded_piece = whiteteam.upgraded_pieces[0];
+    
+    printf("Board setup for check test:\n");
+    mainboard.print_board();
+
+    Game_Status black_in_checkmate = mainboard.is_in_check(&blackteam, &whiteteam, true);
+    printf("Should just be a check.\n");
+    REQUIRE(black_in_checkmate == Game_Status::CHECK);
+    printf("Check detected correctly.\n");
+
+    printf("But if that rook wasn't there, it would be checkmate.\n");
+    kill_piece(&mainboard, &blackteam.rook2);
+    //upgraded_piece->alive = true;
+    //mainboard.place(upgraded_piece, 8, 1, true);
+    mainboard.print_board();
+    black_in_checkmate = mainboard.is_in_check(&blackteam, &whiteteam, true);
+    printf("Should be a checkmate.\n");
+    REQUIRE(black_in_checkmate == Game_Status::CHECKMATE);
+    printf("Checkmate detected correctly.\n");
+}
 
 //*
 TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[spaceless]") {
