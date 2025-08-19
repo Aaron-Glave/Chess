@@ -122,8 +122,6 @@ TEST_CASE("Checkmate can be blocked by guarding your king", "[checkmate]") {
     Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
-    printf("Aaron: Starting board:\n");
-    mainboard.print_board();
     //Delete all black pieces except the king.
     for (int i = 0; i < 16; i++) {
         if (blackteam.pieces[i]->piecetype != TYPE::KING) {
@@ -168,6 +166,61 @@ TEST_CASE("Checkmate can be blocked by guarding your king", "[checkmate]") {
     printf("Should be a checkmate.\n");
     REQUIRE(black_in_checkmate == Game_Status::CHECKMATE);
     printf("Checkmate detected correctly.\n");
+}
+
+TEST_CASE("An en passant move CAN save you from checkmate", "[checkmate][passant]") {
+    Board mainboard = Board();
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+
+    for (int i = 0; i < 16; i++) {
+        if ((whiteteam.pieces[i] != &whiteteam.the_king) &&
+            !((whiteteam.pieces[i]->piecetype == TYPE::PAWN) && (whiteteam.pieces[i]->column == 5))) {
+            kill_piece(&mainboard, whiteteam.pieces[i]);
+        }
+    }
+    
+    mainboard.place(&whiteteam.pawns[4], 5, 5);
+    mainboard.place(&whiteteam.the_king, 4, 5);
+    //Remember, this is named Rook2 to the user because the code views the pieces from the absolute top-down perspective,
+    //but names them from the user's perspective.
+    mainboard.place(&blackteam.rook1, 5, 1);
+    mainboard.place(&blackteam.rook2, 3, 8);
+
+    //We need a few more rooks to paralize the king, so upgrade some pawns.
+    mainboard.place(&blackteam.pawns[8 - 5], 1, 4);
+    upgrade_pawn_if_needed(&blackteam.pawns[8 - 5], &blackteam, &mainboard, TYPE::ROOK);
+    mainboard.place(&blackteam.pawns[8 - 6], 1, 6);
+    upgrade_pawn_if_needed(&blackteam.pawns[8 - 6], &blackteam, &mainboard, TYPE::ROOK);
+    mainboard.place(&blackteam.pawns[8 - 7], 1, 7);
+    upgrade_pawn_if_needed(&blackteam.pawns[8 - 7], &blackteam, &mainboard, TYPE::ROOK);
+    mainboard.place(blackteam.pieces[7 + (9-7)], 5, 8);
+    mainboard.print_board();
+
+    //Now the only way to escape this check is to do an en passant move.
+    Move move_weak_to_passant = Move(7, 4, 5, 4, &blackteam.pawns[8-4], NULL);
+    mainboard.human_move_piece(&move_weak_to_passant);
+    Game_Status white_in_check = mainboard.is_in_check(&whiteteam, &blackteam, true);
+    mainboard.print_board();
+    REQUIRE(white_in_check == Game_Status::CHECK);
+    /*Even though we don't set the piece_landed_on variable to the pawn that was killed,
+    * since it was killed via an en passant move, the game still revives the pawn killed with an en passant.
+    * I wrote to specifically check for that in undo_move.
+    // */
+    Move move_passant = Move(5, 5, 6, 4, &whiteteam.pawns[4], NULL);
+    mainboard.human_move_piece(&move_passant);
+    mainboard.print_board();
+    printf("Looks like your pawn saved you via an en passant move.\n");
+    
+    //Without having the en passant move available, there would be a checkmate.
+    mainboard.undo_move(&move_passant, &whiteteam);
+    kill_piece(&mainboard, &whiteteam.pawns[4]);
+    white_in_check = mainboard.is_in_check(&whiteteam, &blackteam, true);
+    mainboard.print_board();
+    REQUIRE(white_in_check == Game_Status::CHECKMATE);
+    printf("You NEEDED an en passant move to save you.\n");
 }
 
 //*
@@ -676,7 +729,7 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
 }
 
-TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade]") {
+TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
