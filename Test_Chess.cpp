@@ -424,7 +424,7 @@ TEST_CASE("Castling BLACK", "[castle][black]") {
     0;
 }
 
-TEST_CASE("Castling respects movement rules", "[errors][castle][cstlemovement]") {
+TEST_CASE("Castling respects movement rules", "[errors][castle][castlemovement]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
