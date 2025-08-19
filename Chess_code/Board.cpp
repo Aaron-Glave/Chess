@@ -116,9 +116,12 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
                 //TODO CHECK THAT YOU REALLY CAN MOVE HERE!
                 if (tried_move.piece_that_moved->can_classmove(tryrow, trycolumn, this)) {
                     bool did_i_move = human_move_piece(&tried_move);
-                    //No matter whether we're in check or not, this move still has to be undone.
+
+                    //Even if I excaped, I still need to undo this move, because it was automatically made, not made by choice.
                     after_trying_escape = is_in_check(my_team, enemy_team, false);
                     if (did_i_move) {
+                        //Here I know the move my system tested saves me, but I haven't actually made it on purpose yet,
+                        // so I need to undo the move before exiting the loop.
                         undo_move(&tried_move, my_team);
                     }
                     
@@ -129,39 +132,8 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
             }
         }
     }
-    return Game_Status::CHECKMATE;
 
-    /* 
-    //Check upgraded pieces too.
-    for (int i = 0; i < 8; i++) {
-        if (my_team->upgraded_pieces[i] != NULL) {
-            one_of_my_pieces = my_team->upgraded_pieces[i];
-            if (!one_of_my_pieces->alive) {
-                continue;
-            }
-            tried_move.piece_that_moved = one_of_my_pieces;
-            tried_move.start_row = one_of_my_pieces->row;
-            tried_move.start_column = one_of_my_pieces->column;
-            for (int tryrow = 1; tryrow <= 8; tryrow++) {
-                tried_move.end_row = tryrow;
-                for (int trycolumn = 1; trycolumn <= 8; trycolumn++) {
-                    tried_move.end_column = trycolumn;
-                    // We know we can go here, so we might as well try.
-                    human_move_piece(&tried_move);
-                    if (is_in_check(my_team, enemy_team) == Game_Status::NEUTRAL) {
-                        undo_move(&tried_move, my_team);
-                        return Game_Status::CHECKMATE;
-                    }
-                }
-            }
-        }
-    }
-    //Maybe that isn't neeeded. */
-
-    //Here I know the move that saved me and I haven't actually made it on purpose yet,
-    // so I need to undo the move before exiting the loop.
-    undo_move(&tried_move, my_team);
-    // END OF IMAGINARY LOOP
+    //You couldn't escape the check, so you are in checkmate.
     return Game_Status::CHECKMATE;
 };
 
@@ -371,7 +343,6 @@ int Board::current_turn() const
 // If i did then delete team_owner->upgraded_pieces[move_i_made->piece_that_moved->count-8]
 // THEN SET IT TO NULL RIGHT AFTER!
 // Note: IT IS VERY IMPORTANT IN THE LIVE GAME TO ALWAYS PASS THE TEAM THAT MOVED!
-//BUG: Undoing an en passant does not reset the passant pawn.
 void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
     
     passantpawn = prevepassant;
