@@ -9,10 +9,14 @@ int main(int argc, char*argv[]) {
     bool talk_hug = false;
     bool should_load_man = false;
     bool show_debugging = false;
+    bool two_bishops_only = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
             if (strcmp("--hug", argv[i]) == 0) {
                 talk_hug = true;
+            }
+            if (strcmp("--2bishops", argv[i]) == 0) {
+                two_bishops_only = true;
             }
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
                 printf("In-game command load: Load the file from a saved game.\n");
@@ -62,7 +66,7 @@ int main(int argc, char*argv[]) {
     printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number character.\n");
     printf("You can be killed.\n");
     
-    chess(should_load_man, show_debugging, talk_hug);
+    chess(talk_hug, show_debugging, should_load_man, two_bishops_only);
     sleep5();
     
     return 0;
