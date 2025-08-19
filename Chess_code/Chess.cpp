@@ -37,7 +37,7 @@ void sleep5() {
 
 
 
-int chess(bool talk_hug, bool show_debugging, bool should_load_man, bool two_bishops_only)
+int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 {
     /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
     * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
