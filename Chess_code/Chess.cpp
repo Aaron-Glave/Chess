@@ -113,9 +113,9 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 printf("You are in check!\n");
             }
             if (whiteteam.current_status == Game_Status::CHECKMATE) {
-                printf("Black team wins. Good game.\n");
+                printf("Black team wins wins with a checkmate. Good game.\n");
                 wKing->alive = false;
-                break;
+                return 0;
             }
         }
         else if (current_team->color == COLOR::BLACK) {
@@ -124,9 +124,9 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 printf("You are in check!\n");
             }
             if (blackteam.current_status == Game_Status::CHECKMATE) {
-                printf("White team wins. Good game.\n");
+                printf("White team wins with a checkmate. Good game.\n");
                 bKing->alive = false;
-                break;
+                return 0;
             }
         }
         printf("Which piece no you want to move? ");
