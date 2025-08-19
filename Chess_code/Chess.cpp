@@ -85,8 +85,6 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     Piece* current_king = wKing;
     bool am_i_in_check = false;
 
-    //if()
-
     if (should_load_man) {
         //Swapping the current team sometimes helps you set up custom boards.
         printf("Type cteam to say you're done loading the previous game and the current team starts,...\n");
