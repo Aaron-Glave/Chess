@@ -128,8 +128,8 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
                 }
             }
         }
-        return Game_Status::CHECKMATE;
     }
+    return Game_Status::CHECKMATE;
 
     /* 
     //Check upgraded pieces too.
