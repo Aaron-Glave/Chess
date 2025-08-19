@@ -11,9 +11,6 @@ int main(int argc, char*argv[]) {
     bool show_debugging = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
-            if (strcmp("--hug", argv[i]) == 0) {
-                talk_hug = true;
-            }
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
                 printf("In-game command load: Load the file from a saved game.\n");
                 printf("> To save a game, type save\n");
@@ -45,11 +42,15 @@ int main(int argc, char*argv[]) {
                 printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
             }
-            if (strcmp("--loadman", argv[i]) == 0) {
-                should_load_man = true;
+
+            if (strcmp("--hug", argv[i]) == 0) {
+                talk_hug = true;
             }
             if (strcmp("--printdebug", argv[i]) == 0) {
                 show_debugging = true;
+            }
+            if (strcmp("--loadman", argv[i]) == 0) {
+                should_load_man = true;
             }
         }
         if (talk_hug) {
@@ -62,7 +63,7 @@ int main(int argc, char*argv[]) {
     printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number character.\n");
     printf("You can be killed.\n");
     
-    chess(should_load_man, show_debugging, talk_hug);
+    chess(talk_hug, show_debugging, should_load_man);
     sleep5();
     
     return 0;

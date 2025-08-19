@@ -37,7 +37,7 @@ void sleep5() {
 
 
 
-int chess(bool should_load_man, bool show_debugging, bool show_hugging)
+int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 {
     /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
     * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
@@ -84,11 +84,9 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
     Piece* bKing = blackteam.pieces[3];
     Piece* current_king = wKing;
     bool am_i_in_check = false;
+
     if (should_load_man) {
-        /*TODO FINISH LETTING YOU SET UP THE GAME. YOU NEED TO SET is_loaded TO true
-        * when you are done loading the game.
-        Skip the player's movement of pieces when they load the game instead, 
-        just like you skip certain print statements when you castle. */
+        //Swapping the current team sometimes helps you set up custom boards.
         printf("Type cteam to say you're done loading the previous game and the current team starts,...\n");
         printf("...or type oteam to let the opponent move.\n");
     }
@@ -138,11 +136,11 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
         if (should_load_man) {
             if (strcmp(nameofpiecetomove, "cTeam") == 0) {
                 if (done_loading_man) {
-                    printf("You are already done loading.\n");
+                    printf("You can't swap teams without making a move anymore.\n");
                 }
                 else {
-                    printf("You are done loading the game. Now fight the king!\n");
-                    if (show_hugging) {
+                    printf("You are done setting up the game. Now fight the king!\n");
+                    if (talk_hug) {
                         printf("Or you can hug him.\n");
                         print_how_to_hug();
                     }
@@ -410,7 +408,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
                 if (player_who_just_moved_still_in_check != Game_Status::NEUTRAL) {
                     printf("That's check, silly!\n");
                     printf("Do you want to undo that move? Type Yes if so.\n");
-                    get_with_number_of_chars_including_null(nameofpiecetomove, 3);
+                    get_with_number_of_chars_including_null(nameofpiecetomove, 4);
                     
                     nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
                     for (int i = 1; i < 3; i++) {
@@ -462,7 +460,7 @@ int chess(bool should_load_man, bool show_debugging, bool show_hugging)
     if (whiteteam.the_king.row == blackteam.the_king.row
         && whiteteam.the_king.column == blackteam.the_king.column) {
         print_how_to_hug();
-        get_with_number_of_chars_including_null(nameofpiecetomove, 3);
+        get_with_number_of_chars_including_null(nameofpiecetomove, 4);
 
         nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
         for (int i = 1; i < 3; i++) {
