@@ -30,13 +30,6 @@ bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
     return true;
 }
 
-void sleep5() {
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-}
-
-
-
-
 int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 {
     /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
@@ -113,6 +106,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
             if (whiteteam.current_status == Game_Status::CHECKMATE) {
                 printf("Black team wins wins with a checkmate. Good game.\n");
                 wKing->alive = false;
+                clean_chess_input(nameofpiecetomove);
                 return 0;
             }
         }
@@ -124,6 +118,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
             if (blackteam.current_status == Game_Status::CHECKMATE) {
                 printf("White team wins with a checkmate. Good game.\n");
                 bKing->alive = false;
+                clean_chess_input(nameofpiecetomove);
                 return 0;
             }
         }
@@ -192,7 +187,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
             printf("You give up. %s team wins!\n", current_team->enemy_team->full_name);
-            sleep5();
+            clean_chess_input(nameofpiecetomove);
             return 0;
         }
         if (strcmp(nameofpiecetomove, "tIe") == 0) {
@@ -204,7 +199,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
             }
             if (strcmp(nameofpiecetomove, "Yes") == 0) {
                 printf("You both give up. Neither team wins!\n");
-                sleep5();
+                clean_chess_input(nameofpiecetomove);
                 return 0;
             }
             else {
@@ -213,6 +208,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         }
         if (strcmp(nameofpiecetomove, "hUg") == 0) {
             make_kings_hug(current_team, &whiteteam, &blackteam);
+            clean_chess_input(nameofpiecetomove);
             return 0;
         }
 
@@ -468,16 +464,19 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         }
         if (strcmp("Yes", nameofpiecetomove) == 0) {
             make_kings_hug(current_team->enemy_team, public_white_team, public_black_team);
+            clean_chess_input(nameofpiecetomove);
             return 0;
         }
     }
     if (!whiteteam.the_king.alive) {
-        printf("Black team wins.\n");
-        return 2;
+        printf("Black team wins. Good game.\n");
+        clean_chess_input(nameofpiecetomove);
+        return 0;
     }
     if (!blackteam.the_king.alive) {
-        printf("White team wins.\n");
-        return 1;
+        printf("White team wins. Good game.\n");
+        clean_chess_input(nameofpiecetomove);
+        return 0;
     }
     return 0;
 }

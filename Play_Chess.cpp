@@ -64,7 +64,6 @@ int main(int argc, char*argv[]) {
     printf("You can be killed.\n");
     
     chess(talk_hug, show_debugging, should_load_man);
-    sleep5();
     
     return 0;
 }
