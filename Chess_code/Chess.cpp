@@ -123,7 +123,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
             }
         }
         printf("%s turn.\n", team_name(current_team->color));
-        printf("Which piece no you want to move? ");
+        printf("Which piece do you want to move? ");
         
         clean_chess_input(nameofpiecetomove);
         //Alternative commands other than moving 1 piece
