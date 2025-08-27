@@ -104,7 +104,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
                 printf("You are in check!\n");
             }
             if (whiteteam.current_status == Game_Status::CHECKMATE) {
-                printf("Black team wins wins with a checkmate. Good game.\n");
+                printf("Black team wins with a checkmate. Good game.\n");
                 wKing->alive = false;
                 clean_chess_input(nameofpiecetomove);
                 return 0;
