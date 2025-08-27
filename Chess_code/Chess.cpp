@@ -20,7 +20,7 @@
 using namespace std;
 
 void print_how_to_hug() {
-    printf("To hug the king you just landed on instead of defeating him, just type Yes.\n");
+    printf("To hug the king you just landed on instead of defeating him, just type Yes\nWith no punctuation.\n");
 }
 
 bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
@@ -403,7 +403,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
                 Game_Status player_who_just_moved_still_in_check = mainboard.is_in_check(current_team, current_team->enemy_team);
                 if (player_who_just_moved_still_in_check != Game_Status::NEUTRAL) {
                     printf("That's check, silly!\n");
-                    printf("Do you want to undo that move? Type Yes if so.\n");
+                    printf("Do you want to undo that move? If so, type Yes\nWith no punctuation.\n");
                     get_with_number_of_chars_including_null(nameofpiecetomove, 4);
                     
                     nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
