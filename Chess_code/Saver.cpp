@@ -58,9 +58,6 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
         }
     }
     fwrite(&upgraded_pawn_count, sizeof(int), 1, fp);
-    //Save the current passant pawn, saving a PassantPawn() if there is no real passant pawn.
-    //Note that you'll need the pawn's get_start_column() because it is foolish to save memory ADDRESSES of pieces. 
-    //It will be a valid value iff the pawn is not NULL.
 
     // Save standard pieces (which also includes promoted pawns)
     for (i = 0; i < 16; i++)
@@ -92,6 +89,9 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     }
 
     //After that, now we can save an en passant!
+    //Save the current passant pawn, saving a PassantPawn() if there is no real passant pawn.
+    //Note that you'll need the pawn's get_start_column() because it is foolish to save memory ADDRESSES of pieces. 
+    //It will be a valid value iff the pawn is not NULL.
     //Our saved pointer is totally junk, but when we save the en passant piece, we save the column it is in.
     fwrite(&active_board->passantpawn, sizeof(PassantPawn), 1, fp);
 
@@ -231,8 +231,7 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
     int passant_row = saved_passant.get_row();
 
     if(saved_passant.get_row() != -1)
-    {
-        
+    {    
         if (passant_row == 3) { //We know this is a white passant pawn.
             saved_passant = PassantPawn(&whiteteam->pawns[passant_column - 1], passant_row, passant_column, saved_passant.get_turn_made());
         }
