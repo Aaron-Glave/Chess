@@ -1255,4 +1255,12 @@ TEST_CASE("I remember En passant state after doing a move and undoing it.", "[un
 TEST_CASE("Getting the column works right", "[column_input]") {
     REQUIRE(column_from_char('\n') == -1);
     REQUIRE((column_from_char('a') == column_from_char('A') && column_from_char('A') == 1));
+    REQUIRE((column_from_char('b') == column_from_char('B') && column_from_char('B') == 2));
+    REQUIRE((column_from_char('c') == column_from_char('C') && column_from_char('C') == 3));
+    REQUIRE((column_from_char('d') == column_from_char('D') && column_from_char('D') == 4));
+    REQUIRE((column_from_char('e') == column_from_char('E') && column_from_char('E') == 5));
+    REQUIRE((column_from_char('f') == column_from_char('F') && column_from_char('F') == 6));
+    REQUIRE((column_from_char('g') == column_from_char('G') && column_from_char('G') == 7));
+    REQUIRE((column_from_char('h') == column_from_char('H') && column_from_char('H') == 8));
+    REQUIRE((column_from_char('i') == -1 && column_from_char('I') == -1));
 }
