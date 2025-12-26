@@ -1252,7 +1252,7 @@ TEST_CASE("I remember En passant state after doing a move and undoing it.", "[un
     printf("Like this!\n");
 }
 
-/*TEST_CASE("Getting the column works right", "[column_input]") {
+TEST_CASE("Getting the column works right", "[column_input]") {
     REQUIRE(column_from_char('\n') == -1);
     REQUIRE((column_from_char('a') == column_from_char('A') && column_from_char('A') == 1));
-}*/
+}
