@@ -129,6 +129,7 @@
     <ClCompile Include="..\..\Chess_code\CastleMove.cpp" />
     <ClCompile Include="..\..\Chess_code\Chess.cpp" />
     <ClCompile Include="..\..\Chess_code\Chess_non_main.cpp" />
+    <ClCompile Include="..\..\Chess_code\Column_Notation.cpp" />
     <ClCompile Include="..\..\Chess_code\diagnoal_direction.cpp" />
     <ClCompile Include="..\..\Chess_code\King.cpp" />
     <ClCompile Include="..\..\Chess_code\Knight.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\..\Chess_code\Check_vs_Checkmate.h" />
     <ClInclude Include="..\..\Chess_code\Chess.h" />
     <ClInclude Include="..\..\Chess_code\Chess_non_main.h" />
+    <ClInclude Include="..\..\Chess_code\Column_Notation.h" />
     <ClInclude Include="..\..\Chess_code\diagnoal_direction.h" />
     <ClInclude Include="..\..\Chess_code\InvalidPiece.h" />
     <ClInclude Include="..\..\Chess_code\King.h" />

@@ -84,6 +84,9 @@
     <ClCompile Include="..\..\Play_Chess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Chess_code\Column_Notation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Chess_code\Safety.h">
@@ -171,6 +174,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_code\Column_Notation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

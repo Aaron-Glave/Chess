@@ -5,30 +5,31 @@
 #pragma warning(disable:4996)
 
 
-#include "Catch2_code\catch_amalgamated.hpp"
-#include "Chess_code\Chess.h"
-#include "Chess_code\Board.h"
-#include "Chess_code\move_diagnolly.h"
-#include "Chess_code\Chess_non_main.h"
-#include "Chess_code\Piece.h"
-#include "Chess_code\King.h"
-#include "Chess_code\Move_horizontally.h"
-#include "Chess_code\Team.h"
-#include "Chess_code\Pawn.h"
-#include "Chess_code\Knight.h"
-#include "Chess_code\Straight_Line.h"
-#include "Chess_code\Rook.h"
-#include "Chess_code\Bishop.h"
+#include "Catch2_code/catch_amalgamated.hpp"
+#include "Chess_code/Chess.h"
+#include "Chess_code/Board.h"
+#include "Chess_code/move_diagnolly.h"
+#include "Chess_code/Chess_non_main.h"
+#include "Chess_code/Piece.h"
+#include "Chess_code/King.h"
+#include "Chess_code/Move_horizontally.h"
+#include "Chess_code/Team.h"
+#include "Chess_code/Pawn.h"
+#include "Chess_code/Knight.h"
+#include "Chess_code/Straight_Line.h"
+#include "Chess_code/Rook.h"
+#include "Chess_code/Bishop.h"
 
 #include "Chess_code/CastleMove.h"
-#include "Chess_code\Queen.h"
-#include "Chess_code\Safety.h"
-#include "Chess_code\Teamname.h"
-#include "Chess_code\diagnoal_direction.h"
-#include "Chess_code\InvalidPiece.h"
-#include "Chess_code\Saver.h"
-#include "Chess_Code\SpacelessName.h"
-#include "Chess_Code\SpacelessChessInput.h"
+#include "Chess_code/Queen.h"
+#include "Chess_code/Safety.h"
+#include "Chess_code/Teamname.h"
+#include "Chess_code/diagnoal_direction.h"
+#include "Chess_code/InvalidPiece.h"
+#include "Chess_code/Saver.h"
+#include "Chess_Code/SpacelessName.h"
+#include "Chess_Code/SpacelessChessInput.h"
+#include "Chess_code/Column_Notation.h"
 #include <iostream>
 #include <tuple>
 
@@ -1250,3 +1251,8 @@ TEST_CASE("I remember En passant state after doing a move and undoing it.", "[un
     REQUIRE_FALSE(wpawn.alive);
     printf("Like this!\n");
 }
+
+/*TEST_CASE("Getting the column works right", "[column_input]") {
+    REQUIRE(column_from_char('\n') == -1);
+    REQUIRE((column_from_char('a') == column_from_char('A') && column_from_char('A') == 1));
+}*/

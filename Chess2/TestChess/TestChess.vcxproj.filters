@@ -87,6 +87,9 @@
     <ClCompile Include="..\..\Chess_code\SpacelessChessInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Chess_code\Column_Notation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Chess_code\Bishop.h">
@@ -177,6 +180,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Chess_code\SpacelessChessInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_code\Column_Notation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
