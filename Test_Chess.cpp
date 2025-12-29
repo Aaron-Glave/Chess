@@ -1266,6 +1266,23 @@ TEST_CASE("Getting the column works right", "[column_input]") {
     REQUIRE((column_from_char('i') == -1 && column_from_char('I') == -1));
 }
 
+TEST_CASE("Manual test for printing column indexes from entered characters", "[.column_input]") {
+    char test_chars[18] = { 'a', 'A','b','B','c','C','d','D','e','E','f','F','g','G','h','H','I','0'};
+    char char_input[2] = "";
+    int i = 0;
+    for (int j = 0; i < 16; j++, i++) {
+        printf("Enter %c:\n", test_chars[i]);
+        int target = j/2 + 1;
+        get_with_number_of_chars_including_null(char_input, 2);
+        int entered_column = column_from_char(char_input[0]);
+        printf("Character %c corresponds to column index %d\n", test_chars[i], entered_column);
+        REQUIRE(entered_column == target);
+        /*else {
+            printf("Character %c is invalid and corresponds to column index %d\n", test_chars[i], entered_column);
+        }*/
+    }
+}
+
 TEST_CASE("Getting a character from the index of a column works", "[column_input]") {
     REQUIRE(char_from_column(1) == 'A');
     REQUIRE(char_from_column(2) == 'B');
@@ -1276,4 +1293,16 @@ TEST_CASE("Getting a character from the index of a column works", "[column_input
     REQUIRE(char_from_column(7) == 'G');
     REQUIRE(char_from_column(8) == 'H');
     REQUIRE(char_from_column(9) == '\0');
+}
+
+TEST_CASE("Entering integers for columns works too", "[column_input]") {
+    REQUIRE(column_from_char('1') == 1);
+    REQUIRE(column_from_char('2') == 2);
+    REQUIRE(column_from_char('3') == 3);
+    REQUIRE(column_from_char('4') == 4);
+    REQUIRE(column_from_char('5') == 5);
+    REQUIRE(column_from_char('6') == 6);
+    REQUIRE(column_from_char('7') == 7);
+    REQUIRE(column_from_char('8') == 8);
+    REQUIRE(column_from_char('9') == -1);
 }

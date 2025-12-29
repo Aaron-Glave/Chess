@@ -9,8 +9,6 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
-//Disable errors caused by scanf
-#pragma warning(disable:4996)
 
 void get_name_string(std::string& long_input) {
     std::getline(std::cin, long_input);

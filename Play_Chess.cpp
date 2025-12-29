@@ -17,6 +17,7 @@ int main(int argc, char*argv[]) {
                 printf("> Your game will be saved in the same directory that you run this exe in\n> with the name Saved_Game.chess\n");
                
                 printf("\nSpace numbering:\nThe top right square is row 8 column 8,\n and the bottom left square is row 1 column 1.\n");
+                //printf("\nYou can also type number instead of A-H when selecting columns.\n> A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8.\n");
                 printf("> Note that when I ask for the row and column,\n> I read the numbers top-down with the white team on the bottom.\n");
                 printf("> When you have to enter a row or column, you must be very precise.\n> You can't type anything after the single number character.\n");
                 printf("Also, when I ask you to say the word Yes\n> you must NOT type any punctuation after it if you really mean Yes\n");

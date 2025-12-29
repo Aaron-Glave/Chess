@@ -6,6 +6,10 @@
 
 int column_from_char(char entered_char) {
     entered_char = toupper(entered_char);
+    if(entered_char >= '1' && entered_char <= '8') {
+        return int(entered_char - '0');
+    }
+    entered_char = toupper(entered_char);
     int calculated_column = entered_char - int('A') + 1;
     if (!(calculated_column >= 1 && calculated_column <= 8)) {
         return -1;
