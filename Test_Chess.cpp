@@ -62,15 +62,13 @@ TEST_CASE("Names are good after cleaning", "[spaceless]") {
 TEST_CASE("Truncated names are made empty", "[spaceless]") {
     char myentry[3] = "";
     std::string input_str = std::string(myentry);
-    std::string corrected_output;
     bool typed_too_long = false;
     while (!typed_too_long) {
         printf("Type at least 2 non-empty characters.\n");
         get_name_string(input_str);
-        corrected_output = input_str;
-        remove_spaces_string(corrected_output, corrected_output, 3);
-        if (strlen(corrected_output.c_str()) < 2) {
-            printf("That name was too short I read %s. Try again.\n", input_str.c_str());
+        remove_spaces_string(input_str, input_str, 1024);
+        if (strlen(input_str.c_str()) < 2) {
+            printf("That name was too short; I read %s.\n", input_str.c_str());
         }
         else {
             typed_too_long = true;

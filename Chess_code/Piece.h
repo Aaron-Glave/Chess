@@ -3,7 +3,7 @@
 class Board;
 enum class TYPE { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING, EMPTY };
 
-//The longest name is 9 characters and the last one is \0.
+//The longest name is 9 characters and the last character is \0.
 #define PIECE_NAME_LENGTH 10
 class Piece
 {
