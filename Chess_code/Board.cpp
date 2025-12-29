@@ -8,6 +8,7 @@
 #include "CastleMove.h"
 #include "Pawn_Upgrader.h"
 #include "InvalidPiece.h"
+#include "Column_Notation.h"
 #include <string>
 using namespace std;
 
@@ -462,7 +463,7 @@ const static void print_columns() {
     columnname[10] = '\0';
     printf("   |");
     for (int i = 1; i <= 8; i++) {
-        columnname[0] = '0' + i;
+        columnname[0] = char_from_column(i);
         printf("%s|", columnname);
     }
     printf("\n");

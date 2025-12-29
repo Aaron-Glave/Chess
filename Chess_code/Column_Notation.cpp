@@ -13,6 +13,13 @@ int column_from_char(char entered_char) {
     else return calculated_column;
 }
 
+char char_from_column(int column) {
+    if (column < 1 || column > 8) {
+        return '\0';
+    }
+    return char(int('A') + (column - 1));
+}
+
 int get_column() {
     char column_input[2] = "";
     get_with_number_of_chars_including_null(column_input, 2);

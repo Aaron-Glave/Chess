@@ -1265,3 +1265,15 @@ TEST_CASE("Getting the column works right", "[column_input]") {
     REQUIRE((column_from_char('h') == column_from_char('H') && column_from_char('H') == 8));
     REQUIRE((column_from_char('i') == -1 && column_from_char('I') == -1));
 }
+
+TEST_CASE("Getting a character from the index of a column works", "[column_input]") {
+    REQUIRE(char_from_column(1) == 'A');
+    REQUIRE(char_from_column(2) == 'B');
+    REQUIRE(char_from_column(3) == 'C');
+    REQUIRE(char_from_column(4) == 'D');
+    REQUIRE(char_from_column(5) == 'E');
+    REQUIRE(char_from_column(6) == 'F');
+    REQUIRE(char_from_column(7) == 'G');
+    REQUIRE(char_from_column(8) == 'H');
+    REQUIRE(char_from_column(9) == '\0');
+}
