@@ -48,6 +48,8 @@ void remove_spaces_string(std::string& source, std::string& dest, const int dest
       Since the dest_max_length character is always set to the null character,
         if you enter a word with more than max_length characters,
         every character with an index >= dest_max_length is ignored!
+      Note: dest will have at most dest_max_length-1 characters, plus a null terminator.
+            And source and dest may be the same string.
     // */
     int source_start = 0;
     bool found_first_nonspace = false;
