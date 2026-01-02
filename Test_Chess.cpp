@@ -1254,7 +1254,6 @@ TEST_CASE("I remember En passant state after doing a move and undoing it.", "[un
 }
 
 TEST_CASE("Getting the column works right", "[column_input]") {
-    REQUIRE(column_from_char('\n') == -1);
     REQUIRE((column_from_char('a') == column_from_char('A') && column_from_char('A') == 1));
     REQUIRE((column_from_char('b') == column_from_char('B') && column_from_char('B') == 2));
     REQUIRE((column_from_char('c') == column_from_char('C') && column_from_char('C') == 3));
@@ -1264,23 +1263,9 @@ TEST_CASE("Getting the column works right", "[column_input]") {
     REQUIRE((column_from_char('g') == column_from_char('G') && column_from_char('G') == 7));
     REQUIRE((column_from_char('h') == column_from_char('H') && column_from_char('H') == 8));
     REQUIRE((column_from_char('i') == -1 && column_from_char('I') == -1));
-}
 
-TEST_CASE("Manual test for printing column indexes from entered characters", "[.column_input]") {
-    char test_chars[18] = { 'a', 'A','b','B','c','C','d','D','e','E','f','F','g','G','h','H','I','0'};
-    char char_input[2] = "";
-    int i = 0;
-    for (int j = 0; i < 16; j++, i++) {
-        printf("Enter %c:\n", test_chars[i]);
-        int target = j/2 + 1;
-        get_with_number_of_chars_including_null(char_input, 2);
-        int entered_column = column_from_char(char_input[0]);
-        printf("Character %c corresponds to column index %d\n", test_chars[i], entered_column);
-        REQUIRE(entered_column == target);
-        /*else {
-            printf("Character %c is invalid and corresponds to column index %d\n", test_chars[i], entered_column);
-        }*/
-    }
+    REQUIRE(column_from_char('\n') == -1);
+    REQUIRE(column_from_char('0') == -1);
 }
 
 TEST_CASE("Getting a character from the index of a column works", "[column_input]") {
