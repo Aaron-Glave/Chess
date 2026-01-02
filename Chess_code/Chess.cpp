@@ -28,9 +28,9 @@ bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
 
 int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 {
-    /*NOTE THAT YOU CAN'T CASTLE WHILE IN CHECK.
-    * THE BOARD SHOULD KNOW WHATE TEAMS ARE IN CHECK AND PREVENT CASTLING IF THE TEAM TRYING TO CASTLE IS IN CHECK.
-    * IT IS POSSIBLE FOR BOTH TEAMS TO BE IN CHECK, SO THE BOARD NEEDS 2 BOOLEANS TO TELL WHETHER OR NOT the current team is in check.
+    /*Note that you can't castle while in check.
+    * The board should know what teams are in check and prevent castling if the team trying to castle is in check.
+    * It is possible for both teams to be in check, so the board needs 2 booleans to tell whether or not the current team is in check.
     * */
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
@@ -73,6 +73,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     Piece* bKing = blackteam.pieces[3];
     Piece* current_king = wKing;
     bool am_i_in_check = false;
+    bool kings_want_to_hug = false;
 
     if (should_load_man) {
         //Swapping the current team sometimes helps you set up custom boards.
@@ -325,7 +326,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         
         //We found the piece. Now move it.
         bool landonokplace = false;
-        bool enteredexactly1row = false;
+        bool entered_1_column = false;
         if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && !did_load) {
             char spacenum[2] = { '\0','\0' };
             printf("Where do you want to move %s?\n", nameofpiecetomove);
@@ -335,31 +336,31 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
                 printf("First move with %s: %d\n", piecetomove->name, piecetomove->first_turn_i_moved());
             }
             
-            printf("Row: ");
-            get_with_number_of_chars_including_null(spacenum, 2);
-            cspace = spacenum[0];
-            enteredexactly1row = true;
-            m_row = atoi(&cspace);
-            bool valid_row = (m_row >= 1) && (m_row <= 8) && enteredexactly1row;
-            if (valid_row) {
-                bool enteredexactly1column = false;
-                printf("Column: ");
+            //printf("Row: ");
+            printf("Column: ");
+            m_column = get_column();
+            //cspace = spacenum[0];
+            entered_1_column = true;
+            //m_column = atoi(&cspace);
+            if ((m_column >= 1) && (m_column <= 8) && entered_1_column) {
+                bool entered_1_row = false;
+                printf("Row: ");
                 get_with_number_of_chars_including_null(spacenum, 2);
                 cspace = spacenum[0];
-                enteredexactly1column = true;
-
-                m_column = atoi(&cspace);
-                if (((m_column >= 1) && (m_column <= 8) && enteredexactly1column)) {
+                entered_1_row = true;
+                m_row = atoi(&cspace);
+                if (((m_row >= 1) && (m_row <= 8)/* && enteredexactly1column*/)) {
                     landonokplace = true;
                 }
-                else if (!landonokplace && enteredexactly1column) {
-                    printf("Invalid column.\n");
+                else if (!landonokplace/* && enteredexactly1column*/) {
+                    printf("Invalid row.\n");
                 }
             }
             else {
-                printf("Invalid row.\n");
+                printf("Invalid column.\n");
             }
         }
+
         if (!wrong_team(piecetomove, current_team->color) && piecefound && !did_try_tie && !did_try_castle && !did_load && landonokplace
             && !(should_load_man && (swapped_or_done))) {
 
@@ -395,9 +396,17 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
                 
                 did_try_castle = false;
                 //Was that move safe? IF not, I am still in check.
-                //*
+                //The kings might want to land on each other so they can hug.
+                if(whiteteam.the_king.row == blackteam.the_king.row
+                    && whiteteam.the_king.column == blackteam.the_king.column) {
+                    kings_want_to_hug = true;
+                }
+                else {
+                    kings_want_to_hug = false;
+                }
+
                 Game_Status player_who_just_moved_still_in_check = mainboard.is_in_check(current_team, current_team->enemy_team);
-                if (player_who_just_moved_still_in_check != Game_Status::NEUTRAL) {
+                if (player_who_just_moved_still_in_check != Game_Status::NEUTRAL && !kings_want_to_hug) {
                     printf("That's check, silly!\n");
                     printf("Do you want to undo that move? If so, type Yes\nWith no punctuation.\n");
                     get_with_number_of_chars_including_null(nameofpiecetomove, 4);

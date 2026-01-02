@@ -251,22 +251,30 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     }
     printf("Enter a piece name with spaces and tabs before and after it.\n");
     printf("Also, the name MUST be dirty in capitalization.\n");
-    char myentry[128] = "         ";
-    char correctedentry[PIECE_NAME_LENGTH];
-
-    //Verify that the entered name is messy.
+    bool entered_testable_name = false;
+    bool real_piece = false;
+    //Use this flag to verify that the entered name is messy and dirty in capitalization.
     bool had_spaces_and_named = false;
-    while (!had_spaces_and_named) {
+    char correctedentry[PIECE_NAME_LENGTH] = "";
+    while (!entered_testable_name) {
+        char myentry[128] = "         ";
+        had_spaces_and_named = false;
+        correctedentry[0] = '\0';
         //NOTE: I use manual imput here to verify that the user entered a MESSY name.
         std::ignore = scanf("%128[^\n]", myentry);
         clearinput();
+            
         bool start_spaces = false;
         bool anychars = false;
         for (int i = 0; myentry[i] != 0; i++) {
-            if (is_space(myentry[i]) && !start_spaces) start_spaces = true;
+            //Verify that we had spaces before any real characters in the name.
+            if (is_space(myentry[i]) && !start_spaces && !anychars) {
+                start_spaces = true;
+            }
             if (!is_space(myentry[i])) {
                 anychars = true;
             }
+            //Verify that we also end in spaces.
             if (is_space(myentry[i]) && anychars && start_spaces) {
                 had_spaces_and_named = true;
                 break;
@@ -274,17 +282,17 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
         }
         if (!had_spaces_and_named) {
             printf("Remember, to test this you have to add spaces or tabs before AND after.\n");
+            printf("Try again.\n");
+            continue;
         }
-    }
-    
-    REQUIRE(had_spaces_and_named);
-    remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
-    //We end in a period to make sure the name doesn't have any whitespace anymore.
-    printf("Simplified to %s.\n", myentry);
+        //From this point on, we know the entered string did start and end with whitespace.
 
-    bool typed_invalid = false;
-    bool real_piece = false;
-    while (!typed_invalid) {
+        REQUIRE(had_spaces_and_named);
+        remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
+        //We end this printed line in a period to make sure the name doesn't have any whitespace anymore.
+        printf("Simplified to %s.\n", myentry);
+
+        real_piece = false;
         for (int i = 0; i < 16; i++) {
             if ((strcmp(myentry, whiteteam.pieces[i]->name) == 0)
                 || (strcmp(myentry, blackteam.pieces[i]->name) == 0)) {
@@ -296,31 +304,27 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
             //GET ANOTHER PIECE NAME
             printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
             printf("Try again.\n");
-            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
-            remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
-            real_piece = false;
+            continue;
         }
-        else {
-            typed_invalid = true;
-        }
-    }
-    
-    while (!real_piece) {
+
+        bool typed_invalid = false;
         get_standardized_name(myentry, correctedentry);
         for (int i = 0; i < 16; i++) {
             if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
                 || (strcmp(correctedentry, blackteam.pieces[i]->name) == 0)) {
-                real_piece = true;
+                entered_testable_name = true;
                 break;
             }
         }
-        if (!real_piece) {
-            printf("That wasn't a valid piece name. Try again.\n");
-            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
+
+        //If 
+        if (!entered_testable_name) {
+            printf("There's no piece named %s.\n", myentry);
+            printf("Remember to enter an improperly capitalized name of a real piece with spaces or tabs before AND after it.\n");
         }
     }
     
-    REQUIRE(real_piece);
+    REQUIRE(entered_testable_name);
 
     printf("Input parsed to %s.\n", correctedentry);
 }
