@@ -7,12 +7,10 @@
 #include <stdlib.h>
 #include "Team.h"
 #include "Safety.h"
-#include "Check_vs_Checkmate.h"
-#include "Pawn_Upgrader.h"
-#include "Node.h"
+//#include "Pawn_Upgrader.h"
 #include "Move.h"
-#include "CastleMove.h"
-#include <windows.h>
+//#include "CastleMove.h"
+//#include <windows.h>
 #include <ctime>
 void tellmeaspace(Piece* piecetomove) {
     if (piecetomove->alive) {
@@ -23,7 +21,8 @@ void tellmeaspace(Piece* piecetomove) {
 void saybadmove() {
     printf("Illegal move!\n");
 }
-//Column always comes before road.
+
+//Column always comes before row.
 void say(int column, int row, Board mainboard) {
     if (mainboard.spaces[row][column] != NULL) {
         printf("%s\n", mainboard.spaces[row][column]->name);

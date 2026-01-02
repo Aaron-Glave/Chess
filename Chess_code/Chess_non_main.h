@@ -8,6 +8,9 @@
 #include "Pawn_Upgrader.h"
 #include "CastleMove.h"
 #include "Column_Notation.h"
+#include "Saver.h"
+#include "InvalidPiece.h"
+#include "SpacelessChessInput.h"
 //NOTE: The teams have access to their enemys
 bool can_castle(Team* current_team, Board* mainboard, const char *direction_castle);
 void tellmeaspace(Piece* piecetomove);

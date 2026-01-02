@@ -2,19 +2,16 @@
 // I grant credit for Dad. He helped a lot.
 //Not even sure this is better than my old code.
 #pragma warning(disable:4996)
-#include "Chess_non_main.h"
+
 #include <ctype.h>
 #include <tuple>
 #include <stdio.h>
 #include <string.h>
-
 #include <ctime>
-#include "Safety.h"
 #include <chrono>
 #include <thread>
-#include "InvalidPiece.h"
-#include "Saver.h"
-#include "SpacelessChessInput.h"
+
+#include "Chess_non_main.h"
 
 using namespace std;
 
