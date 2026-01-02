@@ -12,16 +12,21 @@ int main(int argc, char*argv[]) {
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
-                printf("In-game command load: Load the file from a saved game.\n");
+                printf("Space numbering:\nThe bottom left square is row 1 column A,\nand the top right square is row 8 column H.\n");
+                printf("You can type a number instead of A-H when selecting a column:\n> A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8.\n");
+                //Do I need to say the spaces are top-down?
+                //printf("> Note that when I ask for the row and column,\n> I read the numbers with the white team on the bottom.\n");
+                printf("> When you have to enter a row or column, you must be very precise.\n> You can't type anything other than spaces or tabs\n  after the single number or letter character.\n");
+                printf("> Spaces and tabs are unnecessary and ignored.\n");
+                //printf("When entering a column, you can type either a letter A-H or a number 1-8.\n");
+                printf("For columns, capitalisation doesn't matter. a and A both mean column 1.\n");
+                printf("For rows only numbers 1 through 8 are accepted.\nCharacters A-H are not!\n");
+
+                printf("\nIn-game command load: Load the file from a saved game.\n");
                 printf("> To save a game, type save\n");
                 printf("> Your game will be saved in the same directory that you run this exe in\n> with the name Saved_Game.chess\n");
-               
-                printf("\nSpace numbering:\nThe top right square is row 8 column 8,\n and the bottom left square is row 1 column 1.\n");
-                //printf("\nYou can also type number instead of A-H when selecting columns.\n> A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8.\n");
-                printf("> Note that when I ask for the row and column,\n> I read the numbers top-down with the white team on the bottom.\n");
-                printf("> When you have to enter a row or column, you must be very precise.\n> You can't type anything after the single number character.\n");
-                printf("Also, when I ask you to say the word Yes\n> you must NOT type any punctuation after it if you really mean Yes\n");
-                printf("Pro type for black team:\n> To figure out the column of your pawn,\n> (assuming it's in its starting column),\n> subtract the number in its name from 9.\n");
+                
+                printf("Note that when I ask you to say the word Yes,\n> you must NOT type any punctuation after it if you really mean Yes\n");
                 
                 printf("\nWhen castling is a legal move for you,\n> you can castle by typing the word castle with no punctuation.\n");
                 printf("> The game will ask you whether you want to castle left or right.\n");
@@ -41,6 +46,7 @@ int main(int argc, char*argv[]) {
                 printf("> After running cteam, you can't swap anymore.\n");
                 printf("--printdebug: Print debugging messages, mainly the current turn count,\n");
                 printf("> and when each piece was first moved.\n");
+                
                 printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
             }
