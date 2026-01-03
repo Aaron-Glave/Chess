@@ -33,10 +33,6 @@
 #include <iostream>
 #include <tuple>
 
-void kill_piece(Board* mainboard, Piece* piece) {
-    piece->alive = false;
-    mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
-}
 
 TEST_CASE("User can hit space then type", "[spaceless]") {
     char myentry[7] = " \thi \n";
@@ -225,7 +221,6 @@ TEST_CASE("An en passant move CAN save you from checkmate", "[checkmate][passant
     printf("You NEEDED an en passant move to save you.\n");
 }
 
-//*
 TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[spaceless]") {
     char myentry[128] = "\n  \t  wPawn7                     \t \n\t \n ";
 
@@ -234,7 +229,6 @@ TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[
     REQUIRE(strcmp(correctedentry, "wPawn7") == 0);
     printf("Spaces and tabs before a piece name are removed correctly.\n");
 }
-// */
 
 TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     Board mainboard = Board();
@@ -313,11 +307,10 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
             if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
                 || (strcmp(correctedentry, blackteam.pieces[i]->name) == 0)) {
                 entered_testable_name = true;
-                break;
             }
         }
 
-        //If 
+        //Because of the continue keyword in the if (real_piece) block above, we only reach this block if we DIDN'T enter a real piece name.
         if (!entered_testable_name) {
             printf("There's no piece named %s.\n", myentry);
             printf("Remember to enter an improperly capitalized name of a real piece with spaces or tabs before AND after it.\n");

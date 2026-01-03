@@ -24,3 +24,4 @@ COLOR enemy_team(COLOR my_team);
 //TYPE move_pawn(Pawn* pawn_to_move, Board* mainboard, Team* current_team);
 bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, char nameofpiecetomove[]);
 const char* team_name(COLOR team);
+void kill_piece(Board* mainboard, Piece* piece);
