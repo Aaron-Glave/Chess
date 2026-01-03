@@ -8,7 +8,7 @@ int main(int argc, char*argv[]) {
     // There are command line args now.
     bool talk_hug = false;
     bool should_load_man = false;
-    bool show_debugging = false;
+    bool enable_debug = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
             if (strcmp(argv[i], "/?") == 0 || strcmp(argv[i], "--help") == 0) {
@@ -42,10 +42,14 @@ int main(int argc, char*argv[]) {
                 printf("--hug: Display that the kings can hug when starting the actual game!\n");
                 printf("--loadman: MANUALLY Set the game in its prior state.\n");
                 printf("> If loading manually, I recommend noting which movement was\n> the last one you made, and taking a screenshot.\n");
-                printf("> Type oteam to switch to the enemy team and move them more.\n> To say you're done setting up, type cteam.\n");
-                printf("> After running cteam, you can't swap anymore.\n");
-                printf("--printdebug: Print debugging messages, mainly the current turn count,\n");
+
+
+                printf("--debug: Print debugging messages, mainly the current turn count,\n");
                 printf("> and when each piece was first moved.\n");
+                printf("> If the --debug flag was passed in the command-line arguments, you can do this:\n");
+                printf("  > Type oteam to switch to the enemy team and move them more.\n");
+                printf("  > To say you're done setting up, type cteam.\n");
+                printf("  > After running cteam, you can't swap anymore.\n");
                 
                 printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
@@ -54,8 +58,8 @@ int main(int argc, char*argv[]) {
             if (strcmp("--hug", argv[i]) == 0) {
                 talk_hug = true;
             }
-            if (strcmp("--printdebug", argv[i]) == 0) {
-                show_debugging = true;
+            if (strcmp("--debug", argv[i]) == 0) {
+                enable_debug = true;
             }
             if (strcmp("--loadman", argv[i]) == 0) {
                 should_load_man = true;
@@ -71,7 +75,7 @@ int main(int argc, char*argv[]) {
     printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number character.\n");
     printf("You can be killed.\n");
     
-    chess(talk_hug, show_debugging, should_load_man);
+    chess(talk_hug, enable_debug, should_load_man);
     
     return 0;
 }
