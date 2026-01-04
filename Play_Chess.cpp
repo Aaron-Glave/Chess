@@ -71,9 +71,19 @@ int main(int argc, char*argv[]) {
     }
     
     printf("Note that when I ask for the row and column,\nI read the numbers from a top-down perspective with the white team on the bottom.\n");
+    printf("For columns, you can name them with numbers from 1-8 or characters from A-H.\n");
     printf("I'll tell you this exactly once:\nThe top right square is row 8 column 8 and the bottom left square is row 1 column 1.\n");
-    printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number character.\n");
+    printf("When you have to enter a row or column, you must be very precise.\nYou can't type anything after the single number or character.\n");
     printf("You can be killed.\n");
+    if (should_load_man) {
+        //Swapping the current team sometimes helps you set up custom boards.
+        printf("Manual loading assistance:\n");
+        printf("Type cteam to say you're done loading the previous game and you're on the right team,\n");
+        printf("...or type oteam to let the opponent move,\n");
+        printf("...or type execute to select a piece and remove it from the board.\n");
+        printf("cteam and oteam both say you're done loading the game.\n");
+
+    }
     
     chess(talk_hug, enable_debug, should_load_man);
     

@@ -16,7 +16,7 @@
 using namespace std;
 
 void print_how_to_hug() {
-    printf("To hug the king you just landed on instead of defeating him,\n  just type Yes with no punctuation.\n");
+    printf("To hug the king you just landed on instead of defeating him,\njust type Yes with no punctuation.\n");
 }
 
 bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
@@ -76,15 +76,6 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     bool am_i_in_check = false;
     bool kings_want_to_hug = false;
 
-    if (should_load_man) {
-        //Swapping the current team sometimes helps you set up custom boards.
-        printf("Manual loading assistance:\n");
-        printf("Type cteam to say you're done loading the previous game and you're on the right team,\n");
-        printf("...or type oteam to let the opponent move,\n");
-        printf("...or type execute to select a piece and remove it from the board.\n");
-        printf("cteam and oteam both say you're done loading the game.\n");
-        
-    }
     printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n\n");
     
     //*
