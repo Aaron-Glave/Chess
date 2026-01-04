@@ -66,7 +66,7 @@ int main(int argc, char*argv[]) {
             }
         }
         if (talk_hug) {
-            printf("You can make kings hug by helping them land on the same space and meet, or by typing the word hug instead of selecting a piece.\n");
+            printf("You can make kings hug by helping them land on the same space and meet,\nor by typing the word hug instead of selecting a piece.\n");
         }
     }
     
