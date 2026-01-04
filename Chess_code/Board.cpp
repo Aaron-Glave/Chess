@@ -8,6 +8,7 @@
 #include "CastleMove.h"
 #include "Pawn_Upgrader.h"
 #include "InvalidPiece.h"
+#include "Column_Notation.h"
 #include <string>
 using namespace std;
 
@@ -379,9 +380,8 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
             // Assume we're the white team.
             int piecenum = movedpawn->get_start_column() + 7;
             Piece* new_piece = team_that_moved->pieces[piecenum];
-            /*THE COLUMNS NEED TO BE RE-CALCULATED FOR THE BLACK TEAM!
-            * Their pieces are not in the same order as the white team.
-              team_owner[piecenum] needs to be adjusted for black pieces .*/
+            /*The piecenum has to be re-calculated for the black team.
+            * The black team's pieces are not in the same order as the white team. */
             if (new_piece->team == COLOR::BLACK) {
                 piecenum = (9 - movedpawn->get_start_column()) + 7;
             }
@@ -436,7 +436,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         move_i_made->piece_that_moved->know_i_moved(-1);
     }
 }
-static void print_piece(Piece *piece /*bool islast*/) {
+static void print_piece(Piece *piece) {
     char piecename[11] = "          ";
     piecename[10] = '\0';
     if (piece != NULL) {
@@ -462,7 +462,7 @@ const static void print_columns() {
     columnname[10] = '\0';
     printf("   |");
     for (int i = 1; i <= 8; i++) {
-        columnname[0] = '0' + i;
+        columnname[0] = char_from_column(i);
         printf("%s|", columnname);
     }
     printf("\n");
@@ -472,32 +472,34 @@ const static void print_columns() {
 void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
-    bool firstcolumn = true;
+    //bool firstcolumn = true;
     printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
     print_columns();
-    //printf("Rows:\n");
+    //Draw a line after we print the column names.
     for (int i = 0; i < 11 + length_of_name * (number_of_spaces - 1); i++) {
         printf("-");
     }
     printf("\n");
     
-    //Top row.
+    
     for (int row = 7; row >= 0; row--) {
-        firstcolumn = true;
+        //Top row.
+        //firstcolumn = true;
         if (row == 7 || row == 0) {
             printf("[]%d|", row+1);
         }
 
-        else if (firstcolumn) {
+        else /*if (firstcolumn)*/ {
             printf("  %d|", row+1);
         }
-        else {
+        /*else {
             printf("|    ");
-        }
-        for (int column = 0; column <= 7; column++) {
+        }*/
+
+        for (int column = 0; column <= 7; column++) {/*
             if (firstcolumn && column != 0) {
                 firstcolumn = false;
-            }
+            }*/
             print_piece(spaces[row][column]);
         }
         if (row == 0 || row == 7) {

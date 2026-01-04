@@ -5,37 +5,34 @@
 #pragma warning(disable:4996)
 
 
-#include "Catch2_code\catch_amalgamated.hpp"
-#include "Chess_code\Chess.h"
-#include "Chess_code\Board.h"
-#include "Chess_code\move_diagnolly.h"
-#include "Chess_code\Chess_non_main.h"
-#include "Chess_code\Piece.h"
-#include "Chess_code\King.h"
-#include "Chess_code\Move_horizontally.h"
-#include "Chess_code\Team.h"
-#include "Chess_code\Pawn.h"
-#include "Chess_code\Knight.h"
-#include "Chess_code\Straight_Line.h"
-#include "Chess_code\Rook.h"
-#include "Chess_code\Bishop.h"
+#include "Catch2_code/catch_amalgamated.hpp"
+#include "Chess_code/Chess.h"
+#include "Chess_code/Board.h"
+#include "Chess_code/move_diagnolly.h"
+#include "Chess_code/Chess_non_main.h"
+#include "Chess_code/Piece.h"
+#include "Chess_code/King.h"
+#include "Chess_code/Move_horizontally.h"
+#include "Chess_code/Team.h"
+#include "Chess_code/Pawn.h"
+#include "Chess_code/Knight.h"
+#include "Chess_code/Straight_Line.h"
+#include "Chess_code/Rook.h"
+#include "Chess_code/Bishop.h"
 
 #include "Chess_code/CastleMove.h"
-#include "Chess_code\Queen.h"
-#include "Chess_code\Safety.h"
-#include "Chess_code\Teamname.h"
-#include "Chess_code\diagnoal_direction.h"
-#include "Chess_code\InvalidPiece.h"
-#include "Chess_code\Saver.h"
-#include "Chess_Code\SpacelessName.h"
-#include "Chess_Code\SpacelessChessInput.h"
+#include "Chess_code/Queen.h"
+#include "Chess_code/Safety.h"
+#include "Chess_code/Teamname.h"
+#include "Chess_code/diagnoal_direction.h"
+#include "Chess_code/InvalidPiece.h"
+#include "Chess_code/Saver.h"
+#include "Chess_Code/SpacelessName.h"
+#include "Chess_Code/SpacelessChessInput.h"
+#include "Chess_code/Column_Notation.h"
 #include <iostream>
 #include <tuple>
 
-void kill_piece(Board* mainboard, Piece* piece) {
-    piece->alive = false;
-    mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
-}
 
 TEST_CASE("User can hit space then type", "[spaceless]") {
     char myentry[7] = " \thi \n";
@@ -224,7 +221,6 @@ TEST_CASE("An en passant move CAN save you from checkmate", "[checkmate][passant
     printf("You NEEDED an en passant move to save you.\n");
 }
 
-//*
 TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[spaceless]") {
     char myentry[128] = "\n  \t  wPawn7                     \t \n\t \n ";
 
@@ -233,7 +229,6 @@ TEST_CASE("Tab and spaces entered before a piece name are treated correctly", "[
     REQUIRE(strcmp(correctedentry, "wPawn7") == 0);
     printf("Spaces and tabs before a piece name are removed correctly.\n");
 }
-// */
 
 TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     Board mainboard = Board();
@@ -250,22 +245,30 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     }
     printf("Enter a piece name with spaces and tabs before and after it.\n");
     printf("Also, the name MUST be dirty in capitalization.\n");
-    char myentry[128] = "         ";
-    char correctedentry[PIECE_NAME_LENGTH];
-
-    //Verify that the entered name is messy.
+    bool entered_testable_name = false;
+    bool real_piece = false;
+    //Use this flag to verify that the entered name is messy and dirty in capitalization.
     bool had_spaces_and_named = false;
-    while (!had_spaces_and_named) {
+    char correctedentry[PIECE_NAME_LENGTH] = "";
+    while (!entered_testable_name) {
+        char myentry[128] = "         ";
+        had_spaces_and_named = false;
+        correctedentry[0] = '\0';
         //NOTE: I use manual imput here to verify that the user entered a MESSY name.
         std::ignore = scanf("%128[^\n]", myentry);
         clearinput();
+            
         bool start_spaces = false;
         bool anychars = false;
         for (int i = 0; myentry[i] != 0; i++) {
-            if (is_space(myentry[i]) && !start_spaces) start_spaces = true;
+            //Verify that we had spaces before any real characters in the name.
+            if (is_space(myentry[i]) && !start_spaces && !anychars) {
+                start_spaces = true;
+            }
             if (!is_space(myentry[i])) {
                 anychars = true;
             }
+            //Verify that we also end in spaces.
             if (is_space(myentry[i]) && anychars && start_spaces) {
                 had_spaces_and_named = true;
                 break;
@@ -273,17 +276,17 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
         }
         if (!had_spaces_and_named) {
             printf("Remember, to test this you have to add spaces or tabs before AND after.\n");
+            printf("Try again.\n");
+            continue;
         }
-    }
-    
-    REQUIRE(had_spaces_and_named);
-    remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
-    //We end in a period to make sure the name doesn't have any whitespace anymore.
-    printf("Simplified to %s.\n", myentry);
+        //From this point on, we know the entered string did start and end with whitespace.
 
-    bool typed_invalid = false;
-    bool real_piece = false;
-    while (!typed_invalid) {
+        REQUIRE(had_spaces_and_named);
+        remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
+        //We end this printed line in a period to make sure the name doesn't have any whitespace anymore.
+        printf("Simplified to %s.\n", myentry);
+
+        real_piece = false;
         for (int i = 0; i < 16; i++) {
             if ((strcmp(myentry, whiteteam.pieces[i]->name) == 0)
                 || (strcmp(myentry, blackteam.pieces[i]->name) == 0)) {
@@ -295,31 +298,26 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
             //GET ANOTHER PIECE NAME
             printf("That piece's capitalization is valid.\nWe are trying to test BADLY capitalized pieces.\n");
             printf("Try again.\n");
-            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
-            remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
-            real_piece = false;
+            continue;
         }
-        else {
-            typed_invalid = true;
-        }
-    }
-    
-    while (!real_piece) {
+
+        bool typed_invalid = false;
         get_standardized_name(myentry, correctedentry);
         for (int i = 0; i < 16; i++) {
             if ((strcmp(correctedentry, whiteteam.pieces[i]->name) == 0)
                 || (strcmp(correctedentry, blackteam.pieces[i]->name) == 0)) {
-                real_piece = true;
-                break;
+                entered_testable_name = true;
             }
         }
-        if (!real_piece) {
-            printf("That wasn't a valid piece name. Try again.\n");
-            get_with_number_of_chars_including_null(myentry, PIECE_NAME_LENGTH);
+
+        //Because of the continue keyword in the if (real_piece) block above, we only reach this block if we DIDN'T enter a real piece name.
+        if (!entered_testable_name) {
+            printf("There's no piece named %s.\n", myentry);
+            printf("Remember to enter an improperly capitalized name of a real piece with spaces or tabs before AND after it.\n");
         }
     }
     
-    REQUIRE(real_piece);
+    REQUIRE(entered_testable_name);
 
     printf("Input parsed to %s.\n", correctedentry);
 }
@@ -1250,4 +1248,43 @@ TEST_CASE("I remember En passant state after doing a move and undoing it.", "[un
     mainboard.print_board();
     REQUIRE_FALSE(wpawn.alive);
     printf("Like this!\n");
+}
+
+TEST_CASE("Getting the column works right", "[column_input]") {
+    REQUIRE((column_from_char('a') == column_from_char('A') && column_from_char('A') == 1));
+    REQUIRE((column_from_char('b') == column_from_char('B') && column_from_char('B') == 2));
+    REQUIRE((column_from_char('c') == column_from_char('C') && column_from_char('C') == 3));
+    REQUIRE((column_from_char('d') == column_from_char('D') && column_from_char('D') == 4));
+    REQUIRE((column_from_char('e') == column_from_char('E') && column_from_char('E') == 5));
+    REQUIRE((column_from_char('f') == column_from_char('F') && column_from_char('F') == 6));
+    REQUIRE((column_from_char('g') == column_from_char('G') && column_from_char('G') == 7));
+    REQUIRE((column_from_char('h') == column_from_char('H') && column_from_char('H') == 8));
+    REQUIRE((column_from_char('i') == -1 && column_from_char('I') == -1));
+
+    REQUIRE(column_from_char('\n') == -1);
+    REQUIRE(column_from_char('0') == -1);
+}
+
+TEST_CASE("Getting a character from the index of a column works", "[column_input]") {
+    REQUIRE(char_from_column(1) == 'A');
+    REQUIRE(char_from_column(2) == 'B');
+    REQUIRE(char_from_column(3) == 'C');
+    REQUIRE(char_from_column(4) == 'D');
+    REQUIRE(char_from_column(5) == 'E');
+    REQUIRE(char_from_column(6) == 'F');
+    REQUIRE(char_from_column(7) == 'G');
+    REQUIRE(char_from_column(8) == 'H');
+    REQUIRE(char_from_column(9) == '\0');
+}
+
+TEST_CASE("Entering integers for columns works too", "[column_input]") {
+    REQUIRE(column_from_char('1') == 1);
+    REQUIRE(column_from_char('2') == 2);
+    REQUIRE(column_from_char('3') == 3);
+    REQUIRE(column_from_char('4') == 4);
+    REQUIRE(column_from_char('5') == 5);
+    REQUIRE(column_from_char('6') == 6);
+    REQUIRE(column_from_char('7') == 7);
+    REQUIRE(column_from_char('8') == 8);
+    REQUIRE(column_from_char('9') == -1);
 }

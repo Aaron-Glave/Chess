@@ -7,6 +7,10 @@
 #include "Move.h"
 #include "Pawn_Upgrader.h"
 #include "CastleMove.h"
+#include "Column_Notation.h"
+#include "Saver.h"
+#include "InvalidPiece.h"
+#include "SpacelessChessInput.h"
 //NOTE: The teams have access to their enemys
 bool can_castle(Team* current_team, Board* mainboard, const char *direction_castle);
 void tellmeaspace(Piece* piecetomove);
@@ -20,3 +24,4 @@ COLOR enemy_team(COLOR my_team);
 //TYPE move_pawn(Pawn* pawn_to_move, Board* mainboard, Team* current_team);
 bool check_piece(Board* mainboard, Piece** piecetomove, int row, int column, char nameofpiecetomove[]);
 const char* team_name(COLOR team);
+void kill_piece(Board* mainboard, Piece* piece);
