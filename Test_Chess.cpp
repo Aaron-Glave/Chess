@@ -689,11 +689,7 @@ TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
     Move firstmove = mainboard.make_move(&whiteteam.pawns[5-1], 4, 5);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
-    /*
-    char pause[2];
-    scanf("%1s", pause);
-    clearinput();
-    // */
+    
     bool printed = false;
     mainboard.print_passant(&printed);
     REQUIRE(printed);
