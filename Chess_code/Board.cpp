@@ -256,7 +256,12 @@ bool Board::human_move_piece(Move* move_to_make) {
 
             //Check if an en passant was made.
             if (passantpawn.get_piece() != NULL) {
-                if (b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && passantpawn.get_piece()->team != piece->team) {
+                //Check if the moving piece is landing on the space the passant pawn passed 
+                if (b_row == passantpawn.get_row() && b_column == passantpawn.get_column()
+                    //Check that the piece moving is on the opposite team.
+                    && passantpawn.get_piece()->team != piece->team
+                    //Check that a passant move was actually made by a pawn.
+                    && (piece->piecetype == TYPE::PAWN) ) {
                     kill_passant();
                 }
             }

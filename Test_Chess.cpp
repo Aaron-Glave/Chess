@@ -728,6 +728,8 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
 }
 
+//TODO: ADD TESTS TO ENSURE THE CAPTURING PAWN IS ON THE OPPOSING TEAM AND IT IS A PAWN
+
 TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
