@@ -38,7 +38,7 @@ void Board::place(Piece* piece, int row, int column, bool revivedinsameplace) {
     if (!revivedinsameplace) {
         spaces[piece->row - 1][piece->column - 1] = NULL;
     } 
-    //spaces[piece->row - 1][piece->column - 1] = NULL;
+    
     spaces[row - 1][column - 1] = piece;
     piece->row = row;
     piece->column = column;
@@ -256,7 +256,12 @@ bool Board::human_move_piece(Move* move_to_make) {
 
             //Check if an en passant was made.
             if (passantpawn.get_piece() != NULL) {
-                if (b_row == passantpawn.get_row() && b_column == passantpawn.get_column() && passantpawn.get_piece()->team != piece->team) {
+                //Check if the moving piece is landing on the space the passant pawn passed 
+                if (b_row == passantpawn.get_row() && b_column == passantpawn.get_column()
+                    //Check that the piece moving is on the opposite team.
+                    && passantpawn.get_piece()->team != piece->team
+                    //Check that a passant move was actually made by a pawn.
+                    && (piece->piecetype == TYPE::PAWN) ) {
                     kill_passant();
                 }
             }
@@ -423,11 +428,9 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
             && (move_i_made->end_column == move_i_made->piece_landed_on->column)) {
             revivedinsameplace = true;
         }
-    };
-    if (move_i_made->piece_landed_on != NULL) {
         move_i_made->piece_landed_on->alive = true;
         spaces[move_i_made->end_row - 1][move_i_made->end_column - 1] = move_i_made->piece_landed_on;
-    }
+    };
     place(piecethatmoved, move_i_made->start_row, move_i_made->start_column, revivedinsameplace);
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
