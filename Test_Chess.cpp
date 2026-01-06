@@ -728,7 +728,50 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
 }
 
-//TODO: ADD TESTS TO ENSURE THE CAPTURING PAWN IS ON THE OPPOSING TEAM AND IT IS A PAWN
+TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill it", "[passant]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    printf("Testing to ensure that only pawns can capture en passant.\n");
+
+    //Make the space in front of the pawn safe for the king to stand.
+    kill_piece(&mainboard, &blackteam.pawns[3]);
+    kill_piece(&mainboard, &blackteam.pawns[5]);
+    kill_piece(&mainboard, &blackteam.queen);
+    kill_piece(&mainboard, &blackteam.bishop1);
+    kill_piece(&mainboard, &blackteam.pawns[8-6]);
+    
+    Piece* pieces_to_test[] = {
+        &whiteteam.the_king, &whiteteam.queen, &whiteteam.rook1,
+        &whiteteam.knight1, &whiteteam.bishop1
+    };
+    mainboard.place(&whiteteam.the_king, 6, 5);
+    mainboard.place(&whiteteam.rook1, 6, 1);
+    mainboard.place(&whiteteam.knight1, 4, 5);
+    mainboard.place(&whiteteam.bishop1, 5, 3);
+    mainboard.place(&whiteteam.queen, 5, 5);
+    Move bpawnmove = Move(7, 4, 5, 4, &blackteam.pawns[8 - 4], NULL);
+    mainboard.human_move_piece(&bpawnmove);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+    REQUIRE(mainboard.passantpawn.get_row() == 6);
+    REQUIRE(mainboard.passantpawn.get_column() == 4);
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+    REQUIRE(mainboard.is_in_check(&whiteteam, &blackteam, false) == Game_Status::NEUTRAL);
+    for (int i = 0; i < 5; i++) {
+        Piece* enemy_of_pawn = pieces_to_test[i];
+        REQUIRE(enemy_of_pawn->can_classmove(6, 4, &mainboard) == true);
+        Move testmove = Move(enemy_of_pawn->row, enemy_of_pawn->column, 6, 4, enemy_of_pawn, NULL);
+        mainboard.human_move_piece(&testmove);
+        mainboard.print_board();
+        REQUIRE(blackteam.pawns[8 - 4].alive == true);
+        mainboard.undo_move(&testmove);
+        REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+    }
+    REQUIRE(blackteam.pawns[8 - 4].alive == true);
+    mainboard.print_board();
+    printf("Non-pawn pieces can't capture with en passant moves.\n");
+}
 
 TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]") {
     Board mainboard;
