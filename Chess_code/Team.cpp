@@ -58,6 +58,9 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
  * NOTE: With i as the visible column number,
  *       the index in the white team's pawn array of the pawn that starts in column i is i-1,
  *       and the index in the black team's pawn array of the pawn that starts in column i is 8-i.
+ * In general, the piece's variable names are set up from the top-down perspective, with the white team at the bottom and the black team on top.
+ *    The name of a variable representing a piece is NOT the name displayed to players.
+ *    For example, blackteam.bishop1.name is "bBishop2". Sorry for the confusion.
  */
 
 {
