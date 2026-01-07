@@ -2,7 +2,7 @@ Made by Aaron Glave.
 
 I am trying to make a command-line Chess program. **It's DONE**!!
 
-I worked on saving the "en passant" pawns, so when you reload the game an "en passant" move is still possible.
+Bat files associated with the game are in the [Chess2/PlayChess2](https://github.com/Aaron-Glave/Chess/tree/main/Chess2/PlayChess2) folder.
 
 The code is written in the Chess_code folder and files to help me edit the program with Visual Studio are in the Chess2 folder.
 
