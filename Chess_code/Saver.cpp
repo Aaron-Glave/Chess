@@ -165,6 +165,8 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
 
         whiteteam->upgraded_pieces[nRow] = blackteam->upgraded_pieces[nRow] = NULL;
     }
+
+    //Step 1
     //Load the current turn count HERE.
     nRC = fread(&current_turn_count, sizeof(int), 1, fp);
     if (nRC != 1)
@@ -173,8 +175,10 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
         return false;
     }
     mainboard->set_turn(current_turn_count);
+    //End Step 1
 
-    //Then load the number of upgraded pawns.
+    //Step 2
+    //Load the total number of upgraded pawns HERE.
     int upgraded_pawn_count = 0;
     nRC = fread(&upgraded_pawn_count, sizeof(int), 1, fp);
     if (nRC != 1)
@@ -182,6 +186,7 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
         fclose(fp);
         return false;
     }
+    //End Step 2
 
     if (false == Dads_LoadStandardPieces(fp, whiteteam, mainboard)) return false;
     if (false == Dads_LoadStandardPieces(fp, blackteam, mainboard)) return false;
