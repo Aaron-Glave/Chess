@@ -769,6 +769,18 @@ TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill i
     printf("Non-pawn pieces can't capture with en passant moves.\n");
 }
 
+TEST_CASE("Just print black pawn names", "[.pieces][black][names]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    printf("Black pawn names:\n");
+    for (int i = 0; i < 8; i++) {
+        printf("Black pawn %s:\nColumn: %d\n\n",
+            blackteam.pawns[i].name, blackteam.pawns[i].column);
+    }
+    printf("This means blackteam->pawns[i] is in column 8-i.");
+}
+
 TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);

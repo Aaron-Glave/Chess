@@ -37,8 +37,9 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 * The contents of the save file this, in order:
 * 1. Current turn number (int)
 * 2. The number of upgraded pawns on either team (int)
-* 3. A Piece array with necessary info  for each of the 16 white pieces (including promoted pawns) (16 * sizeof(Piece))
-* 4. A Piece array with necessary info for each of the 16 black pieces (including promoted pawns) (16 * sizeof(Piece))
+* 3. Save 2 Piece arrays, one for each team, with all 16 pieces
+     TODO: YOU NEED TO SAVE THE DEAD AND UPGRADED PAWNS AS PAWNS!
+*    (including promoted pawns) (2 * (16 * sizeof(Piece)) )
 * 5. A character with 4 bits reprenting:
 *    - Bit 4: 1 if it's the white team's turn, 0 if it's the black team's turn
 *    - Bit 3: 1 if it's the black team's turn, 0 if it's the white team's turn
@@ -86,19 +87,16 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     // Save white pieces (which also includes promoted pawns)
     for (i = 0; i < 16; i++)
         fwrite(whiteteam->pieces[i], sizeof(Piece), 1, fp);
-    // End Step 3
 
-    // Step 4
     // Save black pieces (which also includes promoted pawns)
     for (i = 0; i < 16; i++)
         fwrite(blackteam->pieces[i], sizeof(Piece), 1, fp);
-    // End Step 4
+    // End Step 3
 
-    // Begin Step 5: Use a character with 4 bits to represent important booleans.
+    // Begin Step 4: Use a character with 4 bits to represent important booleans.
     // Namely, save whose turn it was & whether a king was in check.
     unsigned char cStatus = (unsigned char)0x00000000;
 
-    
     // Bit 4: Is it the white team's turn?
     if (current_team == whiteteam)        cStatus |= g_cWhitesTurn;
     // Bit 3: Is it the black team's turn?
@@ -108,9 +106,9 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     // Bit 1: Is the black king in check?
     if (blackteam->current_status == Game_Status::CHECK) cStatus |= g_cBlackInCheck;
     fwrite(&cStatus, sizeof(cStatus), 1, fp);
-    // End Step 5
+    // End Step 4
 
-    // Step 6: Save the Upgraded pawns
+    // Step 5: Save the upgraded pawns
     for (i = 0; i < 8; i++)
     {
         if (whiteteam->upgraded_pieces[i] != NULL)
@@ -119,9 +117,9 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
         if (blackteam->upgraded_pieces[i] != NULL)
             fwrite(blackteam->upgraded_pieces[i], sizeof(Piece), 1, fp);
     }
-    // End Step 6
+    // End Step 5
 
-    // Step 7: Save en passant info
+    // Step 6: Save en passant info
     // After all that, now we can save an en passant!
     // Save the current passant pawn, saving a PassantPawn() if there
     // is no real passant pawn.
@@ -132,7 +130,7 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     // whether or not the passant pawn moved based on whether or not the
     // Pawn pointer is null..
     fwrite(&active_board->passantpawn, sizeof(PassantPawn), 1, fp);
-    // End Step 7
+    // End Step 6
 
     // Final step: Save a dummy variable to test saving/loading
     int test = 1;
@@ -198,7 +196,9 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
         if (cStatus & g_cWhiteInCheck) whiteteam->current_status = Game_Status::CHECK;
         if (cStatus & g_cBlackInCheck) blackteam->current_status = Game_Status::CHECK;
     }
-    else bReturn = false;
+    else {
+        bReturn = false;
+    }
 
     Piece* pNewPiece = NULL;
 
@@ -217,7 +217,7 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
         }
     }
 
-    // And now read in & create any promoted pawns..
+    // And now read in & create any promoted pawns.
     // We only save upgraded pawns we actually made.
     // Because we saved how many upgraded pawns there are, we know exactly how many pieces we have to read in.
     for (int i = 0; i < upgraded_pawn_count; i++)
@@ -299,6 +299,7 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
 bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
 // Loads the 16 standard pieces for the given team from the given file pointer.
 // Returns true on success, false on failure to load a pawn.
+// TODO: PROBLEM: NOT ALL PAWNS WERE SAVED! WE NEED TO ENSURE EVEN THE DEAD PAWNS ARE SAVED!
 {
     size_t nRC;
     unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
