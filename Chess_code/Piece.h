@@ -5,6 +5,8 @@ enum class TYPE { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING, EMPTY };
 
 //The longest name is 9 characters and the last character is \0.
 #define PIECE_NAME_LENGTH 10
+
+//NOTE: Subclasses must not have any additional member variables, only functions.
 class Piece
 {
 protected:
