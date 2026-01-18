@@ -943,7 +943,7 @@ TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
     }
 }
 
-TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces][virtual]") {
+TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces][upgrade]") {
     King testKing = King(COLOR::WHITE);
     Piece* testkpiece = &testKing;
     Board mainboard = Board();
