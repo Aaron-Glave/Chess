@@ -40,7 +40,7 @@ void Piece::know_i_moved(int turn_i_moved_on)
 void Piece::be_safe(COLOR color) {
     count = 0;
     row = -1;
-    column = -1;
+    column = starting_column = -1;
     team = color;
     piecetype = TYPE::EMPTY;
     alive = true;
@@ -51,6 +51,7 @@ void Piece::be_safe(COLOR color) {
 
 void Piece::setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype) {
     be_safe(b_team);
+    starting_column = b_column;
     name[0] = char(b_team);
     alive = true;
     piecetype = b_piecetype;

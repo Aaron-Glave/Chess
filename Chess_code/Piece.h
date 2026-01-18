@@ -11,6 +11,7 @@ class Piece
 {
 protected:
     int first_turn;
+    int starting_column;
 public: // public variables
     COLOR team;
     char chess_class[8];
