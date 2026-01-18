@@ -29,16 +29,13 @@ bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
 /* Asks a yes or no question and requires a "yes" answer to return true.*/
 bool require_yes(const char* static_question) {
     char answer[4];
-    printf("%s\nType yes if so, with no punctuation. ", static_question);
+    printf("%s\nType Yes if so, with no punctuation. ", static_question);
     get_with_number_of_chars_including_null(answer, 4);
     answer[0] = toupper(answer[0]);
     for (int i = 1; i < 3; i++) {
         answer[i] = tolower(answer[i]);
     }
-    if (strcmp("Yes", answer) == 0) {
-        return true;
-    }
-    return false;
+    return strcmp("Yes", answer) == 0;
 }
 
 void main_load_game(Saver* game_saver, Board* mainboard,
