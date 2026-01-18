@@ -26,6 +26,20 @@ Piece::Piece(Piece* piece_to_clone) {
     column = piece_to_clone->column;
 }
 
+const char* Piece::get_type_name(TYPE piecetype)
+{
+    switch (piecetype)
+    {
+    case TYPE::PAWN:   return "Pawn";
+    case TYPE::ROOK:   return "Rook";
+    case TYPE::KNIGHT: return "Knight";
+    case TYPE::BISHOP: return "Bishop";
+    case TYPE::QUEEN:  return "Queen";
+    case TYPE::KING:   return "King";
+    default:     return "";
+    }
+}
+
 int Piece::first_turn_i_moved() const
 {
     return first_turn;

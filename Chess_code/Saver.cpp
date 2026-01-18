@@ -35,22 +35,22 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 
 /*Saves the entire current status of the game.
 * The contents of the save file this, in order:
-* 1. Current turn number (int)
-* 2. The number of upgraded pawns on either team (int)
-* 3. Save 2 Piece arrays, one for each team, with all 16 pieces,
+* Step 1: Current turn number (int)
+* Step 2: The number of upgraded pawns on either team (int)
+* Step 3: Save 2 Piece arrays, one for each team, with all 16 pieces,
 *    including promoted pawns! (2 * (16 * sizeof(Piece)) )
 *    The dead pawns don't need to be saved because they can't be brought back after saving when they're dead.
-* 5. A character with 4 bits reprenting:
+* Step 4: A character with 4 bits reprenting:
 *    - Bit 4: 1 if it's the white team's turn, 0 if it's the black team's turn
 *    - Bit 3: 1 if it's the black team's turn, 0 if it's the white team's turn
 *    - Bit 2: 1 if the white king is in check, 0 if not
 *    - Bit 1: 1 if the black king is in check, 0 if not
-* 6. For each upgraded pawn on either team, a Piece structure.
+* Step 5: For each upgraded pawn on either team, a Piece structure.
 *    The Piece structure contains all the info we need to fully rebuild the upgrade.
-* Step 7: Save en passant info.
+* Step 6: Save en passant info.
 *   Note that you'll need the pawn's get_start_column() to figure out which pawn just moved 2. 
-    It will be a valid value if and only if the pawn pointer is not NULL.
-    Our saved pointer is totally junk, but we can tell whether or
+*   It will be a valid value if and only if the pawn pointer is not NULL.
+* Final step: Save a dummy variable to test saving/loading
 */
 bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team *blackteam)
 //NOTE: A VARIABLE NUMBER OF UPGRADED PAWNS IS SAVED, AND I COUNT HOW MANY THERE ARE BEFORE I SAVE THEM.
@@ -191,6 +191,8 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
     }
     //End Step 2
 
+    //Step 3
+    //Load standard pieces for both teams HERE.
     if (false == Dads_LoadStandardPieces(fp, whiteteam, mainboard)) {
         fclose(fp);
         return 1;
@@ -199,7 +201,10 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
         fclose(fp);
         return 1;
     }
+    //End Step 3
 
+    //Step 4
+    //Load important booleans from a character with 4 bits HERE.
     unsigned char cStatus = (unsigned char)0x00000000;
 
     if (1 == fread(&cStatus, sizeof(unsigned char), 1, fp))
@@ -213,7 +218,10 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
     else {
         return_value = 1;
     }
+    //End Step 4
 
+    //Step 5
+    //Load upgraded pawns HERE.
     Piece* pNewPiece = NULL;
 
     // First, clear any promoted pawns
@@ -233,7 +241,8 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
 
     // And now read in & create any promoted pawns.
     // We only save upgraded pawns we actually made.
-    // Because we saved how many upgraded pawns there are, we know exactly how many pieces we have to read in.
+    // Because we saved how many upgraded pawns there are,
+    // we know exactly how many pieces we have to read in.
     for (int i = 0; i < upgraded_pawn_count; i++)
     {
         memset(data, 0, sizeof(data));
@@ -372,14 +381,5 @@ bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
 
 const char* Saver::GetPieceName(Piece* pExistingPiece)
 {
-    switch (pExistingPiece->piecetype)
-    {
-    case TYPE::PAWN:   return "Pawn";
-    case TYPE::ROOK:   return "Rook";
-    case TYPE::KNIGHT: return "Knight";
-    case TYPE::BISHOP: return "Bishop";
-    case TYPE::QUEEN:  return "Queen";
-    case TYPE::KING:   return "King";
-    default:     return "";
-    }
+    return Piece::get_type_name(pExistingPiece->piecetype);
 }

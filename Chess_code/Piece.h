@@ -31,6 +31,8 @@ public: // public functions
     Piece();
     Piece(COLOR color);
     Piece(Piece* clone);
+    static const char* get_type_name(TYPE piecetype);
+
     //Useful for testing.
     int first_turn_i_moved() const;
     void know_i_moved(int turn_i_moved_on);
