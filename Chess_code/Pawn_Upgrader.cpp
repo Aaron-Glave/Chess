@@ -116,8 +116,6 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
     }
     sprintf(upgraded_piece->name, "%c%sp%c", pawn_i_was->team, newpiece_type, my_column_name);
     // VERY IMPORTANT NOTE: THIS IS WHERE THE UPGRADED PAWN IS ADDED TO THE TEAM!
-    
-    
     team_owner->pieces[piecenum] = upgraded_piece;
     mainboard->place(upgraded_piece, upgraded_piece->row, upgraded_piece->column);
 }
