@@ -65,9 +65,6 @@ int main(int argc, char*argv[]) {
                 should_load_man = true;
             }
         }
-        if (talk_hug) {
-            printf("You can make kings hug by helping them land on the same space and meet,\nor by typing the word hug instead of selecting a piece.\n");
-        }
     }
     
     printf("Note that when I ask for the row and column,\nI read the numbers from a top-down perspective with the white team on the bottom.\n");
@@ -83,6 +80,10 @@ int main(int argc, char*argv[]) {
         printf("...or type execute to select a piece and remove it from the board.\n");
         printf("cteam and oteam both say you're done loading the game.\n");
 
+    }
+
+    if (talk_hug) {
+        printf("You can make kings hug by helping them land on the same space and meet,\nor by typing the word hug instead of selecting a piece.\n");
     }
     
     chess(talk_hug, enable_debug, should_load_man);
