@@ -321,10 +321,14 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
     return return_value;
 }
 
+/* Loads the 16 standard pieces for the given team from the given file pointer.
+ * Returns true on success, false on failure to load a pawn.
+ * It doesn't matter that we save upgraded pawns instead of their original forms,
+ * because we save the upgraded pawns again in an easier spot,
+ * and the old pawn forms don't matter anymore.*/
 bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
-// Loads the 16 standard pieces for the given team from the given file pointer.
-// Returns true on success, false on failure to load a pawn.
-// TODO: PROBLEM: NOT ALL PAWNS WERE SAVED! WE NEED TO ENSURE EVEN THE DEAD PAWNS ARE SAVED!
+// 
+// U
 {
     size_t nRC;
     unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
