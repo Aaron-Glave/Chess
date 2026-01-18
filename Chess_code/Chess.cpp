@@ -232,23 +232,6 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
             main_load_game(&game_saver, &mainboard, &blackteam, &whiteteam, &current_team,
                 &has_loaded_file);
             did_load = true;
-            /*
-            if (has_loaded_file) {
-                printf("You have to quit before you can load again.\n");
-                did_fail_loading = true;
-            }
-            else {
-
-                if (game_saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team)) {
-                    printf("Game loaded.\n");
-                    has_loaded_file = true;
-                }
-                else {
-                    printf("ERROR loading game!\n");
-                }
-                did_load = true;
-            }
-            // */
         }
 
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
