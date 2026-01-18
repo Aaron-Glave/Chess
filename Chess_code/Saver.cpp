@@ -140,19 +140,22 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     return true;
 }
 
-bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p, int* test)
+/*Returns 0 if successful, 1 if failure, -1 if the save file doesn't exist.*/
+int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p, int* test)
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");
-    bool bReturn = true;
+    //Assume optimistic success.
+    int return_value = 0;
     int i;
     size_t nRC;
     unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
     Piece* pPc;
     int current_turn_count = 0;
 
-    if (fp == NULL)
-        return false;
+    if (fp == NULL) {
+        return -1;
+    }
 
     int nRow, nCol;
     for (nRow = 0; nRow < 8; nRow++) // Clear the board
@@ -172,7 +175,7 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
     if (nRC != 1)
     {
         fclose(fp);
-        return false;
+        return 1;
     }
     mainboard->set_turn(current_turn_count);
     //End Step 1
@@ -184,12 +187,18 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
     if (nRC != 1)
     {
         fclose(fp);
-        return false;
+        return 1;
     }
     //End Step 2
 
-    if (false == Dads_LoadStandardPieces(fp, whiteteam, mainboard)) return false;
-    if (false == Dads_LoadStandardPieces(fp, blackteam, mainboard)) return false;
+    if (false == Dads_LoadStandardPieces(fp, whiteteam, mainboard)) {
+        fclose(fp);
+        return 1;
+    }
+    if (false == Dads_LoadStandardPieces(fp, blackteam, mainboard)) {
+        fclose(fp);
+        return 1;
+    }
 
     unsigned char cStatus = (unsigned char)0x00000000;
 
@@ -202,7 +211,7 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
         if (cStatus & g_cBlackInCheck) blackteam->current_status = Game_Status::CHECK;
     }
     else {
-        bReturn = false;
+        return_value = 1;
     }
 
     Piece* pNewPiece = NULL;
@@ -263,7 +272,6 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
 
             TheTeam->upgraded_pieces[n - 1] = pNewPiece;
             TheTeam->pieces[n + 7] = pNewPiece;
-            // PrintPieceDetails(pPc);
             if (pPc->alive)
                 mainboard->spaces[pPc->row - 1][pPc->column - 1] = pNewPiece;
         }
@@ -298,7 +306,7 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
     
     fclose(fp);
 
-    return bReturn;
+    return return_value;
 }
 
 bool Saver::LoadStandardPieces(FILE* fp, Team* pTeam, Board* mainboard) {
