@@ -4,7 +4,7 @@
 #pragma warning(disable:4996)
 
 Saver::Saver() {
-    //This class only has constant variables, specifically the savefile name.
+    // This class only has constant variables, specifically the savefile name.
     Saver_savefile = "Saved_Game.chess";
 }
 //*
@@ -27,7 +27,7 @@ int Saver::GetPieceCount(Piece* pPc)
     return nCount;
 } // */
 
-//Used to save important boolean vaiarables as bits.
+// Used to save important boolean vaiarables as bits.
 const unsigned char g_cWhitesTurn = (unsigned char)0x08;
 const unsigned char g_cBlacksTurn = (unsigned char)0x04;
 const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
@@ -53,7 +53,7 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 * Final step: Save a dummy variable to test saving/loading
 */
 bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team *blackteam)
-//NOTE: A VARIABLE NUMBER OF UPGRADED PAWNS IS SAVED, AND I COUNT HOW MANY THERE ARE BEFORE I SAVE THEM.
+// NOTE: A VARIABLE NUMBER OF UPGRADED PAWNS IS SAVED, AND I COUNT HOW MANY THERE ARE BEFORE I SAVE THEM.
 {
     int i;
     FILE* fp = fopen(Saver_savefile, "w");
@@ -140,12 +140,12 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     return true;
 }
 
-/*Returns 0 if successful, 1 if failure, -1 if the save file doesn't exist.*/
+/* Returns 0 if successful, 1 if failure, -1 if the save file doesn't exist. */
 int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p, int* test)
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");
-    //Assume optimistic success.
+    // Assume optimistic success.
     int return_value = 0;
     int i;
     size_t nRC;
@@ -169,8 +169,8 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
         whiteteam->upgraded_pieces[nRow] = blackteam->upgraded_pieces[nRow] = NULL;
     }
 
-    //Step 1
-    //Load the current turn count HERE.
+    // Step 1
+    // Load the current turn count HERE.
     nRC = fread(&current_turn_count, sizeof(int), 1, fp);
     if (nRC != 1)
     {
@@ -178,10 +178,10 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
         return 1;
     }
     mainboard->set_turn(current_turn_count);
-    //End Step 1
+    // End Step 1
 
-    //Step 2
-    //Load the total number of upgraded pawns HERE.
+    // Step 2
+    // Load the total number of upgraded pawns HERE.
     int upgraded_pawn_count = 0;
     nRC = fread(&upgraded_pawn_count, sizeof(int), 1, fp);
     if (nRC != 1)
@@ -189,10 +189,10 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
         fclose(fp);
         return 1;
     }
-    //End Step 2
+    // End Step 2
 
-    //Step 3
-    //Load standard pieces for both teams HERE.
+    // Step 3
+    // Load standard pieces for both teams HERE.
     if (false == Dads_LoadStandardPieces(fp, whiteteam, mainboard)) {
         fclose(fp);
         return 1;
@@ -201,10 +201,10 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
         fclose(fp);
         return 1;
     }
-    //End Step 3
+    // End Step 3
 
-    //Step 4
-    //Load important booleans from a character with 4 bits HERE.
+    // Step 4
+    // Load important booleans from a character with 4 bits HERE.
     unsigned char cStatus = (unsigned char)0x00000000;
 
     if (1 == fread(&cStatus, sizeof(unsigned char), 1, fp))
@@ -218,10 +218,10 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
     else {
         return_value = 1;
     }
-    //End Step 4
+    // End Step 4
 
-    //Step 5
-    //Load upgraded pawns HERE.
+    // Step 5
+    // Load upgraded pawns HERE.
     Piece* pNewPiece = NULL;
 
     // First, clear any promoted pawns
@@ -248,7 +248,7 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
         memset(data, 0, sizeof(data));
         nRC = fread(data, sizeof(Piece), 1, fp);
         if (nRC != 1) {
-            //This happens when the file is empty or EOF is reached.
+            // This happens when the file is empty or EOF is reached.
             break;
         }
 
@@ -285,9 +285,12 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
                 mainboard->spaces[pPc->row - 1][pPc->column - 1] = pNewPiece;
         }
     }
+    // End Step 5
 
-    //After that, now we can load an en passant!
-    //We don't save the en passant piece, but we save the column it is in.
+    // Step 6
+    // Load en passant info
+    // Now we can load an en passant!
+    // We don't save the en passant piece, but we save the column it is in.
     PassantPawn saved_passant;
     fread(&saved_passant, sizeof(PassantPawn), 1, fp);
     int passant_column = saved_passant.get_column();
@@ -295,17 +298,17 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
 
     if(saved_passant.get_row() != -1)
     {    
-        if (passant_row == 3) { //We know this is a white passant pawn.
+        if (passant_row == 3) { // We know this is a white passant pawn.
             saved_passant = PassantPawn(&whiteteam->pawns[passant_column - 1], passant_row, passant_column, saved_passant.get_turn_made());
         }
-        else { //Since we know this passant pawn is real and not white, it's a black passant pawn.
+        else { // Since we know this passant pawn is real and not white, it's a black passant pawn.
             saved_passant = PassantPawn(&blackteam->pawns[8 - passant_column], passant_row, passant_column, saved_passant.get_turn_made());
         }
     }
     mainboard->passantpawn = saved_passant; // Set the mainboard's passant pawn to the saved one.
-    
+    // End Step 6
 
-    //Or run a test to prove that the upgraded pieces do not half to be saved last.
+    // You can run a test to prove that the upgraded pieces do not half to be saved last.
     int score = 0;
     fread(&score, sizeof(int), 1, fp); // Load the a dummy value for the test.
     if (test != NULL)
