@@ -26,7 +26,7 @@ bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
     return true;
 }
 
-/* Asks a yes / no question and requires a "yes" answer to return true.*/
+/* Asks a yes or no question and requires a "yes" answer to return true.*/
 bool require_yes(const char* static_question) {
     char answer[4];
     printf("%s\nType yes if so, with no punctuation. ", static_question);
