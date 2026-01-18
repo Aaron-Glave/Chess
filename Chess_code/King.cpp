@@ -62,5 +62,4 @@ void King::king_setup(COLOR b_team) {
         b_row = 1;
     }
     setup(b_team, b_row, 5, 0, TYPE::KING);
-    set_up_full_name();
 }
