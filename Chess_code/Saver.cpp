@@ -327,8 +327,6 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
  * because we save the upgraded pawns again in an easier spot,
  * and the old pawn forms don't matter anymore.*/
 bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
-// 
-// U
 {
     size_t nRC;
     unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
