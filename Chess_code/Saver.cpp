@@ -37,9 +37,9 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 * The contents of the save file this, in order:
 * 1. Current turn number (int)
 * 2. The number of upgraded pawns on either team (int)
-* 3. Save 2 Piece arrays, one for each team, with all 16 pieces
-     TODO: YOU NEED TO SAVE THE DEAD AND UPGRADED PAWNS AS PAWNS!
-*    (including promoted pawns) (2 * (16 * sizeof(Piece)) )
+* 3. Save 2 Piece arrays, one for each team, with all 16 pieces,
+*    including promoted pawns! (2 * (16 * sizeof(Piece)) )
+*    The dead pawns don't need to be saved because they can't be brought back after saving when they're dead.
 * 5. A character with 4 bits reprenting:
 *    - Bit 4: 1 if it's the white team's turn, 0 if it's the black team's turn
 *    - Bit 3: 1 if it's the black team's turn, 0 if it's the white team's turn
