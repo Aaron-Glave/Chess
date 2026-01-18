@@ -45,14 +45,6 @@ void Piece::be_safe(COLOR color) {
     piecetype = TYPE::EMPTY;
     alive = true;
     first_turn = -1;
-    /*
-    if (false) {
-        for (int i = 0; i < 7; i++) {
-            chess_class[i] = ' ';
-            name[i] = ' ';
-        }
-    }
-    */
     chess_class[7] = '\0';
     name[9] = '\0';
 }

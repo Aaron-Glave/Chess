@@ -301,6 +301,29 @@ bool Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Te
     return bReturn;
 }
 
+bool Saver::LoadStandardPieces(FILE* fp, Team* pTeam, Board* mainboard) {
+    //TODO SAVE THE PIECES PROPERLY, INCLUDING DEAD PAWNS.
+    // It's probably best to make template functions for saving and loading each real type of piece,
+    // and to use Piece::AssignSavedData for each of them.
+    // See \..\ExampleTemplateCode\ for an example of template functions.
+    size_t nRC = 0;
+    unsigned char pawn_to_save[sizeof(Pawn)];
+    for (int i = 0; i < 8; i++) {
+        nRC = fread(pawn_to_save, sizeof(Pawn), 1, fp);
+        if (nRC != 1) printf("Error reading pawn %d for team %s\n", i + 1, pTeam->team_name());
+        Pawn* pPc = (Pawn*)&pawn_to_save;
+        pTeam->pawns[i].AssignSavedData(pPc);
+    }
+
+    return true;
+}
+
+// 
+/* TODO: Write a LoadUpgradedPieces function
+ * I have to save an upgraded piece's piecetype first, then save the entire piece using the right class's size.
+ * I might make a template function
+ */
+
 bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
 // Loads the 16 standard pieces for the given team from the given file pointer.
 // Returns true on success, false on failure to load a pawn.
