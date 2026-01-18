@@ -308,14 +308,14 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Tea
     mainboard->passantpawn = saved_passant; // Set the mainboard's passant pawn to the saved one.
     // End Step 6
 
-    // You can run a test to prove that the upgraded pieces do not half to be saved last.
+    // Final step: You can run a test to prove that the upgraded pieces do not half to be saved last.
     int score = 0;
     fread(&score, sizeof(int), 1, fp); // Load the a dummy value for the test.
     if (test != NULL)
     {
         *test = score; // This is just a test to prove that the upgraded pieces do not have to be saved last.
     }
-    
+    // End final step. All done
     fclose(fp);
 
     return return_value;
