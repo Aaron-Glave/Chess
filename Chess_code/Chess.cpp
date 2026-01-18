@@ -42,7 +42,6 @@ void main_load_game(Saver* game_saver, Board* mainboard,
     Team* blackteam, Team* whiteteam, Team** current_team,
     bool* has_loaded_file
 ) {
-
     int zero_if_load_success = 1;
     if (!*has_loaded_file) {
         zero_if_load_success = game_saver->Dads_LoadGame(mainboard, blackteam, whiteteam, current_team);
@@ -246,24 +245,8 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
             else {
                 did_try_tie = true;
             }
-
-            /*
-            printf("Opponent: Do you agree that this match should be called a tie? ");
-            get_with_number_of_chars_including_null(nameofpiecetomove, 4);
-            nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
-            for (int i = 1; i < 3; i++) {
-                nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
-            }
-            if (strcmp(nameofpiecetomove, "Yes") == 0) {
-                printf("You both give up. Neither team wins!\n");
-                clean_chess_input(nameofpiecetomove);
-                return 0;
-            }
-            else {
-                did_try_tie = true;
-            }
-            // */
         }
+
         if (strcmp(nameofpiecetomove, "hUg") == 0) {
             make_kings_hug(current_team, &whiteteam, &blackteam);
             clean_chess_input(nameofpiecetomove);
