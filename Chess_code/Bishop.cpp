@@ -11,8 +11,7 @@ Bishop::Bishop() {
 }
 
 Bishop::Bishop(COLOR b_team, int b_row, int b_column, int b_count) {
-    strcpy(chess_class, "Bishop");
-    setup(chess_class, b_team, b_row, b_column, b_count, TYPE::BISHOP);
+    setup(b_team, b_row, b_column, b_count, TYPE::BISHOP);
 }
 
 bool Bishop::can_classmove(int b_row, int b_column, Board* board_to_move_on) {

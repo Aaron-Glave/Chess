@@ -90,7 +90,6 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     bool did_custom_command = false;
     char nameofpiecetomove[PIECE_NAME_LENGTH];
     int piece = 1;
-    //char current_team = 'w';
     Team* current_team = &whiteteam;
 
     TYPE type_of_piecetomove = TYPE::PAWN;

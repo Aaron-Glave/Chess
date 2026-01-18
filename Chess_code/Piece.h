@@ -27,18 +27,22 @@ public: // public variables
 
 
 public: // public functions
-    /*b_row and b_column range from 1 to 8 because they are displayed to the user.*/
+    
     Piece();
     Piece(COLOR color);
     Piece(Piece* clone);
     static const char* get_type_name(TYPE piecetype);
+
+    /* Used to name the piece.
+     * b_row and b_column range from 1 to 8 because they are displayed to the user.*/
+    void setup(COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype);
 
     //Useful for testing.
     int first_turn_i_moved() const;
     void know_i_moved(int turn_i_moved_on);
     char team_character() const;
     bool has_moved() const;
-    void setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype);
+    
     //b_row and b_column are 1 at minimun.
     //This function should not edit the state!!
     virtual bool can_classmove(int b_row, int b_column, Board *board_to_move_on);
@@ -50,7 +54,7 @@ public: // public functions
     void know_i_change_position(int b_row, int b_column, int on_turn);
    // virtual void setup(char b_team, int b_column, int b_row, int b_count);
     void setspace(COLOR b_team, int b_row, int b_column, int b_count);
-    void set_up_full_name(const char* nameofpiece);
+    void set_up_full_name();
     bool is_on_board(int b_row, int b_column);
     bool same_team(COLOR piece_team) const;
     void place(int b_row, int b_column);

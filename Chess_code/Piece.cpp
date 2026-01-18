@@ -24,6 +24,7 @@ Piece::Piece(Piece* piece_to_clone) {
     count = piece_to_clone->count;
     row = piece_to_clone->row;
     column = piece_to_clone->column;
+    starting_column = piece_to_clone->starting_column;
 }
 
 const char* Piece::get_type_name(TYPE piecetype)
@@ -63,15 +64,15 @@ void Piece::be_safe(COLOR color) {
     name[9] = '\0';
 }
 
-void Piece::setup(char* typeofpiece, COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype) {
+void Piece::setup(COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype) {
     be_safe(b_team);
     starting_column = b_column;
     name[0] = char(b_team);
     alive = true;
     piecetype = b_piecetype;
     setspace(b_team, b_row, b_column, b_count);
-    strcpy(chess_class, typeofpiece);
-    set_up_full_name(typeofpiece);
+    strcpy(chess_class, get_type_name(piecetype));
+    set_up_full_name();
 }
 
 bool Piece::same_team(COLOR piece_team) const {
@@ -126,12 +127,12 @@ bool Piece::is_on_board(int b_row, int b_column) {
     return true;
 }
 
-void Piece::set_up_full_name(const char *nameofpiece) {
+void Piece::set_up_full_name() {
     if (count == 0) {
-        sprintf(name, "%c%s", team, nameofpiece);
+        sprintf(name, "%c%s", team, chess_class);
     }
     else {
-        sprintf(name, "%c%s%d", team, nameofpiece, count);
+        sprintf(name, "%c%s%d", team, chess_class, count);
     }
     bool name_ended = false;
     for (int char_name = 0; char_name < 10; char_name++) {
@@ -143,7 +144,6 @@ void Piece::set_up_full_name(const char *nameofpiece) {
         }
     }
     name[9] = '\0';
-    // 0;
 }
 
 bool Piece::do_team_match(Piece* team_there) const {

@@ -19,8 +19,7 @@ int Pawn::get_start_column()
 
 Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
     starting_column = b_column;
-    strcpy(chess_class, "Pawn");
-    setup(chess_class, b_team, b_row, b_column, b_count, TYPE::PAWN);
+    setup(b_team, b_row, b_column, b_count, TYPE::PAWN);
     name[5] = column_name();
 }
 
