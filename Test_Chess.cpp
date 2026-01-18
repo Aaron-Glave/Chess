@@ -769,6 +769,47 @@ TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill i
     printf("Non-pawn pieces can't capture with en passant moves.\n");
 }
 
+TEST_CASE("Just print black pawn names", "[pieces][names][black]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    printf("Black pawn names:\n");
+    for (int i = 0; i < 8; i++) {
+        printf("Black pawn %s:\nColumn: %d\n\n",
+            blackteam.pawns[i].name, blackteam.pawns[i].column);
+        REQUIRE(blackteam.pawns[i].column == 8 - i);
+    }
+    
+    printf("This means blackteam->pawns[i] is in column 8-i.\n");
+}
+
+TEST_CASE("All saved pieces have their starting columns right", "[save][load][pieces]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Saver saver = Saver();
+    whiteteam.enemy_team = &blackteam;
+    blackteam.enemy_team = &whiteteam;
+
+    //Save the game.
+    Team* current_team_pointer = &whiteteam;
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+
+    /* Remember, with 0 <= i < 8, for white pawns, column = i + 1
+       and for black pawns, column = 8 - i */
+    Move first_move = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
+    Move second_move = Move(7, 4, 5, 4, &blackteam.pawns[8 - 4], NULL);
+
+    //Load the game.
+    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
+
+    //Check that the starting columns are correct.
+    for(int i = 0; i < 8; i++) {
+        REQUIRE(whiteteam.pawns[i].column == whiteteam.pawns[i].get_start_column());
+        REQUIRE(blackteam.pawns[i].column == blackteam.pawns[i].get_start_column());
+    }
+}
+
 TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
@@ -929,7 +970,7 @@ TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
     }
 }
 
-TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces][virtual]") {
+TEST_CASE("The Piece movement is properly changed through inheritance", "[pieces][upgrade]") {
     King testKing = King(COLOR::WHITE);
     Piece* testkpiece = &testKing;
     Board mainboard = Board();

@@ -11,6 +11,6 @@ public:
     int GetPieceCount(Piece* pPc);
     bool Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team* blackteam);
     bool Dads_LoadStandardPieces(FILE *fp, Team* pTeam, Board* mainboard);
-    bool Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p, int* test = NULL);
+    int Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p, int* test = NULL);
     const char* GetPieceName(Piece* pExistingPiece);
 };

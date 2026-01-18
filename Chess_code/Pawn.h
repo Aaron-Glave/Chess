@@ -6,8 +6,6 @@ class Board;
 
 class Pawn : public Piece
 {
-private:
-    int starting_column;
 public:
     int get_start_column();
     Pawn(COLOR b_team, int b_row, int b_column, int b_count);

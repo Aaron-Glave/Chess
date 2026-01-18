@@ -26,6 +26,46 @@ bool make_kings_hug(Team *current_team, Team*whiteteam, Team*blackteam) {
     return true;
 }
 
+/* Asks a yes or no question and requires a "yes" answer to return true.*/
+bool require_yes(const char* static_question) {
+    char answer[4];
+    printf("%s\nType Yes if so, with no punctuation. ", static_question);
+    get_with_number_of_chars_including_null(answer, 4);
+    answer[0] = toupper(answer[0]);
+    for (int i = 1; i < 3; i++) {
+        answer[i] = tolower(answer[i]);
+    }
+    return strcmp("Yes", answer) == 0;
+}
+
+void main_load_game(Saver* game_saver, Board* mainboard,
+    Team* blackteam, Team* whiteteam, Team** current_team,
+    bool* has_loaded_file
+) {
+    int zero_if_load_success = 1;
+    if (!*has_loaded_file) {
+        zero_if_load_success = game_saver->Dads_LoadGame(mainboard, blackteam, whiteteam, current_team);
+    }
+    else {
+        if (require_yes("Return to your previous save?")) {
+            zero_if_load_success = game_saver->Dads_LoadGame(mainboard, blackteam, whiteteam, current_team);
+        }
+        else return;
+    }
+    if (zero_if_load_success == 0) {
+        printf("Game loaded.\n");
+        if (has_loaded_file != NULL) {
+            *has_loaded_file = true;
+        }
+    }
+    else if (zero_if_load_success == -1) {
+        printf("No save file found.\n");
+    }
+    else {
+        printf("ERROR loading game!\n");
+    }
+}
+
 int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 {
     /*Note that you can't castle while in check.
@@ -50,7 +90,6 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     bool did_custom_command = false;
     char nameofpiecetomove[PIECE_NAME_LENGTH];
     int piece = 1;
-    //char current_team = 'w';
     Team* current_team = &whiteteam;
 
     TYPE type_of_piecetomove = TYPE::PAWN;
@@ -185,20 +224,9 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         }
         if (strcmp(nameofpiecetomove, "lOad") == 0) {
             did_custom_command = true;
-            if (has_loaded_file) {
-                printf("You have to quit before you can load again.\n");
-                did_fail_loading = true;
-            }
-            else {
-                if (game_saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team)) {
-                    printf("Game loaded.\n");
-                    has_loaded_file = true;
-                }
-                else {
-                    printf("ERROR loading game!\n");
-                }
-                did_load = true;
-            }
+            main_load_game(&game_saver, &mainboard, &blackteam, &whiteteam, &current_team,
+                &has_loaded_file);
+            did_load = true;
         }
 
         if (strcmp(nameofpiecetomove, "sUrrender") == 0) {
@@ -208,13 +236,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         }
         if (strcmp(nameofpiecetomove, "tIe") == 0) {
             did_custom_command = true;
-            printf("Opponent: Do you agree that this match should be called a tie? ");
-            get_with_number_of_chars_including_null(nameofpiecetomove, 4);
-            nameofpiecetomove[0] = toupper(nameofpiecetomove[0]);
-            for (int i = 1; i < 3; i++) {
-                nameofpiecetomove[i] = tolower(nameofpiecetomove[i]);
-            }
-            if (strcmp(nameofpiecetomove, "Yes") == 0) {
+            if (require_yes("Opponent: Do you agree that this match should be called a tie?")) {
                 printf("You both give up. Neither team wins!\n");
                 clean_chess_input(nameofpiecetomove);
                 return 0;
@@ -223,6 +245,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
                 did_try_tie = true;
             }
         }
+
         if (strcmp(nameofpiecetomove, "hUg") == 0) {
             make_kings_hug(current_team, &whiteteam, &blackteam);
             clean_chess_input(nameofpiecetomove);
