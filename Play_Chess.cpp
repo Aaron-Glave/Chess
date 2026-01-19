@@ -50,6 +50,8 @@ int main(int argc, char*argv[]) {
                 printf("  > Type oteam to switch to the enemy team and move them more.\n");
                 printf("  > To say you're done setting up, type cteam.\n");
                 printf("  > After running cteam, you can't swap anymore.\n");
+
+                printf("Note that a bug exists: reloading a save file right after upgrading a pawn deletes it,\n but you can get it back my quitting the game and then restarting it.\n");
                 
                 printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n");
                 return 0;
