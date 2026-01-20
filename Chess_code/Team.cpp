@@ -81,7 +81,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
         bishop2 = Bishop(team_color, 1, 6, 2);
         queen = Queen(team_color, 1, 4, 1);
         for (int i = 1; i <= 8; i++) {
-            pawns[Pawn::column_to_index(team_color, i)] = Pawn(team_color, 2, i, i);
+            pawns[Pawn::column_to_index(i)] = Pawn(team_color, 2, i, i);
         }
     }
     else //team_color == BLACK
@@ -103,7 +103,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
         bishop2 = Bishop(team_color, 8, 6, 1);
         queen = Queen(team_color, 8, 4, 0);
         for (int i = 1; i <= 8; i++) {
-            pawns[Pawn::column_to_index(team_color, i)] = Pawn(team_color, 7, i, i);
+            pawns[Pawn::column_to_index(i)] = Pawn(team_color, 7, i, i);
         }
     }
     pieces[0] = &rook1;
