@@ -179,8 +179,12 @@ TEST_CASE("An en passant move CAN save you from checkmate", "[checkmate][passant
             kill_piece(&mainboard, whiteteam.pieces[i]);
         }
     }
+    int index_white_pawn_column_5 = Pawn::column_to_index(5);
+    int index_black_pawn_column_2 = Pawn::column_to_index(2);
+    int index_black_pawn_column_5 = Pawn::column_to_index(5);
     
-    mainboard.place(&whiteteam.pawns[4], 5, 5);
+    mainboard.place(&whiteteam.pawns[index_white_pawn_column_5], 5, 5);
+    
     mainboard.place(&whiteteam.the_king, 4, 5);
     //Remember, this is named Rook2 to the user because the code views the pieces from the absolute top-down perspective,
     //but names them from the user's perspective.
@@ -188,26 +192,28 @@ TEST_CASE("An en passant move CAN save you from checkmate", "[checkmate][passant
     mainboard.place(&blackteam.rook2, 3, 8);
 
     //We need a few more rooks to paralize the king, so upgrade some pawns.
-    mainboard.place(&blackteam.pawns[8 - 5], 1, 4);
-    upgrade_pawn_if_needed(&blackteam.pawns[8 - 5], &blackteam, &mainboard, TYPE::ROOK);
-    mainboard.place(&blackteam.pawns[8 - 6], 1, 6);
-    upgrade_pawn_if_needed(&blackteam.pawns[8 - 6], &blackteam, &mainboard, TYPE::ROOK);
-    mainboard.place(&blackteam.pawns[8 - 7], 1, 7);
-    upgrade_pawn_if_needed(&blackteam.pawns[8 - 7], &blackteam, &mainboard, TYPE::ROOK);
-    mainboard.place(blackteam.pieces[7 + (9-7)], 5, 8);
+    mainboard.place(&blackteam.pawns[index_black_pawn_column_2], 1, 4);
+    upgrade_pawn_if_needed(&blackteam.pawns[index_black_pawn_column_2], &blackteam, &mainboard, TYPE::ROOK);
+    mainboard.place(&blackteam.pawns[index_black_pawn_column_5], 1, 6);
+    upgrade_pawn_if_needed(&blackteam.pawns[index_black_pawn_column_5], &blackteam, &mainboard, TYPE::ROOK);
+    //mainboard.place(&blackteam.pawns[8 - 7], 1, 7);
+    //upgrade_pawn_if_needed(&blackteam.pawns[8 - 7], &blackteam, &mainboard, TYPE::ROOK);
+    //mainboard.place(blackteam.pieces[7 + (9-7)], 5, 8);
     mainboard.print_board();
 
     //Now the only way to escape this check is to do an en passant move.
-    Move move_weak_to_passant = Move(7, 4, 5, 4, &blackteam.pawns[8-4], NULL);
+    Move move_weak_to_passant = Move(7, 6, 5, 6, &blackteam.pawns[Pawn::column_to_index(6)], NULL);
     mainboard.human_move_piece(&move_weak_to_passant);
-    Game_Status white_in_check = mainboard.is_in_check(&whiteteam, &blackteam, true);
     mainboard.print_board();
+    Game_Status white_in_check = mainboard.is_in_check(&whiteteam, &blackteam, true);
+    
+    //Because an en passant move is possible we should only be in check!
     REQUIRE(white_in_check == Game_Status::CHECK);
     /*Even though we don't set the piece_landed_on variable to the pawn that was killed,
     * since it was killed via an en passant move, the game still revives the pawn killed with an en passant.
     * I wrote to specifically check for that in undo_move.
     // */
-    Move move_passant = Move(5, 5, 6, 4, &whiteteam.pawns[4], NULL);
+    Move move_passant = Move(5, 5, 6, 6, &whiteteam.pawns[Pawn::column_to_index(5)], NULL);
     mainboard.human_move_piece(&move_passant);
     mainboard.print_board();
     printf("Looks like your pawn saved you via an en passant move.\n");
@@ -731,11 +737,12 @@ TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill i
     printf("Testing to ensure that only pawns can capture en passant.\n");
 
     //Make the space in front of the pawn safe for the king to stand.
-    kill_piece(&mainboard, &blackteam.pawns[3]);
-    kill_piece(&mainboard, &blackteam.pawns[5]);
+    //Kill black pawns in columns 3 and 6
+    kill_piece(&mainboard, &blackteam.pawns[Pawn::column_to_index(3)]);
+    kill_piece(&mainboard, &blackteam.pawns[Pawn::column_to_index(6)]);
     kill_piece(&mainboard, &blackteam.queen);
     kill_piece(&mainboard, &blackteam.bishop1);
-    kill_piece(&mainboard, &blackteam.pawns[8-6]);
+    //kill_piece(&mainboard, &blackteam.pawns[8-6]);
     
     Piece* pieces_to_test[] = {
         &whiteteam.the_king, &whiteteam.queen, &whiteteam.rook1,
@@ -746,25 +753,30 @@ TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill i
     mainboard.place(&whiteteam.knight1, 4, 5);
     mainboard.place(&whiteteam.bishop1, 5, 3);
     mainboard.place(&whiteteam.queen, 5, 5);
-    Move bpawnmove = Move(7, 4, 5, 4, &blackteam.pawns[8 - 4], NULL);
+
+    //Mark down the pawn indexes for the pawns we want to test
+    int black_pawn_index_column4 = Pawn::column_to_index(4);
+    Move bpawnmove = Move(7, 4, 5, 4, &blackteam.pawns[black_pawn_index_column4], NULL);
     mainboard.human_move_piece(&bpawnmove);
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_pawn_index_column4]);
     REQUIRE(mainboard.passantpawn.get_row() == 6);
     REQUIRE(mainboard.passantpawn.get_column() == 4);
     mainboard.print_board();
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_pawn_index_column4]);
     REQUIRE(mainboard.is_in_check(&whiteteam, &blackteam, false) == Game_Status::NEUTRAL);
+    mainboard.print_board();
     for (int i = 0; i < 5; i++) {
         Piece* enemy_of_pawn = pieces_to_test[i];
         REQUIRE(enemy_of_pawn->can_classmove(6, 4, &mainboard) == true);
         Move testmove = Move(enemy_of_pawn->row, enemy_of_pawn->column, 6, 4, enemy_of_pawn, NULL);
         mainboard.human_move_piece(&testmove);
         mainboard.print_board();
-        REQUIRE(blackteam.pawns[8 - 4].alive == true);
+        REQUIRE(blackteam.pawns[black_pawn_index_column4].alive == true);
         mainboard.undo_move(&testmove);
-        REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+        REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_pawn_index_column4]);
     }
-    REQUIRE(blackteam.pawns[8 - 4].alive == true);
+    REQUIRE(blackteam.pawns[black_pawn_index_column4].alive == true);
     mainboard.print_board();
     printf("Non-pawn pieces can't capture with en passant moves.\n");
 }
@@ -937,7 +949,6 @@ TEST_CASE("Undoing a successful en passant keeps the victim alive", "[undo][pass
     mainboard.print_board();
     mainboard.human_move_piece(&thirdmove);
     mainboard.print_board();
-    //6
     REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_index_for_column6]);
     Move passantmove = mainboard.make_move(&whiteteam.pawns[white_index_for_column5], 6, 6);
     mainboard.human_move_piece(&passantmove);
