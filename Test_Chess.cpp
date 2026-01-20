@@ -501,7 +501,7 @@ TEST_CASE("Castling error checking", "[errors][castle]") {
     
 }
 
-TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone..", "[upgrade][undo]") {
+TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone.", "[upgrade][undo]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
@@ -1369,4 +1369,32 @@ TEST_CASE("Entering integers for columns works too", "[column_input]") {
     REQUIRE(column_from_char('7') == 7);
     REQUIRE(column_from_char('8') == 8);
     REQUIRE(column_from_char('9') == -1);
+}
+
+TEST_CASE("Pawn indexes are what they should be", "[pieces][pawns][indexes]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    
+    printf("White pawn indexes:\n");
+    int test_index = -1, test_column = -1;
+    for (int i = 0; i < 8; i++) {
+        printf("White pawn %s:\nColumn: %d\nIndex: %d\n\n",
+            whiteteam.pawns[i].name, whiteteam.pawns[i].column, i);
+        test_index = Pawn::column_to_index(COLOR::WHITE, whiteteam.pawns[i].column);
+        test_column = Pawn::index_to_column(COLOR::WHITE, i);
+        REQUIRE(test_index == i);
+        REQUIRE(test_column == whiteteam.pawns[i].column);
+    }
+
+    printf("Black pawn indexes:\n");
+    for (int i = 0; i < 8; i++) {
+        printf("Black pawn %s:\nColumn: %d\nIndex: %d\n\n",
+            blackteam.pawns[i].name, blackteam.pawns[i].column, i);
+        int test_index = Pawn::column_to_index(COLOR::BLACK, blackteam.pawns[i].column);
+        test_column = Pawn::index_to_column(COLOR::BLACK, i);
+        REQUIRE(test_index == i);
+        REQUIRE(test_column == blackteam.pawns[i].column);
+    }
+    printf("This means our methods to convert pawn columns to indexes works.\n");
 }

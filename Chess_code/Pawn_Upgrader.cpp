@@ -125,6 +125,9 @@ void place_upgraded_piece(Team* team_owner, Pawn* pawn_i_was, const char *newpie
 void really_perform_upgrade(Pawn* to_upgrade, TYPE new_class, Team* team_owner, Board* mainboard) {
     for (int i = 8; i < 16; i++) {
         if (team_owner->pieces[i] == to_upgrade) {
+            // By setting the upgraded piece based on the starting column of the pawn,
+            // we can look at the board from the absolute perspective
+            // and both teams store their upgraded pawns the same way.
             int upgraded_index = to_upgrade->get_start_column() - 1;
             switch (new_class)
             {

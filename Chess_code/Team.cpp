@@ -81,17 +81,17 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
         bishop2 = Bishop(team_color, 1, 6, 2);
         queen = Queen(team_color, 1, 4, 1);
         for (int i = 1; i <= 8; i++) {
-            pawns[i-1] = Pawn(team_color, 2, i, i);
+            pawns[Pawn::column_to_index(team_color, i)] = Pawn(team_color, 2, i, i);
         }
     }
     else //team_color == BLACK
     {
         //NOTE: On the black team, the variables in code are named from the TOP DOWN perspective.
         // The pawn indexes are set up the other way, with the 0th pawn being the top right black pawn.
-        //  But their displayed names are from the black team's perspective.
-        //  So are the the pawn *indexes*.
-        //  That means, for example, the black rook starting on the top right corner is displayed as bRook2 even though the variable is rook1,
-        //  and the black pawn beneath it is displayed as bPawn8 and the variable is pawns[7].
+        // But their displayed names are from the black team's perspective.
+        // So are the the pawn *indexes*.
+        // That means, for example, the black rook starting on the top right corner is displayed as bRook2 even though the variable is rook1,
+        // and the black pawn beneath it is displayed as bPawn8 and the variable is pawns[7].
         namefirstletter = 'b';
         strcpy(full_name, "Black");
         empty_spaces();
@@ -103,12 +103,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
         bishop2 = Bishop(team_color, 8, 6, 1);
         queen = Queen(team_color, 8, 4, 0);
         for (int i = 1; i <= 8; i++) {
-            /*The black king looks at his pawns from the opposite angle, so he calls the
-            * pawn in the absolute top left pawn corner is pawn 8. That means pawns[8-1], (or in other words pawns[7]) is in row 7 column 1.
-            * I know it's kinda confusing that the pawns are created from the team's perspective while the other pieces are created from the top-down perspective,
-            * but to make it easier, just think of the pawn's index as the 8 - the pawn's column.
-              */
-            pawns[8-i] = Pawn(team_color, 7, i, i);
+            pawns[Pawn::column_to_index(team_color, i)] = Pawn(team_color, 7, i, i);
         }
     }
     pieces[0] = &rook1;
