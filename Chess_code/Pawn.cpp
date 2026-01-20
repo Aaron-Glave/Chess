@@ -78,7 +78,7 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
 
 //Calculate the column number (1-8) from the index (0-7).
 int Pawn::index_to_column(COLOR pawn_team, int index) {
-    if (pawn_team == COLOR::BLACK) {
+    if (pawn_team == COLOR::BLACK && false) {
         return 8 - index;
     }
     return index + 1;
@@ -89,7 +89,7 @@ int Pawn::index_to_column(COLOR pawn_team, int index) {
  * I know it's kinda confusing that the pawns are created from the team's perspective while the other pieces are created from the top-down perspective,
  * but to make it easier, just think of the pawn's index as the 8 - the pawn's column. */
 int Pawn::column_to_index(COLOR pawn_team, int column) {
-    if (pawn_team == COLOR::BLACK) {
+    if (pawn_team == COLOR::BLACK && false) {
         return 8 - column;
     }
     return column - 1;

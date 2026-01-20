@@ -44,12 +44,12 @@ void main_load_game(Saver* game_saver, Board* mainboard,
 ) {
     int zero_if_load_success = 1;
     if (!*has_loaded_file) {
-        zero_if_load_success = game_saver->Dads_LoadGame(mainboard, blackteam, whiteteam, current_team);
+        zero_if_load_success = game_saver->Dads_LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
         *has_loaded_file = (zero_if_load_success == 0);
     }
     else {
         if (require_yes("Return to your previous save?")) {
-            zero_if_load_success = game_saver->Dads_LoadGame(mainboard, blackteam, whiteteam, current_team);
+            zero_if_load_success = game_saver->Dads_LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
         }
         else return;
     }

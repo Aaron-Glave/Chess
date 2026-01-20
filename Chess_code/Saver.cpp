@@ -141,7 +141,7 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
 }
 
 /* Returns 0 if successful, 1 if failure, -1 if the save file doesn't exist. */
-int Saver::Dads_LoadGame(Board* mainboard, Team* blackteam, Team* whiteteam, Team** current_team_p, int* test)
+int Saver::Dads_LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** current_team_p, int* test)
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");

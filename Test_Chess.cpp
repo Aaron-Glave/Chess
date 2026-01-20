@@ -801,7 +801,7 @@ TEST_CASE("All saved pieces have their starting columns right", "[save][load][pi
     Move second_move = Move(7, 4, 5, 4, &blackteam.pawns[8 - 4], NULL);
 
     //Load the game.
-    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
+    saver.Dads_LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer, NULL);
 
     //Check that the starting columns are correct.
     for(int i = 0; i < 8; i++) {
@@ -848,7 +848,7 @@ TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]"
     int* test_ptr = &test_val;
     printf("If you pass a pointer to the load function, the variable you point at should be updated\n");
     printf("Currently, it's %d\n", test_val);
-    saver.Dads_LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer, test_ptr);
+    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer, test_ptr);
     REQUIRE(test_val == 1);
     printf("Now it's %d!\n", test_val);
     REQUIRE(mainboard.spaces[7][0]->alive);
@@ -878,7 +878,7 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a white pa
     saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
     mainboard.passantpawn.test_kill_passant();
     //Load the game.
-    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
+    saver.Dads_LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer, NULL);
     mainboard.print_board();
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[1 - 1]);
     
@@ -911,7 +911,7 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a black pa
     saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
     mainboard.passantpawn.test_kill_passant();
     //Load the game.
-    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
+    saver.Dads_LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer, NULL);
     mainboard.print_board();
     REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 1]);
 
