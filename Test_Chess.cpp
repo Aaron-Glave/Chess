@@ -1385,7 +1385,7 @@ TEST_CASE("Entering integers for columns works too", "[column_input]") {
     REQUIRE(column_from_char('9') == -1);
 }
 
-TEST_CASE("Pawn indexes are what they should be", "[pieces][pawns][indexes]") {
+TEST_CASE("Pawn indexes are what they should be", "[info][pieces][pawns][indexes]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
@@ -1411,4 +1411,24 @@ TEST_CASE("Pawn indexes are what they should be", "[pieces][pawns][indexes]") {
         REQUIRE(test_column == blackteam.pawns[i].column);
     }
     printf("This means our methods to convert pawn columns to indexes works.\n");
+}
+
+TEST_CASE("All pieces are the same size", "[pieces][size]") {
+    printf("Checking piece sizes...\n");
+    size_t piece_size = sizeof(Piece);
+    size_t pawn_size = sizeof(Pawn);
+    size_t rook_size = sizeof(Rook);
+    size_t knight_size = sizeof(Knight);
+    size_t bishop_size = sizeof(Bishop);
+    size_t queen_size = sizeof(Queen);
+    size_t king_size = sizeof(King);
+    printf("Pawn size: %zu\nRook size: %zu\nKnight size: %zu\nBishop size: %zu\nQueen size: %zu\nKing size: %zu\n",
+        pawn_size, rook_size, knight_size, bishop_size, queen_size, king_size);
+    REQUIRE(piece_size == pawn_size);
+    REQUIRE(piece_size == rook_size);
+    REQUIRE(piece_size == knight_size);
+    REQUIRE(piece_size == bishop_size);
+    REQUIRE(piece_size == queen_size);
+    REQUIRE(piece_size == king_size);
+    printf("All pieces are the same size.\n");
 }
