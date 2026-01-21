@@ -335,22 +335,25 @@ TEST_CASE("First turn pawns can't move like knights #dad", "[pieces][pawns]") {
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     Move pawn2;
+    int index_for_column5 = Pawn::column_to_index(5);
+    bool can_move;
     mainboard.print_board();
     for (int i = 1; i <= 8; i++) {
         if (i != 5) {
-            pawn2 = Move(2, 5, 4, i, &whiteteam.pawns[5 - 1], NULL);
+            pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[Pawn::column_to_index(i)], NULL);
             REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
-			pawn2 = Move(7, 5, 5, i, &blackteam.pawns[8 - 5], NULL);
 			printf("White pawn in column %d can't move to row 4 column 5\n", i);
+            pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[Pawn::column_to_index(i)], NULL);
 			REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
-            printf("Black pawn in column %d can't move to row 4 column 5\n", i);
+            printf("Black pawn in column %d can't move to row 5 column 5\n", i);
         }
     }
-    pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
+    int correct_index = Pawn::column_to_index(5);
+    pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[correct_index], NULL);
     REQUIRE(mainboard.human_move_piece(&pawn2));
     mainboard.print_board();
 	printf("White pawns do their first move correctly.\n");
-	pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[8-5], NULL);
+	pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[correct_index], NULL);
 	REQUIRE(mainboard.human_move_piece(&pawn2));
     mainboard.print_board();
     printf("Black pawns do their first move correctly.\n");

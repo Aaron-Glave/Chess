@@ -399,7 +399,7 @@ bool Saver::Aaron_LoadStandardPieces(FILE* fp, Team* current_team, Board* mainbo
 {
     //TODO: Write your own piece loading function!
     //Do this after finishing your own saving function.
-    size_t nRc;
+    //size_t nRc;
     Piece* pPc = NULL;
     unsigned char data[sizeof(Piece) + 1];
     memset(data, 0, sizeof(data));
