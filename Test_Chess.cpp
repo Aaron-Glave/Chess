@@ -908,18 +908,21 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a black pa
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
+    Pawn* wPawn2 = &whiteteam.pawns[Pawn::column_to_index(2)];
+    Pawn* bPawn8 = &blackteam.pawns[Pawn::column_to_index(1)];
     Saver saver = Saver();
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
-    Move wpawn2m1 = Move(2, 2, 4, 2, &whiteteam.pawns[2 - 1], NULL);
-    Move wpawn2m2 = Move(4, 2, 5, 2, &whiteteam.pawns[2 - 1], NULL);
+    Move wpawn2m1 = Move(2, 2, 4, 2, wPawn2, NULL);
+    Move wpawn2m2 = Move(4, 2, 5, 2, wPawn2, NULL);
     mainboard.human_move_piece(&wpawn2m1);
     mainboard.human_move_piece(&wpawn2m2);
-    Move bpawn1 = Move(7, 1, 5, 1, &blackteam.pawns[8 - 1], NULL);
-    mainboard.human_move_piece(&bpawn1);
+    Move bpawn_column_1 = Move(7, 1, 5, 1, bPawn8, NULL);
+    mainboard.human_move_piece(&bpawn_column_1);
     mainboard.print_board();
 
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 1]);
+    Pawn * test_passant_pawn = mainboard.passantpawn.get_piece();
+    REQUIRE(mainboard.passantpawn.get_piece() == bPawn8);
 
     //Save the game.
     Team* current_team_pointer = &blackteam;

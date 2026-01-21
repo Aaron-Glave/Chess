@@ -35,9 +35,7 @@ Board::Board() {
 //If there used to be another piece here, do NOT set its old space to NULL!
 //The function undo_move in Board.cpp will revive the piece that was landed on BEFORE calling this.
 void Board::place(Piece* piece, int row, int column) {
-    if (spaces[piece->row-1][piece->column-1] == piece) {
-        spaces[piece->row - 1][piece->column - 1] = NULL;
-    }
+    spaces[piece->row - 1][piece->column - 1] = NULL;
     spaces[row - 1][column - 1] = piece;
     piece->row = row;
     piece->column = column;
