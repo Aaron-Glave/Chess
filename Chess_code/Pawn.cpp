@@ -20,11 +20,13 @@ int Pawn::get_start_column()
 Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
     starting_column = b_column;
     setup(b_team, b_row, b_column, b_count, TYPE::PAWN);
-    name[5] = column_name();
+    name[5] = relative_column_name();
 }
 
-//Changes the way the piece is named visually but NOT functionally!
-char Pawn::column_name() {
+/*Changes the way the piece is named visually but NOT functionally!
+* Remember, the black player sits on the other side of the board,
+* so the pawns his left side are on the white player's left side. */
+char Pawn::relative_column_name() {
     if (team == COLOR::BLACK) {
         return '0' + 9 - column;
     }

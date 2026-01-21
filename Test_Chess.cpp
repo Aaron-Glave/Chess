@@ -383,32 +383,32 @@ TEST_CASE("Upgraded Black Pawn names", "[pieces][pawns][black]") {
 	}
 	mainboard.print_board();
 	for (int i = 0; i < 8; i++) {
-		Pawn* blackpawn = &blackteam.pawns[7-i];
+		Pawn* blackpawn = &blackteam.pawns[i];
 		
 		Move move1 = Move(2, blackpawn->column, 1, blackpawn->column, blackpawn, NULL);
 		mainboard.human_move_piece(&move1);
         REQUIRE(upgrade_pawn_if_needed(blackpawn, &blackteam, &mainboard, TYPE::ROOK) == TYPE::ROOK);
-        if (i == 7) {
+        if (i == 7 || true) {
             mainboard.print_board();
         }
 	}
     //*
     for (int i = 0; i < 8; i++) {
-        if (blackteam.upgraded_pieces[7 - i] == NULL) {
-			printf("Black team upgraded piece %d is incorrectly NULL.\n", 7 - i);
+        if (blackteam.upgraded_pieces[i] == NULL) {
+			printf("Black team upgraded piece %d is incorrectly NULL.\n", i);
             REQUIRE(false);
         }
         else if (blackteam.upgraded_pieces[7 - i]->piecetype != TYPE::ROOK) {
             REQUIRE(false);
         }
-        else if (strlen(blackteam.upgraded_pieces[7 - i]->name) < 7) {
+        else if (strlen(blackteam.upgraded_pieces[i]->name) < 7) {
             REQUIRE(false);
         }
         else {
-            char rooknumber = blackteam.upgraded_pieces[7 - i]->name[6];
+            char rooknumber = blackteam.upgraded_pieces[i]->name[6];
             Pawn* blackpawn = &blackteam.pawns[i];
             char pawnnumber = blackpawn->name[5];
-            REQUIRE(blackteam.upgraded_pieces[7 - i]->alive == true);
+            REQUIRE(blackteam.upgraded_pieces[i]->alive == true);
             REQUIRE(rooknumber == pawnnumber);
         }
     }
