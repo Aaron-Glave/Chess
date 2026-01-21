@@ -60,8 +60,8 @@ void Piece::be_safe(COLOR color) {
     piecetype = TYPE::EMPTY;
     alive = true;
     first_turn = -1;
-    chess_class[7] = '\0';
-    name[9] = '\0';
+    chess_class[CLASS_NAME_LENGTH-1] = '\0';
+    name[PIECE_NAME_LENGTH-1] = '\0';
 }
 
 void Piece::setup(COLOR b_team, int b_row, int b_column, int b_count, TYPE b_piecetype) {
@@ -160,10 +160,23 @@ bool Piece::do_team_match(Piece* team_there) const {
 
 void Piece::AssignSavedData(Piece* pPc)
 {
+    //UPDATE FROM Aaron: Save the piece's knowledge of when it first moved.
+    first_turn = pPc->first_turn;
+    starting_column = pPc->starting_column;
+    
+    //Copy the chess class
+    for (int i = 0; i < CLASS_NAME_LENGTH; i++) {
+        chess_class[i] = pPc->chess_class[i];
+    }
+    //Copy the full name
+    for (int i = 0; i < PIECE_NAME_LENGTH; i++) {
+        name[i] = pPc->name[i];
+    }
+
+    team = pPc->team;
+    piecetype = pPc->piecetype;
     alive = pPc->alive;
     count = pPc->count;
     row = pPc->row;
     column = pPc->column;
-    //UPDATE FROM Aaron: Save the piece's knowledge of when it first moved.
-    first_turn = pPc->first_turn;
 }

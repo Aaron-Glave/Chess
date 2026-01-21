@@ -1,9 +1,18 @@
 #pragma once
 #include "Teamname.h"
 class Board;
-enum class TYPE { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING, EMPTY };
+enum class TYPE { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING,
+    //Used to represent invalid pieces to promote.
+    EMPTY };
 
-//The longest name is 9 characters and the last character is \0.
+//The longest class name is "Bishop" which is 6 characters +1 for null character.
+#define CLASS_NAME_LENGTH 7
+
+/* The name of a piece is:
+1 character for team + up to 6 characters for the class name,
+plus up to 2 characters to represent an upgraded pawn ('p' + column number),
+plus 1 for null character.
+// */
 #define PIECE_NAME_LENGTH 10
 
 //NOTE: Subclasses must not have any additional member variables, only functions.
@@ -13,19 +22,20 @@ protected:
     int first_turn;
     int starting_column;
 public: // public variables
-    COLOR team;
-    char chess_class[8];
-    //Printed when the board is printed. Important: Length of name.
+    //The longest class name is "Bishop" which is 6 characters +1 for null character.
+    char chess_class[CLASS_NAME_LENGTH];
+    //Printed when the board is printed.
+    // Important: See PIECE_NAME_LENGTH for the length of a name.
     char name[PIECE_NAME_LENGTH];
+
+    COLOR team;
+    TYPE piecetype;
     //Important. This decides whether or not the piece should stay on the board.
     bool alive;
     int count;
     int row;
     int column;
-    TYPE piecetype;
     
-
-
 public: // public functions
     
     Piece();

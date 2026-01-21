@@ -658,8 +658,8 @@ TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Pawn* wpawn = &whiteteam.pawns[4];
-    Pawn* bpawn = &blackteam.pawns[4];
+    Pawn* wpawn = &whiteteam.pawns[Pawn::column_to_index(5)];
+    Pawn* bpawn = &blackteam.pawns[Pawn::column_to_index(4)];
     Move firstmove = mainboard.make_move(wpawn, 4, 5);
     Move secondmove = mainboard.make_move(bpawn, 5, 4);
     mainboard.human_move_piece(&firstmove);

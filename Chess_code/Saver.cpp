@@ -7,9 +7,14 @@ Saver::Saver() {
     // This class only has constant variables, specifically the savefile name.
     Saver_savefile = "Saved_Game.chess";
 }
-//*
+
+
+//Basic methods
+//Hopefully this works; pieces SHOULD have their count number saved.
 int Saver::GetPieceCount(Piece* pPc)
 {
+    return pPc->count;
+    /*
     int nCount = 0;  char i;
 
     if(pPc != NULL)
@@ -25,9 +30,10 @@ int Saver::GetPieceCount(Piece* pPc)
     }
 
     return nCount;
-} // */
+    // */
+}
 
-// Used to save important boolean vaiarables as bits.
+// Used to save important boolean variables as bits.
 const unsigned char g_cWhitesTurn = (unsigned char)0x08;
 const unsigned char g_cBlacksTurn = (unsigned char)0x04;
 const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
@@ -268,10 +274,10 @@ int Saver::Dads_LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Tea
             }
         }
         catch (const char* pszEx) {
-            printf("EXCEPTION: while allocating %s\n%s\n", GetPieceName(pPc), pszEx);
+            printf("EXCEPTION: while allocating %s\n%s\n", pPc->name, pszEx);
         }
         catch (...) {
-            printf("EXCEPTION: failed to allocate %s\n", GetPieceName(pPc));
+            printf("EXCEPTION: failed to allocate %s\n", pPc->name);
         }
 
         if (pNewPiece != NULL)
@@ -361,7 +367,49 @@ bool Saver::Dads_LoadStandardPieces(FILE* fp, Team* pTeam, Board *mainboard)
     return true;
 }
 
-const char* Saver::GetPieceName(Piece* pExistingPiece)
+size_t Saver::Aaron_SaveOnePiece(FILE* fp, Piece* pPc)
 {
-    return Piece::get_type_name(pExistingPiece->piecetype);
+    return fwrite(pPc, sizeof(Piece), 1, fp);
 }
+
+bool Saver::Aaron_LoadOnePiece(FILE* fp, Piece *pPc, Board *mainboard)
+{
+    size_t nRC;
+    unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
+    memset(data, 0, sizeof(data));
+    nRC = fread(data, sizeof(Piece), 1, fp);
+    if (nRC != 1) return false;
+    Piece* pLoadedPc = (Piece*)&data;
+    pPc->AssignSavedData(pLoadedPc);
+    mainboard->place(pPc, pPc->row, pPc->column);
+    return true;
+}
+
+//Returns false upon a failed load, true on successfully loading 1 piece.
+bool Saver::Aaron_SaveStandardPieces(FILE* fp, Team* current_team, Board* active_board)
+{
+    for (int i = 0; i < 8; i++) {
+        fwrite(&current_team->pawns[i], sizeof(Piece), 1, fp);
+    }
+    return false;
+}
+
+//Returns false upon a failed load, true on successfully loading all standard pieces.
+bool Saver::Aaron_LoadStandardPieces(FILE* fp, Team* current_team, Board* mainboard)
+{
+    //TODO: Write your own piece loading function!
+    //Do this after finishing your own saving function.
+    size_t nRc;
+    Piece* pPc = NULL;
+    unsigned char data[sizeof(Piece) + 1];
+    memset(data, 0, sizeof(data));
+    for (int i = 0; i < 8; i++) {
+        if (!Aaron_LoadOnePiece(fp, pPc, mainboard)) return false;
+    }
+    
+    return true;
+}
+
+
+
+

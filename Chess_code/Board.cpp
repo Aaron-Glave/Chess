@@ -34,10 +34,7 @@ Board::Board() {
 //Note that this does NOT count as making a move.
 //If there used to be another piece here, do NOT set its old space to NULL!
 //The function undo_move in Board.cpp will revive the piece that was landed on BEFORE calling this.
-void Board::place(Piece* piece, int row, int column, bool revivedinsameplace) {
-    if (!revivedinsameplace) {
-        spaces[piece->row - 1][piece->column - 1] = NULL;
-    } 
+void Board::place(Piece* piece, int row, int column) {
     
     spaces[row - 1][column - 1] = piece;
     piece->row = row;
@@ -431,7 +428,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         move_i_made->piece_landed_on->alive = true;
         spaces[move_i_made->end_row - 1][move_i_made->end_column - 1] = move_i_made->piece_landed_on;
     };
-    place(piecethatmoved, move_i_made->start_row, move_i_made->start_column, revivedinsameplace);
+    place(piecethatmoved, move_i_made->start_row, move_i_made->start_column);
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
     turn_number--;
