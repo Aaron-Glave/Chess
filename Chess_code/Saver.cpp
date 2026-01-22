@@ -14,23 +14,6 @@ Saver::Saver() {
 int Saver::GetPieceCount(Piece* pPc)
 {
     return pPc->count;
-    /*
-    int nCount = 0;  char i;
-
-    if(pPc != NULL)
-    {
-        for(i = 0; i < strlen(pPc->name); i++)
-        {
-            if( (pPc->name[i] >= '0') && (pPc->name[i] <= '9') )
-            {
-                nCount = pPc->name[i] - '0';
-                break;
-            }
-        }
-    }
-
-    return nCount;
-    // */
 }
 
 // Used to save important boolean variables as bits.
@@ -42,6 +25,7 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 /* Dad deserves credit for helping me write this function.
 * Saves the entire current status of the game.
 * The contents of the save file this, in order:
+* Step 0 for loading only: Empty the board and clear any promoted pawns.
 * Step 1: Current turn number (int)
 * Step 2: The number of upgraded pawns on either team (int)
 * Step 3: Save 2 Piece arrays, one for each team, with all 16 pieces,
@@ -172,12 +156,14 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
         return -1;
     }
 
+    //Step 0: Empty the board. and clear any promoted pawns.
     int nRow, nCol;
-    for (nRow = 0; nRow < 8; nRow++) // Clear the board
+    for (nRow = 0; nRow < 8; nRow++)
     {
         for (nCol = 0; nCol < 8; nCol++)
             mainboard->spaces[nRow][nCol] = NULL;
 
+        // Conveniently, there are the same number of rows as possible upgraded pieces.
         if (whiteteam->upgraded_pieces[nRow] != NULL) delete whiteteam->upgraded_pieces[nRow];
         if (blackteam->upgraded_pieces[nRow] != NULL) delete blackteam->upgraded_pieces[nRow];
 
