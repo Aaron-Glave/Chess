@@ -156,7 +156,7 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
         return -1;
     }
 
-    //Step 0: Empty the board. and clear any promoted pawns.
+    //Step 0: Empty the board and clear any promoted pawns.
     int nRow, nCol;
     for (nRow = 0; nRow < 8; nRow++)
     {
