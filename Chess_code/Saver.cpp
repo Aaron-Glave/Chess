@@ -39,14 +39,15 @@ const unsigned char g_cBlacksTurn = (unsigned char)0x04;
 const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
 const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 
-/*Saves the entire current status of the game.
+/* Dad deserves credit for helping me write this function.
+* Saves the entire current status of the game.
 * The contents of the save file this, in order:
 * Step 1: Current turn number (int)
 * Step 2: The number of upgraded pawns on either team (int)
 * Step 3: Save 2 Piece arrays, one for each team, with all 16 pieces,
 *    including promoted pawns! (2 * (16 * sizeof(Piece)) )
 *    The dead pawns don't need to be saved because they can't be brought back after saving when they're dead.
-* Step 4: A character with 4 bits reprenting:
+* Step 4: A character with 4 bits representing:
 *    - Bit 4: 1 if it's the white team's turn, 0 if it's the black team's turn
 *    - Bit 3: 1 if it's the black team's turn, 0 if it's the white team's turn
 *    - Bit 2: 1 if the white king is in check, 0 if not
@@ -57,8 +58,15 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 *   Note that you'll need the pawn's get_start_column() to figure out which pawn just moved 2. 
 *   It will be a valid value if and only if the pawn pointer is not NULL.
 * Final step: Save a dummy variable to test saving/loading
+* TODO: THIS DOESN'T WORK ANYMORE BECAUSE I CHANGED THE WAY PAWNS ARE INDEXED!
+* TODO: FIX IT BY REWRITING FUNCTIONS TO SAVE AND LOAD STANDARD AND UPGRADED PAWNS!
+* THAT MEANS YOU NEED 4 FUNCTIONS:
+*  - Save standard pieces
+*  - Load standard pieces
+*  - Save upgraded pieces
+*  - Load upgraded pieces
 */
-bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team *blackteam)
+bool Saver::SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team *blackteam)
 // NOTE: A VARIABLE NUMBER OF UPGRADED PAWNS IS SAVED, AND I COUNT HOW MANY THERE ARE BEFORE I SAVE THEM.
 {
     int i;
@@ -146,8 +154,9 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     return true;
 }
 
-/* Returns 0 if successful, 1 if failure, -1 if the save file doesn't exist. */
-int Saver::Dads_LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** current_team_p, int* test)
+/* Dad deserves credit for helping me write this function.
+ * Returns 0 if successful, 1 if failure, -1 if the save file doesn't exist. */
+int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** current_team_p, int* test)
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");

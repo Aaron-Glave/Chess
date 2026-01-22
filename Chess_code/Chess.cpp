@@ -44,12 +44,12 @@ void main_load_game(Saver* game_saver, Board* mainboard,
 ) {
     int zero_if_load_success = 1;
     if (!*has_loaded_file) {
-        zero_if_load_success = game_saver->Dads_LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
+        zero_if_load_success = game_saver->LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
         *has_loaded_file = (zero_if_load_success == 0);
     }
     else {
         if (require_yes("Return to your previous save?")) {
-            zero_if_load_success = game_saver->Dads_LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
+            zero_if_load_success = game_saver->LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
         }
         else return;
     }
@@ -215,7 +215,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
             did_custom_command = true;
-            if (game_saver.Dads_SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
+            if (game_saver.SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
                 printf("Game saved.\n");
             }
             else {
