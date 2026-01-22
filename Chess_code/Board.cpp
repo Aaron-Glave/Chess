@@ -330,11 +330,14 @@ void Board::kill_passant() {
     if (passantpawn.get_piece() == NULL) {
         throw InvalidMove("No passant pawn to kill.");
     }
-    passantpawn.get_piece()->alive = false;
-    spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
-    //This is safe because doing a passant will NEVER be followed by a passant.
+    //The passant pawn should always point at NULL or a valid piece on the board!
+    Pawn *pawn_to_passant = passantpawn.get_piece();
+    pawn_to_passant->alive = false;
+    spaces[pawn_to_passant->row - 1][pawn_to_passant->column - 1] = NULL;
+    
     //Save the deleted passant pawn in case an undo is made.
     prevepassant = passantpawn;
+    //This is safe because doing a passant will NEVER be followed by a passant.
     passantpawn = PassantPawn();
 }
 

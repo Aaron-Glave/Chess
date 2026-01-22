@@ -298,12 +298,15 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
     int passant_row = saved_passant.get_row();
 
     if(saved_passant.get_row() != -1)
-    {    
+    {   
+        //TODO: I'm not loading the correct pawns!
+        //Maybe this will work?
+        //Maybe I should look at how pieces are loaded again.
         if (passant_row == 3) { // We know this is a white passant pawn.
             saved_passant = PassantPawn(&whiteteam->pawns[passant_column - 1], passant_row, passant_column, saved_passant.get_turn_made());
         }
         else { // Since we know this passant pawn is real and not white, it's a black passant pawn.
-            saved_passant = PassantPawn(&blackteam->pawns[8 - passant_column], passant_row, passant_column, saved_passant.get_turn_made());
+            saved_passant = PassantPawn(&blackteam->pawns[passant_column - 1], passant_row, passant_column, saved_passant.get_turn_made());
         }
     }
     mainboard->passantpawn = saved_passant; // Set the mainboard's passant pawn to the saved one.

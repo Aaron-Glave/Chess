@@ -30,6 +30,7 @@ public:
     bool whiteturn;
 
     //functions
+public:
     int current_turn() const;
     void undo_move(Move* move_i_made, Team* team_that_moved = NULL);
     Move make_move(Piece* piece_that_moved, int erow, int ecolumn);
