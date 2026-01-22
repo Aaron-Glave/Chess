@@ -390,7 +390,9 @@ bool Saver::Aaron_LoadOnePiece(FILE* fp, Piece *pPc, Board *mainboard)
     if (nRC != 1) return false;
     Piece* pLoadedPc = (Piece*)&data;
     pPc->AssignSavedData(pLoadedPc);
-    mainboard->place(pPc, pPc->row, pPc->column);
+    if (pLoadedPc->alive) {
+        mainboard->place(pPc, pPc->row, pPc->column);
+    }
     return true;
 }
 

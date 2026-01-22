@@ -33,6 +33,14 @@
 #include <iostream>
 #include <tuple>
 
+//#define MAIN_TESTS
+#define AARON_NODE_TESTS
+
+#ifdef AARON_NODE_TESTS
+#include "DoubleLists/NodeTests.hpp"
+#endif
+
+#ifdef MAIN_TESTS
 
 TEST_CASE("User can hit space then type", "[spaceless]") {
     char myentry[7] = " \thi \n";
@@ -1486,3 +1494,5 @@ TEST_CASE("All pieces are the same size", "[pieces][size]") {
     REQUIRE(piece_size == king_size);
     printf("All pieces are the same size.\n");
 }
+
+#endif // MAIN_TESTS

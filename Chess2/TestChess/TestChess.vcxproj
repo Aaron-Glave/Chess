@@ -170,7 +170,6 @@
     <ClInclude Include="..\..\Chess_code\move_diagnolly.h" />
     <ClInclude Include="..\..\Chess_code\Move_horizontally.h" />
     <ClInclude Include="..\..\Chess_code\Move_safety.h" />
-    <ClInclude Include="..\..\Chess_code\Node.h" />
     <ClInclude Include="..\..\Chess_code\PassantPawn.h" />
     <ClInclude Include="..\..\Chess_code\Pawn.h" />
     <ClInclude Include="..\..\Chess_code\Pawn_Upgrader.h" />
@@ -184,6 +183,8 @@
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />
+    <ClInclude Include="..\..\DoubleLists\Node.h" />
+    <ClInclude Include="..\..\DoubleLists\NodeTests.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
