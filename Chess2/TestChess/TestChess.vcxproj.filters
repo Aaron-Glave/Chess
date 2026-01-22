@@ -188,6 +188,9 @@
     <ClInclude Include="..\..\DoubleLists\Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DoubleLists\DoublyLinkedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Chess_code\Main.md" />

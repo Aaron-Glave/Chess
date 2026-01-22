@@ -40,3 +40,7 @@ TEST_CASE("Node class can add any type of piece", "[node]") {
     printf("After reloading all pieces, the board is:\n");
     mainboard.print_board();
 }
+
+TEST_CASE("Load a smiley face", "[linkedlist]") {
+
+}
