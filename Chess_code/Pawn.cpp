@@ -62,7 +62,7 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
             }
         }
     }
-    //Assures are moving eactly 1 space
+    //Make sure are moving exactly 1 space
     if (row + direction != b_row) return false;
     //Check for passant.
     if ((b_column == column - 1) || (b_column == column + 1)) {

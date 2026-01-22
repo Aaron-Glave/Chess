@@ -34,7 +34,8 @@ public:
     void undo_move(Move* move_i_made, Team* team_that_moved = NULL);
     Move make_move(Piece* piece_that_moved, int erow, int ecolumn);
     bool human_move_piece(Move* move_to_make);
-    void place(Piece* piece, int row, int column);
+    //We use the revive_in_same_place flag when undoing a move that killed another piece.
+    void place(Piece* piece, int row, int column, bool revive_in_same_place = false);
     void kill_passant();
     void print_board() const;
     void print_passant(bool* testprinted = NULL);

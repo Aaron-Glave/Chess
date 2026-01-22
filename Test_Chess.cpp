@@ -328,7 +328,7 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     printf("Input parsed to %s.\n", correctedentry);
 }
 
-TEST_CASE("First turn pawns can't move like knights #dad", "[pieces][pawns]") {
+TEST_CASE("First turn pawns can't move like knights", "[pieces][pawns]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
@@ -509,29 +509,36 @@ TEST_CASE("Castling error checking", "[errors][castle]") {
     
 }
 
-TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone.", "[upgrade][undo]") {
+TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone.", "[dad][upgrade][undo]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
-    kill_piece(&mainboard, mainboard.spaces[1][6]);
+    
 
-    int index_of_tested_pawn = Pawn::column_to_index(7);
+    int index_of_tested_pawn = Pawn::column_to_index(6);
     Pawn* tested_pawn = &blackteam.pawns[index_of_tested_pawn];
-    mainboard.place(tested_pawn, 2, 7);
-    Move upgrade_pawn_move = Move(2, 7, 1, 8, tested_pawn, NULL);
+    mainboard.place(tested_pawn, 3, 6);
     mainboard.print_board();
+    Move pawn_kill_move = Move(3, 6, 2, 7, tested_pawn, &whiteteam.pawns[Pawn::column_to_index(6)]);
+    mainboard.human_move_piece(&pawn_kill_move);
+    mainboard.print_board();
+    Move upgrade_pawn_move = Move(2, 7, 1, 8, tested_pawn, NULL);
     mainboard.human_move_piece(&upgrade_pawn_move);
     printf("The black pawn just moved to the bottom of the board...\n");
     mainboard.print_board();
     std::ignore = upgrade_pawn_if_needed(tested_pawn, &blackteam, &mainboard, TYPE::KNIGHT);
-    int index_of_column_7 = Pawn::column_to_index(7);
-    Piece** knightholder = &blackteam.upgraded_pieces[index_of_column_7];
+    int index_of_column_6 = Pawn::column_to_index(6);
+    Piece** knightholder = &blackteam.upgraded_pieces[index_of_column_6];
     Knight* upgraded = dynamic_cast<Knight*>(blackteam.upgraded_pieces[6]);
-    REQUIRE(blackteam.upgraded_pieces[index_of_column_7] != NULL);
-    REQUIRE(blackteam.upgraded_pieces[index_of_column_7]->piecetype == TYPE::KNIGHT);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6] != NULL);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6]->piecetype == TYPE::KNIGHT);
+    printf("Black pawn upgraded to a knight...\n");
+    mainboard.print_board();
+
     mainboard.undo_move(&upgrade_pawn_move, &blackteam);
+    printf("We undid that move...\n");
     mainboard.print_board();
     for (int i = 0; i < 8; i++) {
         REQUIRE(blackteam.upgraded_pieces[i] == NULL);
@@ -539,8 +546,25 @@ TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move tha
     bool black_pawn_is_there = tested_pawn->piecetype == TYPE::PAWN && tested_pawn->alive;
     REQUIRE(black_pawn_is_there);
     REQUIRE(tested_pawn->row == 2);
+    Move white_knight_move = Move(1, 7, 3, 6, &whiteteam.knight2, NULL);
+    mainboard.human_move_piece(&white_knight_move);
+    printf("White knight moved...\n");
+    mainboard.print_board();
+    Move forward_move = Move(2, 7, 1, 7, tested_pawn, NULL);
+    mainboard.human_move_piece(&forward_move);
+    mainboard.print_board();
+    printf("Black pawn moved forward instead of capturing the rook.\n");
+    TYPE bishop_upgrade = upgrade_pawn_if_needed(tested_pawn, &blackteam, &mainboard, TYPE::BISHOP);
+    REQUIRE(bishop_upgrade == TYPE::BISHOP);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6] != NULL);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6]->piecetype == TYPE::BISHOP);
+    Bishop* pawn_upgraded_differently = dynamic_cast<Bishop*>(blackteam.upgraded_pieces[6-1]);
+    REQUIRE(pawn_upgraded_differently != NULL);
+    mainboard.print_board();
 
     //Now we're testing the white team's pawn 1.
+    //We need to clear its path first.
+    kill_piece(&mainboard, &blackteam.pawns[0]);
     int index_of_column_1 = Pawn::column_to_index(1);
     mainboard.place(&whiteteam.pawns[index_of_column_1], 7, 1);
     Move upwhite = Move(7, 1, 8, 2, &whiteteam.pawns[0], NULL);
@@ -556,6 +580,7 @@ TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move tha
     REQUIRE(whiteteam.pieces[8] != NULL);
     bool undidwhiteupgrade = whiteteam.pawns[0].alive && whiteteam.pawns[0].row == 7 && whiteteam.pawns[0].column == 1;
     REQUIRE(undidwhiteupgrade);
+    mainboard.print_board();
     printf("Upgraded pieces deleted correctly.\n");
 }
 

@@ -34,8 +34,10 @@ Board::Board() {
 //Note that this does NOT count as making a move.
 //If there used to be another piece here, do NOT set its old space to NULL!
 //The function undo_move in Board.cpp will revive the piece that was landed on BEFORE calling this.
-void Board::place(Piece* piece, int row, int column) {
-    spaces[piece->row - 1][piece->column - 1] = NULL;
+void Board::place(Piece* piece, int row, int column, bool revive_in_same_place) {
+    if (!revive_in_same_place) {
+        spaces[piece->row - 1][piece->column - 1] = NULL;
+    }
     spaces[row - 1][column - 1] = piece;
     piece->row = row;
     piece->column = column;
@@ -236,12 +238,12 @@ bool Board::human_move_piece(Move* move_to_make) {
             throw InvalidPiece(move_to_make->piece_that_moved);
         }
         if (can_move) {
-            // If you landed on a piece on your team:
+            // If you would land on a piece on your team you can't make the move.
             if (piece->do_team_match(spaces[b_row - 1][b_column - 1])) {
                 return false;
             }
 
-            //Opposing team:
+            // But if you land an a piece on the opposing team you can.
             if (spaces[b_row - 1][b_column - 1] != NULL) {
                 /*NOTE: THE piece_landed_on variable CAN be null before this function was called.
                 * Remember the piece I landed on in case this move has to be undone. */
@@ -428,7 +430,7 @@ void Board::undo_move(Move* move_i_made, Team* team_that_moved) {
         move_i_made->piece_landed_on->alive = true;
         spaces[move_i_made->end_row - 1][move_i_made->end_column - 1] = move_i_made->piece_landed_on;
     };
-    place(piecethatmoved, move_i_made->start_row, move_i_made->start_column);
+    place(piecethatmoved, move_i_made->start_row, move_i_made->start_column, revivedinsameplace);
     piecethatmoved->row = move_i_made->start_row;
     piecethatmoved->column = move_i_made->start_column;
     turn_number--;
