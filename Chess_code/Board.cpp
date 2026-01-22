@@ -477,7 +477,7 @@ const static void print_columns() {
 void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
-    //bool firstcolumn = true;
+    // TODO MOVE THIS STATEMENT TO THE START OF THE GAME! JUST THIS 1 LINE
     printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
     print_columns();
     //Draw a line after we print the column names.
