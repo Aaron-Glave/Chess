@@ -33,11 +33,12 @@
 #include <iostream>
 #include <tuple>
 
+// Depending on which tests you want to run, comment or uncomment these macros.
 //#define MAIN_TESTS
 #define AARON_NODE_TESTS
 
 #ifdef AARON_NODE_TESTS
-#include "DoubleLists/NodeTests.hpp"
+#include "DoubleLists/DoublyLinkedListTests.hpp"
 #endif
 
 #ifdef MAIN_TESTS
