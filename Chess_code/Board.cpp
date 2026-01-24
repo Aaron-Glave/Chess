@@ -473,6 +473,15 @@ const static void print_columns() {
     printf("\n");
 }
 
+
+void Board::clear() {
+    for (int row = 0; row < 8; row++) {
+        for (int column = 0; column < 8; column++) {
+
+        }
+    }
+}
+
 /*Looks nice now.*/
 void Board::print_board() const {
     const int length_of_name = 12;

@@ -1,7 +1,7 @@
 #include <string.h>
 #include <cstdio>
 #include "Saver.h"
-#include "../DoubleLists/DoublyLinkedList.h"
+#include "ListOfLivingPieces.h"
 #pragma warning(disable:4996)
 
 Saver::Saver() {
@@ -419,22 +419,22 @@ bool Saver::Aaron_LoadOnePiece(FILE* fp, Piece *pPc, Board *mainboard)
 }
 
 /* Use a queue to save the count of living standard pieces, then the living pieces.
- * Returns false upon a failed load, true on successfully loading 1 piece. */
-bool Saver::Aaron_SaveStandardPieces(FILE* fp, Team* current_team, Board* active_board)
+ * Saves the number of living pieces on the . */
+bool Saver::Aaron_SaveStandardPieces(FILE* fp, Team* team_to_save, Board* active_board)
 {
-    DoublyLinkedList<Piece*> living_pieces;
-    for (int i = 0; i < 8; i++) {
-        fwrite(&current_team->pawns[i], sizeof(Piece), 1, fp);
-    }
+    ListOfLivingPieces living_pieces;
+    living_pieces.add_if_living(&team_to_save->knight1);
+    living_pieces.add_if_living(&team_to_save->knight2);
+    living_pieces.add_if_living(&team_to_save->rook1);
+    living_pieces.add_if_living(&team_to_save->rook2);
     return false;
 }
 
-//Returns false upon a failed load, true on successfully loading all standard pieces.
-bool Saver::Aaron_LoadStandardPieces(FILE* fp, Team* current_team, Board* mainboard)
+/* Loads your saved pieces, assuming the board was initially empty.
+ * Returns false upon a failed load, true on successfully loading all standard pieces. */
+bool Saver::Aaron_LoadStandardPieces(FILE* fp, Team* team_to_load, Board* mainboard)
 {
-    //TODO: Write your own piece loading function!
-    //Do this after finishing your own saving function.
-    //size_t nRc;
+    //Before we load our living pieces standard pieces, set all of them to dead 
     Piece* pPc = NULL;
     unsigned char data[sizeof(Piece) + 1];
     memset(data, 0, sizeof(data));
