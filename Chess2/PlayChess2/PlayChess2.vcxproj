@@ -147,6 +147,7 @@
     <ClCompile Include="..\..\Chess_code\SpacelessChessInput.cpp" />
     <ClCompile Include="..\..\Chess_code\SpacelessName.cpp" />
     <ClCompile Include="..\..\Chess_code\Team.cpp" />
+    <ClCompile Include="..\..\DoubleLists\Node.cpp" />
     <ClCompile Include="..\..\Play_Chess.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="..\..\Chess_code\InvalidPiece.h" />
     <ClInclude Include="..\..\Chess_code\King.h" />
     <ClInclude Include="..\..\Chess_code\Knight.h" />
+    <ClInclude Include="..\..\Chess_code\ListOfLivingPieces.h" />
     <ClInclude Include="..\..\Chess_code\Move.h" />
     <ClInclude Include="..\..\Chess_code\move_diagnolly.h" />
     <ClInclude Include="..\..\Chess_code\Move_horizontally.h" />
@@ -179,6 +181,8 @@
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />
+    <ClInclude Include="..\..\DoubleLists\DoublyLinkedList.h" />
+    <ClInclude Include="..\..\DoubleLists\Node.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,8 @@
 #pragma once
 #include "Node.h"
+#include <stdexcept>
+
+/* Doubly linked lists can do anything stacks or queues can do, and more!*/
 template <typename T> class DoublyLinkedList {
 private:
     Node<T>* head;
@@ -20,7 +23,7 @@ public:
         return head == nullptr;
     }
 
-    void add_to_end(const T& value) {
+    void add_tail(const T& value) {
         Node<T>* newNode = new Node<T>(value);
         if (isEmpty()) {
             head = tail = newNode;
@@ -31,7 +34,7 @@ public:
         }
     }
 
-    void add_at_beginning(const T& value) {
+    void add_head(const T& value) {
         Node<T>* newNode = new Node<T>(value);
         if (isEmpty()) {
             head = tail = newNode;
@@ -42,7 +45,7 @@ public:
         }
     }
 
-    T remove_from_end() {
+    T remove_tail() {
         if (isEmpty()) throw std::runtime_error("List is empty");
         Node<T>* toDelete = tail;
         T value = tail->data;
@@ -53,7 +56,7 @@ public:
         return value;
     }
 
-    T remove_from_beginning() {
+    T remove_head() {
         if (isEmpty()) throw std::runtime_error("List is empty");
         Node<T>* toDelete = head;
         T value = head->data;

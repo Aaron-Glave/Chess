@@ -2,6 +2,7 @@
 #include "../Catch2_code/catch_amalgamated.hpp"
 #include "../Chess_code/Chess_non_main.h"
 #include "Node.h"
+#include "DoublyLinkedList.h"
 
 template<typename T> void print_survival(Board* mainboard, T* piece_to_test) {
     if (piece_to_test->alive) printf("%s is alive.\n", piece_to_test->name);
@@ -43,6 +44,20 @@ TEST_CASE("Node class can add any type of piece", "[node]") {
     mainboard.print_board();
 }
 
+TEST_CASE("Use a linked list as a queue", "[linkedlist]") {
+    int test1to3[] = {1, 2, 3};
+    printf("Testing storing [1, 2, 3] in a doubly linked list used as a queue.\n");
+    DoublyLinkedList<int> int_queue = DoublyLinkedList<int>();
+    for (int i = 0; i < 3; i++) {
+        int_queue.add_tail(test1to3[i]);
+    }
+    for (int i = 0; i < 3; i++) {
+        int val = int_queue.remove_head();
+        printf("Expected %d, got %d\n", test1to3[i], val);
+        REQUIRE(val == test1to3[i]);
+    }
+}
+
 TEST_CASE("Load a smiley face", "[linkedlist]") {
 
 }
@@ -58,7 +73,7 @@ TEST_CASE("All saved pieces have their starting columns right", "[save][load][pi
 
     //Save the game.
     Team* current_team_pointer = &whiteteam;
-    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
     printf("Players saved the game before making any moves.\n");
 
     /* Remember to use the index lookup function! */
@@ -103,7 +118,7 @@ TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]"
     //Save the game.
     Team* current_team_pointer = &blackteam;
 
-    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
 
     //Pretend I made a turn.
     current_team_pointer = current_team_pointer->enemy_team;
@@ -148,7 +163,7 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a white pa
 
     //Save the game.
     Team* current_team_pointer = &blackteam;
-    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
     mainboard.passantpawn.test_kill_passant();
     printf("We killed the passant pawn to see if loading restores it correctly.\n");
     //Load the game.
@@ -189,7 +204,7 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a black pa
 
     //Save the game.
     Team* current_team_pointer = &blackteam;
-    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
     mainboard.passantpawn.test_kill_passant();
     printf("We killed the passant pawn to see if loading restores it correctly.\n");
     mainboard.print_board();

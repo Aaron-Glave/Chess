@@ -37,7 +37,7 @@ const char* Team::team_name() const {
 //public
 Team::Team() {
     enemy_team = nullptr;
-    empty_spaces();
+    empty_piece_pointers();
 }
 
 Team::~Team() {
@@ -66,13 +66,12 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
 {
     //NOTE THE QUEEN AND KING SHOULD SWAP
     enemy_team = nullptr;
-    empty_spaces();
+    empty_piece_pointers();
     color = team_color;
     current_status = Game_Status::NEUTRAL;
     if (team_color == COLOR::WHITE) {
         namefirstletter = 'w';
         strcpy(full_name, "White");
-        empty_spaces();
         knight1 = Knight(team_color, 1, 2, 1);
         knight2 = Knight(team_color, 1, 7, 2);
         rook1 = Rook(team_color, 1, 1, 1);
@@ -94,7 +93,6 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
         // and the black pawn beneath it is displayed as bPawn8 and the variable is pawns[7].
         namefirstletter = 'b';
         strcpy(full_name, "Black");
-        empty_spaces();
         knight1 = Knight(team_color, 8, 2, 2);
         knight2 = Knight(team_color, 8, 7, 1);
         rook1 = Rook(team_color, 8, 1, 2);
@@ -126,7 +124,7 @@ Team::Team(COLOR team_color, Board *the_board_shared) :the_king(COLOR::WHITE) /*
     // Now put the pieces on our team on the board.
     put_pieces_on_board(the_board_shared);
 }
-void Team::empty_spaces() {
+void Team::empty_piece_pointers() {
     set_upgraded_pointers_to0();
     for (int i = 0; i < 16; i++) {
         pieces[i] = 0;
