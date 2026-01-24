@@ -189,7 +189,6 @@
     <ClInclude Include="..\..\DoubleLists\DoublyLinkedList.h" />
     <ClInclude Include="..\..\DoubleLists\DoublyLinkedListTests.hpp" />
     <ClInclude Include="..\..\DoubleLists\Node.h" />
-    <ClInclude Include="..\..\DoubleLists\NodeTests.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

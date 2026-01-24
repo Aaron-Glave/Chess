@@ -188,9 +188,6 @@
     <ClInclude Include="..\..\Chess_code\Column_Notation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\DoubleLists\NodeTests.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\DoubleLists\Node.h">
       <Filter>Header Files</Filter>
     </ClInclude>

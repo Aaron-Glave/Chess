@@ -421,26 +421,29 @@ bool Saver::Aaron_LoadOnePiece(FILE* fp, Piece *pPc, Board *mainboard)
 /* Use a queue to save the count of living standard pieces, then the living pieces.
  * Use remove_head and add_tail to save and load pieces in a predictable order.
  * Saves the number of living pieces on the . */
-void Saver::Aaron_SaveStandardPieces(FILE* fp, Team* team_to_save, Board* active_board)
+void Saver::Aaron_SaveStandardPieces(FILE* fp, Team* team_to_save, Board* mainboard)
 {
-    ListOfLivingPieces living_pieces;
-    living_pieces.add_standard_if_living(&team_to_save->knight1);
-    living_pieces.add_standard_if_living(&team_to_save->knight2);
-    living_pieces.add_standard_if_living(&team_to_save->rook1);
-    living_pieces.add_standard_if_living(&team_to_save->rook2);
-    living_pieces.add_standard_if_living(&team_to_save->bishop1);
-    living_pieces.add_standard_if_living(&team_to_save->bishop2);
-    living_pieces.add_standard_if_living(&team_to_save->queen);
-    living_pieces.add_standard_if_living(&team_to_save->the_king);
-    for (int i = 0; i < 8; i++) {
-        living_pieces.add_standard_if_living(&team_to_save->pawns[i]);
-    }
-    Piece* piece_to_save = NULL;
-    const int number_of_pieces_to_save = living_pieces.get_number_of_living_pieces();
-    fwrite(&number_of_pieces_to_save, sizeof(int), 1, fp);
-    for (int i = 0; i < number_of_pieces_to_save; i++) {
-        piece_to_save = living_pieces.remove_head();
-        fwrite(piece_to_save, sizeof(Piece), 1, fp);
+    Piece* standard_pieces[] = {
+        &team_to_save->knight1,
+        &team_to_save->knight2,
+        &team_to_save->rook1,
+        &team_to_save->rook2,
+        &team_to_save->bishop1,
+        &team_to_save->bishop2,
+        &team_to_save->queen,
+        &team_to_save->the_king,
+        &team_to_save->pawns[0],
+        &team_to_save->pawns[1],
+        &team_to_save->pawns[2],
+        &team_to_save->pawns[3],
+        &team_to_save->pawns[4],
+        &team_to_save->pawns[5],
+        &team_to_save->pawns[6],
+        &team_to_save->pawns[7]
+    };
+    
+    for (int i = 0; i < 16; i++) {
+        fwrite(standard_pieces[i], sizeof(Piece), 1, fp);
     }
 }
 

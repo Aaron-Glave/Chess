@@ -1,15 +1,17 @@
-﻿#include "Piece.h"
+﻿#include <iostream>
+#include <string>
+
+#include "Piece.h"
+#include "KillPiece.h"
 #include "Knight.h"
 #include "Board.h"
-
-#include <iostream>
 #include "Safety.h"
 #include "Check_vs_Checkmate.h"
 #include "CastleMove.h"
 #include "Pawn_Upgrader.h"
 #include "InvalidPiece.h"
 #include "Column_Notation.h"
-#include <string>
+
 using namespace std;
 
 Board::Board() {
@@ -477,7 +479,9 @@ const static void print_columns() {
 void Board::clear() {
     for (int row = 0; row < 8; row++) {
         for (int column = 0; column < 8; column++) {
-
+            if (spaces[row][column] != NULL) {
+                kill_piece(this, spaces[row][column]);
+            }
         }
     }
 }
