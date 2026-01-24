@@ -2,7 +2,7 @@
 #include "Node.h"
 #include <stdexcept>
 
-/* Doubly linked lists can do anything stacks or queues can do, and more!*/
+/* Doubly linked lists can do anything stacks or queues can do, and more! */
 template <typename T> class DoublyLinkedList {
 private:
     Node<T>* head;

@@ -1,3 +1,3 @@
 #pragma once
-#include "Board.h"
+class Board; class Piece;
 void kill_piece(Board* mainboard, Piece* piece);

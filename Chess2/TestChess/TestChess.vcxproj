@@ -135,8 +135,10 @@
     <ClCompile Include="..\..\Chess_code\Chess_non_main.cpp" />
     <ClCompile Include="..\..\Chess_code\Column_Notation.cpp" />
     <ClCompile Include="..\..\Chess_code\diagnoal_direction.cpp" />
+    <ClCompile Include="..\..\Chess_code\KillPiece.cpp" />
     <ClCompile Include="..\..\Chess_code\King.cpp" />
     <ClCompile Include="..\..\Chess_code\Knight.cpp" />
+    <ClCompile Include="..\..\Chess_code\ListOfLivingPieces.cpp" />
     <ClCompile Include="..\..\Chess_code\Move.cpp" />
     <ClCompile Include="..\..\Chess_code\move_diagnolly.cpp" />
     <ClCompile Include="..\..\Chess_code\Move_horizontally.cpp" />
@@ -164,6 +166,7 @@
     <ClInclude Include="..\..\Chess_code\Column_Notation.h" />
     <ClInclude Include="..\..\Chess_code\diagnoal_direction.h" />
     <ClInclude Include="..\..\Chess_code\InvalidPiece.h" />
+    <ClInclude Include="..\..\Chess_code\KillPiece.h" />
     <ClInclude Include="..\..\Chess_code\King.h" />
     <ClInclude Include="..\..\Chess_code\Knight.h" />
     <ClInclude Include="..\..\Chess_code\Move.h" />
