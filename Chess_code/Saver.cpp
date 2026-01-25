@@ -27,7 +27,7 @@ const unsigned char g_cBlackInCheck = (unsigned char)0x01;
 * The contents of the save file this, in order:
 * Step 0 for loading only: Empty the board and clear any promoted pawns.
 * Step 1: Current turn number (int)
-* Step 2: The number of upgraded pawns on either team (int)
+* Step 2: The number of upgraded pawns on either team (char)
 * Step 3: Save 2 Piece arrays, one for each team, with all 16 pieces,
 *    including promoted pawns! (2 * (16 * sizeof(Piece)) )
 *    The dead pawns don't need to be saved because they can't be brought back after saving when they're dead.
@@ -67,7 +67,7 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
 
     // Step 2
     // Count the number of upgraded pawns and save the number.
-    int upgraded_pawn_count = 0;
+    char upgraded_pawn_count = 0;
     for (i = 0; i < 8; i++)
     {
         if (whiteteam->upgraded_pieces[i] != NULL) {
@@ -78,7 +78,7 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
             upgraded_pawn_count++;
         }
     }
-    fwrite(&upgraded_pawn_count, sizeof(int), 1, fp);
+    fwrite(&upgraded_pawn_count, sizeof(char), 1, fp);
     // End Step 2
     
     // Step 3
@@ -141,20 +141,19 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
 /* Saves the entire current status of the game.
 * The contents of the save file this, in order:
 * Step 0 for loading only: Empty the board and clear any promoted pawns.
-* Step 1: Current turn number (int)
-* Step 2: The number of upgraded pawns on either team (int)
-* Step 3: Read the living white standard pieces while counting them
-*         and adding them to a queue, then save the count, then the living pieces.
-* Step 4: Read the living black standard pieces while counting them
-*         and adding them to a queue, then save the count, then the living pieces.
-* Step 5: A character with 4 bits representing:
+* Step 1: Save the current turn number (int)
+* Step 2: Save the number of upgraded pawns on either team; 1 byte is plenty (char)
+* Step 3: Save all the white standard pieces on each team.
+*         Save the white team, then the black team.
+* Step 4: Save a character with 4 bits representing:
 *    - Bit 4: 1 if it's the white team's turn, 0 if it's the black team's turn
 *    - Bit 3: 1 if it's the black team's turn, 0 if it's the white team's turn
 *    - Bit 2: 1 if the white king is in check, 0 if not
 *    - Bit 1: 1 if the black king is in check, 0 if not
-* Step 6: For each upgraded pawn on either team, a Piece structure.
+* 
+* Step 5: For each upgraded pawn on either team, save a Piece structure.
 *    The Piece structure contains all the info we need to fully rebuild the upgrade.
-* Step 7: Save en passant info.
+* Step 6: Save en passant info.
 *   Note that you'll need the pawn's get_start_column() to figure out which pawn just moved 2.
 *   It will be a valid value if and only if the pawn pointer is not NULL.
 * Final step: Save a dummy variable to test saving/loading
@@ -171,7 +170,11 @@ bool Saver::SaveGame(Board* active_board, Team* current_team, Team* whiteteam, T
     if (fp == NULL) return false;
 
     //TODO WRITE THE SAVING CODE
+    //
+    int current_turn_number = active_board->current_turn();
+    fwrite(&current_turn_number, sizeof(int), 1, fp) != 1;
 
+    //return true; //when done
     return false;
 }
 
@@ -219,7 +222,7 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
     // Step 2
     // Load the total number of upgraded pawns HERE.
     int upgraded_pawn_count = 0;
-    nRC = fread(&upgraded_pawn_count, sizeof(int), 1, fp);
+    nRC = fread(&upgraded_pawn_count, sizeof(char), 1, fp);
     if (nRC != 1)
     {
         fclose(fp);
