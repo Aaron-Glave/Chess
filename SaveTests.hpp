@@ -22,7 +22,7 @@ TEST_CASE("Empty the board before loading", "[load]") {
     printf("The board can clear itself for a new game.\n");
 }
 
-TEST_CASE("Load a smiley face", "[linkedlist]") {
+TEST_CASE("Load a smiley face", "[save][load][aaron]") {
 
 }
 
