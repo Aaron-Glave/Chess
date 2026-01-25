@@ -117,7 +117,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     bool kings_want_to_hug = false;
 
     printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n\n");
-    
+    printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
     //*
     while (wKing->alive && bKing->alive)
     {
@@ -155,8 +155,8 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
                 return 0;
             }
         }
-        printf("%s turn.\n", team_name(current_team->color));
-        printf("Which piece do you want to move? ");
+        //printf("It's the %s team's turn.\n", team_name(current_team->color));
+        printf("%s player, which piece do you want to move? ", team_name(current_team->color));
         
         clean_chess_input(nameofpiecetomove);
         //Alternative commands other than moving 1 piece
