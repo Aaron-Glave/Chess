@@ -176,8 +176,6 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
 {
     FILE* fp = NULL;
     fp = fopen(Saver_savefile, "r");
-    // Assume optimistic success.
-    int return_value = 0;
     int i;
     size_t nRC;
     unsigned char data[sizeof(Piece) + 1]; // +1 for safety margin 
@@ -249,7 +247,8 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
         if (cStatus & g_cBlackInCheck) blackteam->current_status = Game_Status::CHECK;
     }
     else {
-        return_value = 1;
+        fclose(fp);
+        return 1;
     }
     // End Step 4
 
@@ -354,7 +353,7 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
     // End final step. All done
     fclose(fp);
 
-    return return_value;
+    return 0;
 }
 
 /* Loads the 16 standard pieces for the given team from the given file pointer.
@@ -417,9 +416,7 @@ bool Saver::Aaron_LoadOnePiece(FILE* fp, Piece *pPc, Board *mainboard)
     return true;
 }
 
-/* Use a queue to save the count of living standard pieces, then the living pieces.
- * Use remove_head and add_tail to save and load pieces in a predictable order.
- * Saves the number of living pieces on the . */
+/* Save every standard piece. */
 void Saver::Aaron_SaveStandardPieces(FILE* fp, Team* team_to_save, Board* mainboard)
 {
     Piece* standard_pieces[] = {
@@ -461,3 +458,4 @@ bool Saver::Aaron_LoadStandardPieces(FILE* fp, Team* team_to_load, Board* mainbo
     return true;
 }
 
+bool 
