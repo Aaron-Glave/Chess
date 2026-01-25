@@ -17,10 +17,10 @@ int Saver::GetPieceCount(Piece* pPc)
 }
 
 // Used to save important boolean variables as bits.
-const unsigned char g_cWhitesTurn = (unsigned char)0x08;
-const unsigned char g_cBlacksTurn = (unsigned char)0x04;
-const unsigned char g_cWhiteInCheck = (unsigned char)0x02;
-const unsigned char g_cBlackInCheck = (unsigned char)0x01;
+const unsigned char bit_whites_turn = (unsigned char)0x08;
+const unsigned char bit_blacks_turn = (unsigned char)0x04;
+const unsigned char bit_white_in_check = (unsigned char)0x02;
+const unsigned char bit_black_in_check = (unsigned char)0x01;
 
 /* Dad deserves credit for helping me write this function.
 * Saves the entire current status of the game.
@@ -96,13 +96,13 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
     unsigned char cStatus = (unsigned char)0x00000000;
 
     // Bit 4: Is it the white team's turn?
-    if (current_team == whiteteam)        cStatus |= g_cWhitesTurn;
+    if (current_team == whiteteam)        cStatus |= bit_whites_turn;
     // Bit 3: Is it the black team's turn?
-    else if (current_team == blackteam)   cStatus |= g_cBlacksTurn;
+    else if (current_team == blackteam)   cStatus |= bit_blacks_turn;
     // Bit 2: Is the white king in check?
-    if (whiteteam->current_status == Game_Status::CHECK) cStatus |= g_cWhiteInCheck;
+    if (whiteteam->current_status == Game_Status::CHECK) cStatus |= bit_white_in_check;
     // Bit 1: Is the black king in check?
-    if (blackteam->current_status == Game_Status::CHECK) cStatus |= g_cBlackInCheck;
+    if (blackteam->current_status == Game_Status::CHECK) cStatus |= bit_black_in_check;
     fwrite(&cStatus, sizeof(cStatus), 1, fp);
     // End Step 4
 
@@ -139,11 +139,12 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
 }
 
 /* Saves the entire current status of the game.
-* The contents of the save file this, in order:
+* Dad still deserves credit for giving me code to adjust.
+* The contents of the save file are this, in order:
 * Step 0 for loading only: Empty the board and clear any promoted pawns.
 * Step 1: Save the current turn number (int)
 * Step 2: Save the number of upgraded pawns on either team; 1 byte is plenty (char)
-* Step 3: Save all the white standard pieces on each team.
+* Step 3: Save all the standard pieces on each team.
 *         Save the white team, then the black team.
 * Step 4: Save a character with 4 bits representing:
 *    - Bit 4: 1 if it's the white team's turn, 0 if it's the black team's turn
@@ -164,18 +165,75 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
 *  - Save upgraded pieces
 *  - Load upgraded pieces
 */
-bool Saver::SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team* blackteam)
+bool Saver::SaveGame(Board* mainboard, Team* current_team, Team* whiteteam, Team* blackteam)
 {
     FILE* fp = fopen(Saver_savefile, "w");
     if (fp == NULL) return false;
 
     //TODO WRITE THE SAVING CODE
-    //
-    int current_turn_number = active_board->current_turn();
+    // Begin Step 1: Save the current turn number (int)
+    int current_turn_number = mainboard->current_turn();
     fwrite(&current_turn_number, sizeof(int), 1, fp) != 1;
+    // End Step 1
 
-    //return true; //when done
-    return false;
+    // Step 2: Save the number of upgraded pawns on either team; 1 byte is plenty(char)
+    char num_upgraded_pawns = 0;
+    for (int i = 0; i < 8; i++) {
+        if(whiteteam->upgraded_pieces[i] != NULL) num_upgraded_pawns++;
+        if(blackteam->upgraded_pieces[i] != NULL) num_upgraded_pawns++;
+    }
+    // End Step 2
+
+    // Step 3: Save all the standard pieces on each team. White, then black.
+    Team* team_pointers[] = {whiteteam, blackteam};
+    for (int i = 0; i < 2; i++) {
+        Aaron_SaveStandardPieces(fp, team_pointers[i], mainboard);
+    }
+    // End Step 3
+
+    /* Step 4: Save a character with 4 bits representing:
+     * Bit 4: 1 if it's the white team's turn, 0 if it's the black team's turn
+     * Bit 3: 1 if it's the black team's turn, 0 if it's the white team's turn
+     * Bit 2: 1 if the white king is in check, 0 if not
+     * Bit 1: 1 if the black king is in check, 0 if not */
+    unsigned char important_status = 0;
+    // Bit 4: Is it the white team's turn?
+    if (current_team == whiteteam) important_status |= bit_whites_turn;
+    // Bit 3: Is it the black team's turn?
+    else if (current_team == blackteam) important_status |= bit_blacks_turn;
+    // Bit 2: Is the white king in check?
+    if (whiteteam->current_status == Game_Status::CHECK) important_status |= bit_white_in_check;
+    // Bit 1: Is the black king in check?
+    if (blackteam->current_status == Game_Status::CHECK) important_status |= bit_black_in_check;
+    fwrite(&important_status, sizeof(unsigned char), 1, fp);
+    // End Step 4
+
+    // Step 5: For each upgraded pawn on either team, a Piece structure.
+    for (int i = 0; i < 8; i++) {
+        if (whiteteam->upgraded_pieces[i] != NULL)
+            fwrite(whiteteam->upgraded_pieces[i], sizeof(Piece), 1, fp);
+        if (blackteam->upgraded_pieces[i] != NULL)
+            fwrite(blackteam->upgraded_pieces[i], sizeof(Piece), 1, fp);
+    }
+    // End Step 5
+
+    // Step 6: Save en passant info.
+    // After all that, now we can save an en passant!
+    // Save the current passant pawn, saving a PassantPawn() if there
+    // is no real passant pawn.
+    // Note that you'll need the pawn's get_start_column() to figure out
+    // which piece you're referring to.
+    // It will be a valid value if and only if a real pawn was saved.
+    // If there is no passant pawn, the passant_column will be -1.
+    fwrite(&mainboard->passantpawn, sizeof(PassantPawn), 1, fp);
+    // End Step 6
+
+    // Final step: Save a dummy variable to test saving/loading
+    int test_saved = 1;
+    fwrite(&test_saved, sizeof(int), 1, fp);
+    // End final step. All done.
+    fclose(fp);
+    return true;
 }
 
 /* Dad deserves credit for helping me write this function.
@@ -249,10 +307,10 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
     if (1 == fread(&cStatus, sizeof(unsigned char), 1, fp))
     {
         // printf("Status = %d\n", cStatus);
-        if (cStatus & g_cWhitesTurn)   *current_team_p = whiteteam;
-        if (cStatus & g_cBlacksTurn)   *current_team_p = blackteam;
-        if (cStatus & g_cWhiteInCheck) whiteteam->current_status = Game_Status::CHECK;
-        if (cStatus & g_cBlackInCheck) blackteam->current_status = Game_Status::CHECK;
+        if (cStatus & bit_whites_turn)   *current_team_p = whiteteam;
+        if (cStatus & bit_blacks_turn)   *current_team_p = blackteam;
+        if (cStatus & bit_white_in_check) whiteteam->current_status = Game_Status::CHECK;
+        if (cStatus & bit_black_in_check) blackteam->current_status = Game_Status::CHECK;
     }
     else {
         fclose(fp);
@@ -321,6 +379,7 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
 
             TheTeam->upgraded_pieces[n - 1] = pNewPiece;
             TheTeam->pieces[n + 7] = pNewPiece;
+            // Important: Place the upgraded piece on the board if it's alive!
             if (pPc->alive)
                 mainboard->spaces[pPc->row - 1][pPc->column - 1] = pNewPiece;
         }

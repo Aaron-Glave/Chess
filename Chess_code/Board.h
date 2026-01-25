@@ -39,8 +39,6 @@ public:
     //We use the revive_in_same_place flag when undoing a move that killed another piece.
     void place(Piece* piece, int row, int column, bool revive_in_same_place = false);
     void kill_passant();
-    //Clears the board before reloading the pieces.
-    void clear();
     void print_board() const;
     void print_passant(bool* testprinted = NULL);
     bool is_on_board(int b_row, int b_column);

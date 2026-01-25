@@ -10,23 +10,6 @@ template<typename T> void print_survival(Board* mainboard, T* piece_to_test) {
     else printf("%s is still dead.\n", piece_to_test->name);
 }
 
-TEST_CASE("Empty the board before loading", "[test_saving][load]") {
-    Board mainboard;
-    Team whiteteam = Team(COLOR::WHITE, &mainboard);
-    Team blackteam = Team(COLOR::BLACK, &mainboard);
-    mainboard.clear();
-    mainboard.print_board();
-    for (int i = 0; i < 16; i++) {
-        REQUIRE_FALSE(whiteteam.pieces[i]->alive);
-        REQUIRE_FALSE(blackteam.pieces[i]->alive);
-    }
-    printf("The board can clear itself for a new game.\n");
-}
-
-TEST_CASE("Load a smiley face", "[test_saving][save][load][aaron]") {
-
-}
-
 // Saving and loading tests
 TEST_CASE("All saved pieces have their starting columns right", "[test_saving][save][load][pieces]") {
     Board mainboard;
