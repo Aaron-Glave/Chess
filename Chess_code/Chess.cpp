@@ -215,7 +215,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
             did_custom_command = true;
-            if (game_saver.SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
+            if (game_saver.Dads_SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
                 printf("Game saved.\n");
             }
             else {

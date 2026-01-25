@@ -9,6 +9,7 @@
 #include "Safety.h"
 //#include "Pawn_Upgrader.h"
 #include "Move.h"
+#include "KillPiece.h"
 //#include "CastleMove.h"
 //#include <windows.h>
 #include <ctime>
@@ -120,7 +121,6 @@ const char* team_name(COLOR team) {
     else return "Black";
 }
 
-void kill_piece(Board* mainboard, Piece* piece) {
-    piece->alive = false;
-    mainboard->spaces[piece->row - 1][piece->column - 1] = NULL;
-}
+//* Move this v
+
+// */

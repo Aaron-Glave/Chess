@@ -1,15 +1,17 @@
-﻿#include "Piece.h"
+﻿#include <iostream>
+#include <string>
+
+#include "Piece.h"
+#include "KillPiece.h"
 #include "Knight.h"
 #include "Board.h"
-
-#include <iostream>
 #include "Safety.h"
 #include "Check_vs_Checkmate.h"
 #include "CastleMove.h"
 #include "Pawn_Upgrader.h"
 #include "InvalidPiece.h"
 #include "Column_Notation.h"
-#include <string>
+
 using namespace std;
 
 Board::Board() {
@@ -330,11 +332,14 @@ void Board::kill_passant() {
     if (passantpawn.get_piece() == NULL) {
         throw InvalidMove("No passant pawn to kill.");
     }
-    passantpawn.get_piece()->alive = false;
-    spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
-    //This is safe because doing a passant will NEVER be followed by a passant.
+    //The passant pawn should always point at NULL or a valid piece on the board!
+    Pawn *pawn_to_passant = passantpawn.get_piece();
+    pawn_to_passant->alive = false;
+    spaces[pawn_to_passant->row - 1][pawn_to_passant->column - 1] = NULL;
+    
     //Save the deleted passant pawn in case an undo is made.
     prevepassant = passantpawn;
+    //This is safe because doing a passant will NEVER be followed by a passant.
     passantpawn = PassantPawn();
 }
 
@@ -470,11 +475,22 @@ const static void print_columns() {
     printf("\n");
 }
 
+
+void Board::clear() {
+    for (int row = 0; row < 8; row++) {
+        for (int column = 0; column < 8; column++) {
+            if (spaces[row][column] != NULL) {
+                kill_piece(this, spaces[row][column]);
+            }
+        }
+    }
+}
+
 /*Looks nice now.*/
 void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
-    //bool firstcolumn = true;
+    // TODO MOVE THIS STATEMENT TO THE START OF THE GAME! JUST THIS 1 LINE
     printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
     print_columns();
     //Draw a line after we print the column names.
