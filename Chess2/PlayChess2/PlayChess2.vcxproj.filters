@@ -93,9 +93,6 @@
     <ClCompile Include="..\..\Chess_code\KillPiece.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Chess_code\ListOfLivingPieces.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Chess_code\Safety.h">
@@ -188,13 +185,7 @@
     <ClInclude Include="..\..\Chess_code\Column_Notation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\DoubleLists\DoublyLinkedList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\DoubleLists\Node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Chess_code\ListOfLivingPieces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Chess_code\KillPiece.h">

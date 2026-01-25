@@ -138,7 +138,6 @@
     <ClCompile Include="..\..\Chess_code\KillPiece.cpp" />
     <ClCompile Include="..\..\Chess_code\King.cpp" />
     <ClCompile Include="..\..\Chess_code\Knight.cpp" />
-    <ClCompile Include="..\..\Chess_code\ListOfLivingPieces.cpp" />
     <ClCompile Include="..\..\Chess_code\Move.cpp" />
     <ClCompile Include="..\..\Chess_code\move_diagnolly.cpp" />
     <ClCompile Include="..\..\Chess_code\Move_horizontally.cpp" />
@@ -186,9 +185,8 @@
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />
-    <ClInclude Include="..\..\DoubleLists\DoublyLinkedList.h" />
-    <ClInclude Include="..\..\DoubleLists\DoublyLinkedListTests.hpp" />
     <ClInclude Include="..\..\DoubleLists\Node.h" />
+    <ClInclude Include="..\..\SaveTests.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

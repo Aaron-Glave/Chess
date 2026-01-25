@@ -6,6 +6,7 @@
 
 
 #include "Catch2_code/catch_amalgamated.hpp"
+#include "SaveTests.hpp"
 #include "Chess_code/Chess.h"
 #include "Chess_code/Board.h"
 #include "Chess_code/move_diagnolly.h"
@@ -33,16 +34,8 @@
 #include <iostream>
 #include <tuple>
 
-// Depending on which tests you want to run, comment or uncomment these macros.
-//#define AARON_MAIN_TESTS
-#define AARON_NODE_TESTS
-
-#ifdef AARON_NODE_TESTS
-#include "DoubleLists/DoublyLinkedListTests.hpp"
-#endif
-
-#ifdef AARON_MAIN_TESTS
-
+//define MAIN_TESTS
+#ifdef MAIN_TESTS
 TEST_CASE("User can hit space then type", "[spaceless]") {
     char myentry[7] = " \thi \n";
     remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
@@ -1353,5 +1346,4 @@ TEST_CASE("All pieces are the same size", "[pieces][size]") {
     REQUIRE(piece_size == king_size);
     printf("All pieces are the same size.\n");
 }
-
-#endif // AARON_MAIN_TESTS
+#endif //MAIN_TESTS

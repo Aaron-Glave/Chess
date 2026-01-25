@@ -1,7 +1,6 @@
 #include <string.h>
 #include <cstdio>
 #include "Saver.h"
-#include "ListOfLivingPieces.h"
 #pragma warning(disable:4996)
 
 Saver::Saver() {
