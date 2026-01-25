@@ -2,6 +2,7 @@
 #include "Catch2_code/catch_amalgamated.hpp"
 #include "Chess_code/Chess_non_main.h"
 
+//Note that all tests in this file have the [test_saving] flag.
 #define TEST_SAVING
 #ifdef TEST_SAVING
 template<typename T> void print_survival(Board* mainboard, T* piece_to_test) {
@@ -9,7 +10,7 @@ template<typename T> void print_survival(Board* mainboard, T* piece_to_test) {
     else printf("%s is still dead.\n", piece_to_test->name);
 }
 
-TEST_CASE("Empty the board before loading", "[load]") {
+TEST_CASE("Empty the board before loading", "[test_saving][load]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
@@ -22,12 +23,12 @@ TEST_CASE("Empty the board before loading", "[load]") {
     printf("The board can clear itself for a new game.\n");
 }
 
-TEST_CASE("Load a smiley face", "[save][load][aaron]") {
+TEST_CASE("Load a smiley face", "[test_saving][save][load][aaron]") {
 
 }
 
 // Saving and loading tests
-TEST_CASE("All saved pieces have their starting columns right", "[save][load][pieces]") {
+TEST_CASE("All saved pieces have their starting columns right", "[test_saving][save][load][pieces]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
@@ -63,7 +64,7 @@ TEST_CASE("All saved pieces have their starting columns right", "[save][load][pi
     }
 }
 
-TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]") {
+TEST_CASE("Loading a game with a passant pawn works", "[test_saving][load][upgrade][passant]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
@@ -106,7 +107,7 @@ TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]"
     mainboard.print_board();
 }
 
-TEST_CASE("The passant pawn status is saved and loaded correctly with a white pawn", "[load][passant][white]") {
+TEST_CASE("The passant pawn status is saved and loaded correctly with a white pawn", "[test_saving][load][passant][white]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
@@ -142,7 +143,7 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a white pa
     printf("Works for killing white pawns via en passant!\n");
 }
 
-TEST_CASE("The passant pawn status is saved and loaded correctly with a black pawn", "[load][passant][black]") {
+TEST_CASE("The passant pawn status is saved and loaded correctly with a black pawn", "[test_saving][load][passant][black]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);

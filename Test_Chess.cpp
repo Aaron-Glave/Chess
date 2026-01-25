@@ -34,7 +34,7 @@
 #include <iostream>
 #include <tuple>
 
-//#define MAIN_TESTS
+#define MAIN_TESTS
 #ifdef MAIN_TESTS
 TEST_CASE("User can hit space then type", "[spaceless]") {
     char myentry[7] = " \thi \n";
