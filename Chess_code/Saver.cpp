@@ -167,6 +167,11 @@ bool Saver::Dads_SaveGame(Board* active_board, Team* current_team, Team* whitete
 */
 bool Saver::SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team* blackteam)
 {
+    FILE* fp = fopen(Saver_savefile, "w");
+    if (fp == NULL) return false;
+
+    //TODO WRITE THE SAVING CODE
+
     return false;
 }
 
@@ -457,5 +462,4 @@ bool Saver::Aaron_LoadStandardPieces(FILE* fp, Team* team_to_load, Board* mainbo
     
     return true;
 }
-
-bool 
+ 
