@@ -185,7 +185,6 @@
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />
-    <ClInclude Include="..\..\DoubleLists\Node.h" />
     <ClInclude Include="..\..\SaveTests.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
