@@ -128,16 +128,16 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
 
     //Step 0: Empty the board and clear any promoted pawns.
     int nRow, nCol;
-    for (nRow = 0; nRow < 8; nRow++)
+    for (nCol = 0; nCol < 8; nCol++)
     {
-        for (nCol = 0; nCol < 8; nCol++)
+        for (nRow = 0; nRow < 8; nRow++)
             mainboard->spaces[nRow][nCol] = NULL;
 
-        // Conveniently, there are the same number of rows as possible upgraded pieces.
-        if (whiteteam->upgraded_pieces[nRow] != NULL) delete whiteteam->upgraded_pieces[nRow];
-        if (blackteam->upgraded_pieces[nRow] != NULL) delete blackteam->upgraded_pieces[nRow];
+        // Conveniently, there are the same number of columns as possible upgraded pieces.
+        if (whiteteam->upgraded_pieces[nCol] != NULL) delete whiteteam->upgraded_pieces[nCol];
+        if (blackteam->upgraded_pieces[nCol] != NULL) delete blackteam->upgraded_pieces[nCol];
 
-        whiteteam->upgraded_pieces[nRow] = blackteam->upgraded_pieces[nRow] = NULL;
+        whiteteam->upgraded_pieces[nCol] = blackteam->upgraded_pieces[nCol] = NULL;
     }
     //Also clear the piece pointer array of each team.
     for (int i = 0; i < 16; i++) {
