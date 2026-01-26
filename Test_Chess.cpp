@@ -6,6 +6,7 @@
 
 
 #include "Catch2_code/catch_amalgamated.hpp"
+#include "SaveTests.hpp"
 #include "Chess_code/Chess.h"
 #include "Chess_code/Board.h"
 #include "Chess_code/move_diagnolly.h"
@@ -33,7 +34,8 @@
 #include <iostream>
 #include <tuple>
 
-
+#define MAIN_TESTS
+#ifdef MAIN_TESTS
 TEST_CASE("User can hit space then type", "[spaceless]") {
     char myentry[7] = " \thi \n";
     remove_spaces(myentry, myentry, PIECE_NAME_LENGTH);
@@ -179,8 +181,12 @@ TEST_CASE("An en passant move CAN save you from checkmate", "[checkmate][passant
             kill_piece(&mainboard, whiteteam.pieces[i]);
         }
     }
+    int index_white_pawn_column_5 = Pawn::column_to_index(5);
+    int index_black_pawn_column_2 = Pawn::column_to_index(2);
+    int index_black_pawn_column_5 = Pawn::column_to_index(5);
     
-    mainboard.place(&whiteteam.pawns[4], 5, 5);
+    mainboard.place(&whiteteam.pawns[index_white_pawn_column_5], 5, 5);
+    
     mainboard.place(&whiteteam.the_king, 4, 5);
     //Remember, this is named Rook2 to the user because the code views the pieces from the absolute top-down perspective,
     //but names them from the user's perspective.
@@ -188,26 +194,28 @@ TEST_CASE("An en passant move CAN save you from checkmate", "[checkmate][passant
     mainboard.place(&blackteam.rook2, 3, 8);
 
     //We need a few more rooks to paralize the king, so upgrade some pawns.
-    mainboard.place(&blackteam.pawns[8 - 5], 1, 4);
-    upgrade_pawn_if_needed(&blackteam.pawns[8 - 5], &blackteam, &mainboard, TYPE::ROOK);
-    mainboard.place(&blackteam.pawns[8 - 6], 1, 6);
-    upgrade_pawn_if_needed(&blackteam.pawns[8 - 6], &blackteam, &mainboard, TYPE::ROOK);
-    mainboard.place(&blackteam.pawns[8 - 7], 1, 7);
-    upgrade_pawn_if_needed(&blackteam.pawns[8 - 7], &blackteam, &mainboard, TYPE::ROOK);
-    mainboard.place(blackteam.pieces[7 + (9-7)], 5, 8);
+    mainboard.place(&blackteam.pawns[index_black_pawn_column_2], 1, 4);
+    upgrade_pawn_if_needed(&blackteam.pawns[index_black_pawn_column_2], &blackteam, &mainboard, TYPE::ROOK);
+    mainboard.place(&blackteam.pawns[index_black_pawn_column_5], 1, 6);
+    upgrade_pawn_if_needed(&blackteam.pawns[index_black_pawn_column_5], &blackteam, &mainboard, TYPE::ROOK);
+    //mainboard.place(&blackteam.pawns[8 - 7], 1, 7);
+    //upgrade_pawn_if_needed(&blackteam.pawns[8 - 7], &blackteam, &mainboard, TYPE::ROOK);
+    //mainboard.place(blackteam.pieces[7 + (9-7)], 5, 8);
     mainboard.print_board();
 
     //Now the only way to escape this check is to do an en passant move.
-    Move move_weak_to_passant = Move(7, 4, 5, 4, &blackteam.pawns[8-4], NULL);
+    Move move_weak_to_passant = Move(7, 6, 5, 6, &blackteam.pawns[Pawn::column_to_index(6)], NULL);
     mainboard.human_move_piece(&move_weak_to_passant);
-    Game_Status white_in_check = mainboard.is_in_check(&whiteteam, &blackteam, true);
     mainboard.print_board();
+    Game_Status white_in_check = mainboard.is_in_check(&whiteteam, &blackteam, true);
+    
+    //Because an en passant move is possible we should only be in check!
     REQUIRE(white_in_check == Game_Status::CHECK);
     /*Even though we don't set the piece_landed_on variable to the pawn that was killed,
     * since it was killed via an en passant move, the game still revives the pawn killed with an en passant.
     * I wrote to specifically check for that in undo_move.
     // */
-    Move move_passant = Move(5, 5, 6, 4, &whiteteam.pawns[4], NULL);
+    Move move_passant = Move(5, 5, 6, 6, &whiteteam.pawns[Pawn::column_to_index(5)], NULL);
     mainboard.human_move_piece(&move_passant);
     mainboard.print_board();
     printf("Looks like your pawn saved you via an en passant move.\n");
@@ -322,29 +330,31 @@ TEST_CASE("Clean the name and find a matching piece", "[spaceless]") {
     printf("Input parsed to %s.\n", correctedentry);
 }
 
-TEST_CASE("First turn pawns can't move like knights #dad", "[pieces][pawns]") {
+TEST_CASE("First turn pawns can't move like knights", "[pieces][pawns]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
     Move pawn2;
+    int index_for_column5 = Pawn::column_to_index(5);
     mainboard.print_board();
     for (int i = 1; i <= 8; i++) {
         if (i != 5) {
-            pawn2 = Move(2, 5, 4, i, &whiteteam.pawns[5 - 1], NULL);
+            pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[Pawn::column_to_index(i)], NULL);
             REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
-			pawn2 = Move(7, 5, 5, i, &blackteam.pawns[8 - 5], NULL);
 			printf("White pawn in column %d can't move to row 4 column 5\n", i);
+            pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[Pawn::column_to_index(i)], NULL);
 			REQUIRE_FALSE(mainboard.human_move_piece(&pawn2));
-            printf("Black pawn in column %d can't move to row 4 column 5\n", i);
+            printf("Black pawn in column %d can't move to row 5 column 5\n", i);
         }
     }
-    pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
+    int correct_index = Pawn::column_to_index(5);
+    pawn2 = Move(2, 5, 4, 5, &whiteteam.pawns[correct_index], NULL);
     REQUIRE(mainboard.human_move_piece(&pawn2));
     mainboard.print_board();
 	printf("White pawns do their first move correctly.\n");
-	pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[8-5], NULL);
+	pawn2 = Move(7, 5, 5, 5, &blackteam.pawns[correct_index], NULL);
 	REQUIRE(mainboard.human_move_piece(&pawn2));
     mainboard.print_board();
     printf("Black pawns do their first move correctly.\n");
@@ -374,32 +384,32 @@ TEST_CASE("Upgraded Black Pawn names", "[pieces][pawns][black]") {
 	}
 	mainboard.print_board();
 	for (int i = 0; i < 8; i++) {
-		Pawn* blackpawn = &blackteam.pawns[7-i];
+		Pawn* blackpawn = &blackteam.pawns[i];
 		
 		Move move1 = Move(2, blackpawn->column, 1, blackpawn->column, blackpawn, NULL);
 		mainboard.human_move_piece(&move1);
         REQUIRE(upgrade_pawn_if_needed(blackpawn, &blackteam, &mainboard, TYPE::ROOK) == TYPE::ROOK);
-        if (i == 7) {
+        if (i == 7 || true) {
             mainboard.print_board();
         }
 	}
     //*
     for (int i = 0; i < 8; i++) {
-        if (blackteam.upgraded_pieces[7 - i] == NULL) {
-			printf("Black team upgraded piece %d is incorrectly NULL.\n", 7 - i);
+        if (blackteam.upgraded_pieces[i] == NULL) {
+			printf("Black team upgraded piece %d is incorrectly NULL.\n", i);
             REQUIRE(false);
         }
         else if (blackteam.upgraded_pieces[7 - i]->piecetype != TYPE::ROOK) {
             REQUIRE(false);
         }
-        else if (strlen(blackteam.upgraded_pieces[7 - i]->name) < 7) {
+        else if (strlen(blackteam.upgraded_pieces[i]->name) < 7) {
             REQUIRE(false);
         }
         else {
-            char rooknumber = blackteam.upgraded_pieces[7 - i]->name[6];
+            char rooknumber = blackteam.upgraded_pieces[i]->name[6];
             Pawn* blackpawn = &blackteam.pawns[i];
             char pawnnumber = blackpawn->name[5];
-            REQUIRE(blackteam.upgraded_pieces[7 - i]->alive == true);
+            REQUIRE(blackteam.upgraded_pieces[i]->alive == true);
             REQUIRE(rooknumber == pawnnumber);
         }
     }
@@ -501,45 +511,78 @@ TEST_CASE("Castling error checking", "[errors][castle]") {
     
 }
 
-TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone..", "[upgrade][undo]") {
+TEST_CASE("Upgraded pawns downgrade and delete their upgrades after the move that upgraded them is undone.", "[dad][upgrade][undo]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
     whiteteam.enemy_team = &blackteam;
     blackteam.enemy_team = &whiteteam;
-    kill_piece(&mainboard, mainboard.spaces[1][6]);
+    
 
-    mainboard.place(&blackteam.pawns[1], 2, 7);
-    Move upgradepawn = Move(2, 7, 1, 8, &blackteam.pawns[1], NULL);
+    int index_of_tested_pawn = Pawn::column_to_index(6);
+    Pawn* tested_pawn = &blackteam.pawns[index_of_tested_pawn];
+    mainboard.place(tested_pawn, 3, 6);
     mainboard.print_board();
-    mainboard.human_move_piece(&upgradepawn);
+    Move pawn_kill_move = Move(3, 6, 2, 7, tested_pawn, &whiteteam.pawns[Pawn::column_to_index(6)]);
+    mainboard.human_move_piece(&pawn_kill_move);
+    mainboard.print_board();
+    Move upgrade_pawn_move = Move(2, 7, 1, 8, tested_pawn, NULL);
+    mainboard.human_move_piece(&upgrade_pawn_move);
     printf("The black pawn just moved to the bottom of the board...\n");
     mainboard.print_board();
-    std::ignore = upgrade_pawn_if_needed(&blackteam.pawns[1], &blackteam, &mainboard, TYPE::KNIGHT);
-    Piece** knightholder = &blackteam.upgraded_pieces[6];
+    std::ignore = upgrade_pawn_if_needed(tested_pawn, &blackteam, &mainboard, TYPE::KNIGHT);
+    int index_of_column_6 = Pawn::column_to_index(6);
+    Piece** knightholder = &blackteam.upgraded_pieces[index_of_column_6];
     Knight* upgraded = dynamic_cast<Knight*>(blackteam.upgraded_pieces[6]);
-    REQUIRE(blackteam.upgraded_pieces[6] != NULL);
-    REQUIRE(blackteam.upgraded_pieces[6]->piecetype == TYPE::KNIGHT);
-    mainboard.undo_move(&upgradepawn, &blackteam);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6] != NULL);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6]->piecetype == TYPE::KNIGHT);
+    printf("Black pawn upgraded to a knight...\n");
+    mainboard.print_board();
+
+    mainboard.undo_move(&upgrade_pawn_move, &blackteam);
+    printf("We undid that move...\n");
     mainboard.print_board();
     for (int i = 0; i < 8; i++) {
         REQUIRE(blackteam.upgraded_pieces[i] == NULL);
     }
-    REQUIRE(blackteam.pieces[7 + 2]->piecetype == TYPE::PAWN);
-    REQUIRE(blackteam.pieces[7 + 2]->row == 2);
-    mainboard.place(&whiteteam.pawns[0], 7, 1);
+    bool black_pawn_is_there = tested_pawn->piecetype == TYPE::PAWN && tested_pawn->alive;
+    REQUIRE(black_pawn_is_there);
+    REQUIRE(tested_pawn->row == 2);
+    Move white_knight_move = Move(1, 7, 3, 6, &whiteteam.knight2, NULL);
+    mainboard.human_move_piece(&white_knight_move);
+    printf("White knight moved...\n");
+    mainboard.print_board();
+    Move forward_move = Move(2, 7, 1, 7, tested_pawn, NULL);
+    mainboard.human_move_piece(&forward_move);
+    mainboard.print_board();
+    printf("Black pawn moved forward instead of capturing the rook.\n");
+    TYPE bishop_upgrade = upgrade_pawn_if_needed(tested_pawn, &blackteam, &mainboard, TYPE::BISHOP);
+    REQUIRE(bishop_upgrade == TYPE::BISHOP);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6] != NULL);
+    REQUIRE(blackteam.upgraded_pieces[index_of_column_6]->piecetype == TYPE::BISHOP);
+    Bishop* pawn_upgraded_differently = dynamic_cast<Bishop*>(blackteam.upgraded_pieces[6-1]);
+    REQUIRE(pawn_upgraded_differently != NULL);
+    mainboard.print_board();
+
+    //Now we're testing the white team's pawn 1.
+    //We need to clear its path first.
+    kill_piece(&mainboard, &blackteam.pawns[0]);
+    int index_of_column_1 = Pawn::column_to_index(1);
+    mainboard.place(&whiteteam.pawns[index_of_column_1], 7, 1);
     Move upwhite = Move(7, 1, 8, 2, &whiteteam.pawns[0], NULL);
     mainboard.human_move_piece(&upwhite);
     mainboard.print_board();
     std::ignore = upgrade_pawn_if_needed(&whiteteam.pawns[0], &whiteteam, &mainboard, TYPE::BISHOP);
     mainboard.print_board();
-    REQUIRE(whiteteam.upgraded_pieces[0] != NULL);
-    REQUIRE(whiteteam.upgraded_pieces[0]->piecetype == TYPE::BISHOP);
+    REQUIRE(whiteteam.upgraded_pieces[index_of_column_1] != NULL);
+    REQUIRE(whiteteam.upgraded_pieces[index_of_column_1]->piecetype == TYPE::BISHOP);
     mainboard.undo_move(&upwhite, &whiteteam);
-    REQUIRE(whiteteam.upgraded_pieces[0] == NULL);
+    REQUIRE(whiteteam.upgraded_pieces[index_of_column_1] == NULL);
+    //8 == the number of your non-pawn pieces + the column-based index of the pawn in column 1.
     REQUIRE(whiteteam.pieces[8] != NULL);
     bool undidwhiteupgrade = whiteteam.pawns[0].alive && whiteteam.pawns[0].row == 7 && whiteteam.pawns[0].column == 1;
     REQUIRE(undidwhiteupgrade);
+    mainboard.print_board();
     printf("Upgraded pieces deleted correctly.\n");
 }
 
@@ -652,8 +695,8 @@ TEST_CASE("Pieces know the first turn they moved", "[FirstTurnPiece]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Pawn* wpawn = &whiteteam.pawns[4];
-    Pawn* bpawn = &blackteam.pawns[4];
+    Pawn* wpawn = &whiteteam.pawns[Pawn::column_to_index(5)];
+    Pawn* bpawn = &blackteam.pawns[Pawn::column_to_index(4)];
     Move firstmove = mainboard.make_move(wpawn, 4, 5);
     Move secondmove = mainboard.make_move(bpawn, 5, 4);
     mainboard.human_move_piece(&firstmove);
@@ -686,22 +729,22 @@ TEST_CASE("I remember previous turn's passant", "[undo][passant]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Move firstmove = mainboard.make_move(&whiteteam.pawns[5-1], 4, 5);
+    Move firstmove = mainboard.make_move(&whiteteam.pawns[Pawn::column_to_index(5)], 4, 5);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
     
     bool printed = false;
     mainboard.print_passant(&printed);
     REQUIRE(printed);
-    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
-    Move secondmove = mainboard.make_move(&blackteam.pawns[5 - 1], 5, 4);
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[Pawn::column_to_index(5)]);
+    Move secondmove = mainboard.make_move(&blackteam.pawns[Pawn::column_to_index(4)], 5, 4);
     mainboard.human_move_piece(&secondmove);
     mainboard.print_board();
     mainboard.print_passant(&printed);
     REQUIRE(printed);
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[5 - 1]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[Pawn::column_to_index(4)]);
     mainboard.undo_move(&secondmove);
-    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[Pawn::column_to_index(5)]);
     printf("Looks like the passant is undone correctly.\n");
 }
 //I NEED TO KNOW THE TURN NUMBER ON THE BOARD IN ORDER TO MAKE THIS WORK
@@ -713,15 +756,15 @@ TEST_CASE("Passants do have to happen immediately", "[passant][1turn]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Move firstmove = mainboard.make_move(&whiteteam.pawns[5-1], 4, 5);
+    Move firstmove = mainboard.make_move(&whiteteam.pawns[Pawn::column_to_index(5)], 4, 5);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
-    Move secondmove = mainboard.make_move(&blackteam.pawns[6 - 1], 6, 3);
+    Move secondmove = mainboard.make_move(&blackteam.pawns[Pawn::column_to_index(3)], 6, 3);
     mainboard.human_move_piece(&secondmove);
     mainboard.print_board();
     REQUIRE(mainboard.passantpawn.get_piece() == NULL);
     mainboard.undo_move(&secondmove);
-    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[Pawn::column_to_index(5)]);
 }
 
 TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill it", "[passant]") {
@@ -731,11 +774,12 @@ TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill i
     printf("Testing to ensure that only pawns can capture en passant.\n");
 
     //Make the space in front of the pawn safe for the king to stand.
-    kill_piece(&mainboard, &blackteam.pawns[3]);
-    kill_piece(&mainboard, &blackteam.pawns[5]);
+    //Kill black pawns in columns 3 and 6
+    kill_piece(&mainboard, &blackteam.pawns[Pawn::column_to_index(3)]);
+    kill_piece(&mainboard, &blackteam.pawns[Pawn::column_to_index(6)]);
     kill_piece(&mainboard, &blackteam.queen);
     kill_piece(&mainboard, &blackteam.bishop1);
-    kill_piece(&mainboard, &blackteam.pawns[8-6]);
+    //kill_piece(&mainboard, &blackteam.pawns[8-6]);
     
     Piece* pieces_to_test[] = {
         &whiteteam.the_king, &whiteteam.queen, &whiteteam.rook1,
@@ -746,25 +790,30 @@ TEST_CASE("Moving a non-pawn onto the space a jumping pawn passed doesn't kill i
     mainboard.place(&whiteteam.knight1, 4, 5);
     mainboard.place(&whiteteam.bishop1, 5, 3);
     mainboard.place(&whiteteam.queen, 5, 5);
-    Move bpawnmove = Move(7, 4, 5, 4, &blackteam.pawns[8 - 4], NULL);
+
+    //Mark down the pawn indexes for the pawns we want to test
+    int black_pawn_index_column4 = Pawn::column_to_index(4);
+    Move bpawnmove = Move(7, 4, 5, 4, &blackteam.pawns[black_pawn_index_column4], NULL);
     mainboard.human_move_piece(&bpawnmove);
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+    mainboard.print_board();
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_pawn_index_column4]);
     REQUIRE(mainboard.passantpawn.get_row() == 6);
     REQUIRE(mainboard.passantpawn.get_column() == 4);
     mainboard.print_board();
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_pawn_index_column4]);
     REQUIRE(mainboard.is_in_check(&whiteteam, &blackteam, false) == Game_Status::NEUTRAL);
+    mainboard.print_board();
     for (int i = 0; i < 5; i++) {
         Piece* enemy_of_pawn = pieces_to_test[i];
         REQUIRE(enemy_of_pawn->can_classmove(6, 4, &mainboard) == true);
         Move testmove = Move(enemy_of_pawn->row, enemy_of_pawn->column, 6, 4, enemy_of_pawn, NULL);
         mainboard.human_move_piece(&testmove);
         mainboard.print_board();
-        REQUIRE(blackteam.pawns[8 - 4].alive == true);
+        REQUIRE(blackteam.pawns[black_pawn_index_column4].alive == true);
         mainboard.undo_move(&testmove);
-        REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 4]);
+        REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_pawn_index_column4]);
     }
-    REQUIRE(blackteam.pawns[8 - 4].alive == true);
+    REQUIRE(blackteam.pawns[black_pawn_index_column4].alive == true);
     mainboard.print_board();
     printf("Non-pawn pieces can't capture with en passant moves.\n");
 }
@@ -777,174 +826,53 @@ TEST_CASE("Just print black pawn names", "[pieces][names][black]") {
     for (int i = 0; i < 8; i++) {
         printf("Black pawn %s:\nColumn: %d\n\n",
             blackteam.pawns[i].name, blackteam.pawns[i].column);
-        REQUIRE(blackteam.pawns[i].column == 8 - i);
+        int index_we_want = Pawn::index_to_column(COLOR::BLACK, i);
+        REQUIRE(blackteam.pawns[i].column == index_we_want);
     }
     
-    printf("This means blackteam->pawns[i] is in column 8-i.\n");
+    printf("This means you can use Pawn::index_to_column to figure out the column of black pawns based on their index.\n");
 }
 
-TEST_CASE("All saved pieces have their starting columns right", "[save][load][pieces]") {
+TEST_CASE("Just print white pawn names", "[pieces][names][white]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Saver saver = Saver();
-    whiteteam.enemy_team = &blackteam;
-    blackteam.enemy_team = &whiteteam;
-
-    //Save the game.
-    Team* current_team_pointer = &whiteteam;
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
-
-    /* Remember, with 0 <= i < 8, for white pawns, column = i + 1
-       and for black pawns, column = 8 - i */
-    Move first_move = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
-    Move second_move = Move(7, 4, 5, 4, &blackteam.pawns[8 - 4], NULL);
-
-    //Load the game.
-    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
-
-    //Check that the starting columns are correct.
-    for(int i = 0; i < 8; i++) {
-        REQUIRE(whiteteam.pawns[i].column == whiteteam.pawns[i].get_start_column());
-        REQUIRE(blackteam.pawns[i].column == blackteam.pawns[i].get_start_column());
+    printf("White pawn names:\n");
+    for (int i = 0; i < 8; i++) {
+        printf("White pawn %s:\nColumn: %d\n\n",
+            whiteteam.pawns[i].name, whiteteam.pawns[i].column);
+        int index_we_want = Pawn::index_to_column(COLOR::WHITE, i);
+        REQUIRE(blackteam.pawns[i].column == index_we_want);
     }
-}
 
-TEST_CASE("Loading a game with a passant pawn works", "[load][upgrade][passant]") {
-    Board mainboard;
-    Team whiteteam = Team(COLOR::WHITE, &mainboard);
-    Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Saver saver = Saver();
-    whiteteam.enemy_team = &blackteam;
-    blackteam.enemy_team = &whiteteam;
-    Move pawn1 = Move(2, 5, 4, 5, &whiteteam.pawns[5 - 1], NULL);
-    mainboard.human_move_piece(&pawn1);
-    kill_piece(&mainboard, &blackteam.pawns[0]);
-    mainboard.place(&whiteteam.pawns[0], 8, 1);
-    upgrade_pawn_if_needed(&whiteteam.pawns[0], &whiteteam, &mainboard, TYPE::QUEEN);
-    mainboard.print_board();
-    
-    
-    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[5 - 1]);
-    
-    //Save the game.
-    Team* current_team_pointer = &blackteam;
-
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
-
-
-
-    //Pretend I made a turn.
-    current_team_pointer = current_team_pointer->enemy_team;
-    mainboard.passantpawn.test_kill_passant();
-    REQUIRE(current_team_pointer == &whiteteam);
-    REQUIRE(mainboard.spaces[7][0] != NULL);
-    kill_piece(&mainboard, mainboard.spaces[7][0]);
-    printf("Pretend the black team took a magical move resulting in this board.\n");
-    mainboard.print_board();
-    
-    //Load the game.
-    int test_val = 2;
-    int* test_ptr = &test_val;
-    printf("If you pass a pointer to the load function, the variable you point at should be updated\n");
-    printf("Currently, it's %d\n", test_val);
-    saver.Dads_LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer, test_ptr);
-    REQUIRE(test_val == 1);
-    printf("Now it's %d!\n", test_val);
-    REQUIRE(mainboard.spaces[7][0]->alive);
-    printf("After loading, the upgraded pawn is still alive.\n");
-    mainboard.print_board();
-}
-
-TEST_CASE("The passant pawn status is saved and loaded correctly with a white pawn", "[load][passant][white]") {
-    Board mainboard;
-    Team whiteteam = Team(COLOR::WHITE, &mainboard);
-    Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Saver saver = Saver();
-    whiteteam.enemy_team = &blackteam;
-    blackteam.enemy_team = &whiteteam;
-    Move bpawn2m1 = Move(7, 2, 5, 2, &blackteam.pawns[8 - 2], NULL);
-    Move bpawn2m2 = Move(5, 2, 4, 2, &blackteam.pawns[8 - 2], NULL);
-    mainboard.human_move_piece(&bpawn2m1);
-    mainboard.human_move_piece(&bpawn2m2);
-    Move wpawn1 = Move(2, 1, 4, 1, &whiteteam.pawns[1 - 1], NULL);
-    mainboard.human_move_piece(&wpawn1);
-    mainboard.print_board();
-    
-    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[1 - 1]);
-    
-    //Save the game.
-    Team* current_team_pointer = &blackteam;
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
-    mainboard.passantpawn.test_kill_passant();
-    //Load the game.
-    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
-    mainboard.print_board();
-    REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[1 - 1]);
-    
-    //Perform a passant;
-    Move passant_move = Move(4, 2, 3, 1, &blackteam.pawns[8 - 2], NULL);
-    mainboard.human_move_piece(&passant_move);
-    mainboard.print_board();
-    printf("Works for white pawns!\n");
-}
-
-TEST_CASE("The passant pawn status is saved and loaded correctly with a black pawn", "[load][passant][black]") {
-    Board mainboard;
-    Team whiteteam = Team(COLOR::WHITE, &mainboard);
-    Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Saver saver = Saver();
-    whiteteam.enemy_team = &blackteam;
-    blackteam.enemy_team = &whiteteam;
-    Move wpawn2m1 = Move(2, 2, 4, 2, &whiteteam.pawns[2 - 1], NULL);
-    Move wpawn2m2 = Move(4, 2, 5, 2, &whiteteam.pawns[2 - 1], NULL);
-    mainboard.human_move_piece(&wpawn2m1);
-    mainboard.human_move_piece(&wpawn2m2);
-    Move bpawn1 = Move(7, 1, 5, 1, &blackteam.pawns[8 - 1], NULL);
-    mainboard.human_move_piece(&bpawn1);
-    mainboard.print_board();
-
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 1]);
-
-    //Save the game.
-    Team* current_team_pointer = &blackteam;
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
-    mainboard.passantpawn.test_kill_passant();
-    //Load the game.
-    saver.Dads_LoadGame(&mainboard, &blackteam, &whiteteam, &current_team_pointer);
-    mainboard.print_board();
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 1]);
-
-    //Perform a passant;
-    Move passant_move = Move(5, 2, 6, 1, &whiteteam.pawns[2 - 1], NULL);
-    mainboard.human_move_piece(&passant_move);
-    mainboard.print_board();
-    printf("Works for black pawns!\n");
+    printf("This means you can use Pawn::index_to_column to figure out the column of white pawns based on their index.\n");
 }
 
 TEST_CASE("Undoing a successful en passant keeps the victim alive", "[undo][passant]") {
     Board mainboard;
     Team whiteteam = Team(COLOR::WHITE, &mainboard);
     Team blackteam = Team(COLOR::BLACK, &mainboard);
-    Move firstmove = mainboard.make_move(&whiteteam.pawns[5 - 1], 4, 5);
-    Move secondmove = mainboard.make_move(&whiteteam.pawns[5 - 1], 5, 5);
-    Move thirdmove = mainboard.make_move(&blackteam.pawns[8 - 6], 5, 6);
+    const int white_index_for_column5 = Pawn::column_to_index(5);
+    const int black_index_for_column6 = Pawn::column_to_index(6);
+    Move firstmove = mainboard.make_move(&whiteteam.pawns[white_index_for_column5], 4, 5);
+    Move secondmove = mainboard.make_move(&whiteteam.pawns[white_index_for_column5], 5, 5);
+    Move thirdmove = mainboard.make_move(&blackteam.pawns[black_index_for_column6], 5, 6);
     mainboard.human_move_piece(&firstmove);
     mainboard.print_board();
     mainboard.human_move_piece(&secondmove);
     mainboard.print_board();
     mainboard.human_move_piece(&thirdmove);
     mainboard.print_board();
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 6]);
-    Move passantmove = mainboard.make_move(&whiteteam.pawns[5 - 1], 6, 6);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_index_for_column6]);
+    Move passantmove = mainboard.make_move(&whiteteam.pawns[white_index_for_column5], 6, 6);
     mainboard.human_move_piece(&passantmove);
-    REQUIRE_FALSE(blackteam.pawns[8-6].alive);
+    REQUIRE_FALSE(blackteam.pawns[black_index_for_column6].alive);
     mainboard.print_board();
     mainboard.undo_move(&passantmove, &whiteteam);
     mainboard.print_board();
-    REQUIRE(blackteam.pawns[6 - 1].alive);
-    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[8 - 6]);
-    REQUIRE(mainboard.spaces[5 - 1][6 - 1] == &blackteam.pawns[8 - 6]);
+    REQUIRE(blackteam.pawns[black_index_for_column6].alive);
+    REQUIRE(mainboard.passantpawn.get_piece() == &blackteam.pawns[black_index_for_column6]);
+    REQUIRE(mainboard.spaces[5 - 1][6 - 1] == &blackteam.pawns[black_index_for_column6]);
 }
 
 TEST_CASE("Throws errors upgrading pawns to themselves", "[errors]") {
@@ -1370,3 +1298,52 @@ TEST_CASE("Entering integers for columns works too", "[column_input]") {
     REQUIRE(column_from_char('8') == 8);
     REQUIRE(column_from_char('9') == -1);
 }
+
+TEST_CASE("Pawn indexes are what they should be", "[info][pieces][pawns][indexes]") {
+    Board mainboard;
+    Team whiteteam = Team(COLOR::WHITE, &mainboard);
+    Team blackteam = Team(COLOR::BLACK, &mainboard);
+    
+    printf("White pawn indexes:\n");
+    int test_index = -1, test_column = -1;
+    for (int i = 0; i < 8; i++) {
+        printf("White pawn %s:\nColumn: %d\nIndex: %d\n\n",
+            whiteteam.pawns[i].name, whiteteam.pawns[i].column, i);
+        test_index = Pawn::column_to_index(whiteteam.pawns[i].column);
+        test_column = Pawn::index_to_column(COLOR::WHITE, i);
+        REQUIRE(test_index == i);
+        REQUIRE(test_column == whiteteam.pawns[i].column);
+    }
+
+    printf("Black pawn indexes:\n");
+    for (int i = 0; i < 8; i++) {
+        printf("Black pawn %s:\nColumn: %d\nIndex: %d\n\n",
+            blackteam.pawns[i].name, blackteam.pawns[i].column, i);
+        int test_index = Pawn::column_to_index(blackteam.pawns[i].column);
+        test_column = Pawn::index_to_column(COLOR::BLACK, i);
+        REQUIRE(test_index == i);
+        REQUIRE(test_column == blackteam.pawns[i].column);
+    }
+    printf("This means our methods to convert pawn columns to indexes works.\n");
+}
+
+TEST_CASE("All pieces are the same size", "[pieces][size]") {
+    printf("Checking piece sizes...\n");
+    size_t piece_size = sizeof(Piece);
+    size_t pawn_size = sizeof(Pawn);
+    size_t rook_size = sizeof(Rook);
+    size_t knight_size = sizeof(Knight);
+    size_t bishop_size = sizeof(Bishop);
+    size_t queen_size = sizeof(Queen);
+    size_t king_size = sizeof(King);
+    printf("Pawn size: %zu\nRook size: %zu\nKnight size: %zu\nBishop size: %zu\nQueen size: %zu\nKing size: %zu\n",
+        pawn_size, rook_size, knight_size, bishop_size, queen_size, king_size);
+    REQUIRE(piece_size == pawn_size);
+    REQUIRE(piece_size == rook_size);
+    REQUIRE(piece_size == knight_size);
+    REQUIRE(piece_size == bishop_size);
+    REQUIRE(piece_size == queen_size);
+    REQUIRE(piece_size == king_size);
+    printf("All pieces are the same size.\n");
+}
+#endif //MAIN_TESTS

@@ -1,15 +1,17 @@
-﻿#include "Piece.h"
+﻿#include <iostream>
+#include <string>
+
+#include "Piece.h"
+#include "KillPiece.h"
 #include "Knight.h"
 #include "Board.h"
-
-#include <iostream>
 #include "Safety.h"
 #include "Check_vs_Checkmate.h"
 #include "CastleMove.h"
 #include "Pawn_Upgrader.h"
 #include "InvalidPiece.h"
 #include "Column_Notation.h"
-#include <string>
+
 using namespace std;
 
 Board::Board() {
@@ -34,11 +36,10 @@ Board::Board() {
 //Note that this does NOT count as making a move.
 //If there used to be another piece here, do NOT set its old space to NULL!
 //The function undo_move in Board.cpp will revive the piece that was landed on BEFORE calling this.
-void Board::place(Piece* piece, int row, int column, bool revivedinsameplace) {
-    if (!revivedinsameplace) {
+void Board::place(Piece* piece, int row, int column, bool revive_in_same_place) {
+    if (!revive_in_same_place) {
         spaces[piece->row - 1][piece->column - 1] = NULL;
-    } 
-    
+    }
     spaces[row - 1][column - 1] = piece;
     piece->row = row;
     piece->column = column;
@@ -113,8 +114,7 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
             tried_move.end_row = tryrow;
             for (int trycolumn = 1; trycolumn <= 8; trycolumn++) {
                 tried_move.end_column = trycolumn;
-                // We know we can go here, so we might as well try.
-                //TODO CHECK THAT YOU REALLY CAN MOVE HERE!
+                // We might as well try to move here in case in gets us out of check.
                 if (tried_move.piece_that_moved->can_classmove(tryrow, trycolumn, this)) {
                     bool did_i_move = human_move_piece(&tried_move);
 
@@ -239,12 +239,12 @@ bool Board::human_move_piece(Move* move_to_make) {
             throw InvalidPiece(move_to_make->piece_that_moved);
         }
         if (can_move) {
-            // If you landed on a piece on your team:
+            // If you would land on a piece on your team you can't make the move.
             if (piece->do_team_match(spaces[b_row - 1][b_column - 1])) {
                 return false;
             }
 
-            //Opposing team:
+            // But if you land an a piece on the opposing team you can.
             if (spaces[b_row - 1][b_column - 1] != NULL) {
                 /*NOTE: THE piece_landed_on variable CAN be null before this function was called.
                 * Remember the piece I landed on in case this move has to be undone. */
@@ -331,11 +331,14 @@ void Board::kill_passant() {
     if (passantpawn.get_piece() == NULL) {
         throw InvalidMove("No passant pawn to kill.");
     }
-    passantpawn.get_piece()->alive = false;
-    spaces[passantpawn.get_piece()->row - 1][passantpawn.get_piece()->column - 1] = NULL;
-    //This is safe because doing a passant will NEVER be followed by a passant.
+    //The passant pawn should always point at NULL or a valid piece on the board!
+    Pawn *pawn_to_passant = passantpawn.get_piece();
+    pawn_to_passant->alive = false;
+    spaces[pawn_to_passant->row - 1][pawn_to_passant->column - 1] = NULL;
+    
     //Save the deleted passant pawn in case an undo is made.
     prevepassant = passantpawn;
+    //This is safe because doing a passant will NEVER be followed by a passant.
     passantpawn = PassantPawn();
 }
 
@@ -475,8 +478,6 @@ const static void print_columns() {
 void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
-    //bool firstcolumn = true;
-    printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
     print_columns();
     //Draw a line after we print the column names.
     for (int i = 0; i < 11 + length_of_name * (number_of_spaces - 1); i++) {

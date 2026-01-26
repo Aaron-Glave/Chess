@@ -12,7 +12,7 @@ bool move_horizontally(Piece* valid_piece, int b_row, int b_column, Board* board
         up = b_row > valid_piece->row;
         if (up) {
             //Row up
-            //I need to stop once I hit a piece and I don't yet. This loop will never ever end the functon with True.
+            //I need to stop once I hit a piece and I don't yet. This loop will never ever end the function with True.
             for (int u_row = valid_piece->row + 1; u_row < b_row; u_row++) {
                 if (board_to_move_on->does_have_any_piece(u_row, b_column)) {
                     return false;

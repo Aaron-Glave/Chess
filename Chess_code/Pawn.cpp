@@ -20,11 +20,13 @@ int Pawn::get_start_column()
 Pawn::Pawn(COLOR b_team, int b_row, int b_column, int b_count) {
     starting_column = b_column;
     setup(b_team, b_row, b_column, b_count, TYPE::PAWN);
-    name[5] = column_name();
+    name[5] = relative_column_name();
 }
 
-//Changes the way the piece is named visually but NOT functionally!
-char Pawn::column_name() {
+/*Changes the way the piece is named visually but NOT functionally!
+* Remember, the black player sits on the other side of the board,
+* so the pawns his left side are on the white player's left side. */
+char Pawn::relative_column_name() {
     if (team == COLOR::BLACK) {
         return '0' + 9 - column;
     }
@@ -60,7 +62,7 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
             }
         }
     }
-    //Assures are moving eactly 1 space
+    //Make sure are moving exactly 1 space
     if (row + direction != b_row) return false;
     //Check for passant.
     if ((b_column == column - 1) || (b_column == column + 1)) {
@@ -74,4 +76,17 @@ bool Pawn::can_classmove(int b_row, int b_column, Board* main_board) {
         return (main_board->does_have_any_piece(b_row, b_column) && main_board->no_ally_there(team, b_row, b_column));
     }
     return false;
+}
+
+//Calculate the column number (1-8) from the index (0-7).
+int Pawn::index_to_column(COLOR pawn_team, int index) {
+    if (pawn_team == COLOR::BLACK && false) {
+        return 8 - index;
+    }
+    return index + 1;
+}
+
+/* Returns the index of the pawn standing in the specified column */
+int Pawn::column_to_index(int column) {
+    return column - 1;
 }

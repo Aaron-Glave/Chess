@@ -44,12 +44,12 @@ void main_load_game(Saver* game_saver, Board* mainboard,
 ) {
     int zero_if_load_success = 1;
     if (!*has_loaded_file) {
-        zero_if_load_success = game_saver->Dads_LoadGame(mainboard, blackteam, whiteteam, current_team);
+        zero_if_load_success = game_saver->LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
         *has_loaded_file = (zero_if_load_success == 0);
     }
     else {
         if (require_yes("Return to your previous save?")) {
-            zero_if_load_success = game_saver->Dads_LoadGame(mainboard, blackteam, whiteteam, current_team);
+            zero_if_load_success = game_saver->LoadGame(mainboard, whiteteam, blackteam, current_team, NULL);
         }
         else return;
     }
@@ -102,7 +102,6 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     bool did_try_castle = false;
     bool done_loading_man = !should_load_man;
     bool did_load = false;
-    //You cannot load the game twice. TODO: FOLLOW THAT RULE.
     bool has_loaded_file = false;
     bool did_fail_loading = false;
     bool swapped_or_done = false;
@@ -117,7 +116,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     bool kings_want_to_hug = false;
 
     printf("\nGod answered my prayers and helped me make this game. He deserves credit!\n\n");
-    
+    printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
     //*
     while (wKing->alive && bKing->alive)
     {
@@ -155,12 +154,12 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
                 return 0;
             }
         }
-        printf("%s turn.\n", team_name(current_team->color));
-        printf("Which piece do you want to move? ");
+        //printf("It's the %s team's turn.\n", team_name(current_team->color));
+        printf("%s player, which piece do you want to move? ", team_name(current_team->color));
         
         clean_chess_input(nameofpiecetomove);
         //Alternative commands other than moving 1 piece
-        //TODO: Make options to kill a selected piece.
+        //For example, you can kill a piece by typing the word "execute".
         if (should_load_man) {
             if (strcmp(nameofpiecetomove, ("eXecute")) == 0) {
                 did_custom_command = true;
@@ -215,7 +214,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
             did_custom_command = true;
-            if (game_saver.Dads_SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
+            if (game_saver.SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
                 printf("Game saved.\n");
             }
             else {
@@ -364,7 +363,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         //The game looks at the board when searching for pieces, so if your piece is dead it WON'T be found and it will be called invalid.
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
-        } else if /*TODO: TEST THIS IF STATEMENT*/ (!piecefound && !did_custom_command) {
+        } else if(!piecefound && !did_custom_command) {
             printf("That piece is either dead, or non-existent.\n");
         }
         

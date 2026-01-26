@@ -135,6 +135,7 @@
     <ClCompile Include="..\..\Chess_code\Chess_non_main.cpp" />
     <ClCompile Include="..\..\Chess_code\Column_Notation.cpp" />
     <ClCompile Include="..\..\Chess_code\diagnoal_direction.cpp" />
+    <ClCompile Include="..\..\Chess_code\KillPiece.cpp" />
     <ClCompile Include="..\..\Chess_code\King.cpp" />
     <ClCompile Include="..\..\Chess_code\Knight.cpp" />
     <ClCompile Include="..\..\Chess_code\Move.cpp" />
@@ -164,13 +165,13 @@
     <ClInclude Include="..\..\Chess_code\Column_Notation.h" />
     <ClInclude Include="..\..\Chess_code\diagnoal_direction.h" />
     <ClInclude Include="..\..\Chess_code\InvalidPiece.h" />
+    <ClInclude Include="..\..\Chess_code\KillPiece.h" />
     <ClInclude Include="..\..\Chess_code\King.h" />
     <ClInclude Include="..\..\Chess_code\Knight.h" />
     <ClInclude Include="..\..\Chess_code\Move.h" />
     <ClInclude Include="..\..\Chess_code\move_diagnolly.h" />
     <ClInclude Include="..\..\Chess_code\Move_horizontally.h" />
     <ClInclude Include="..\..\Chess_code\Move_safety.h" />
-    <ClInclude Include="..\..\Chess_code\Node.h" />
     <ClInclude Include="..\..\Chess_code\PassantPawn.h" />
     <ClInclude Include="..\..\Chess_code\Pawn.h" />
     <ClInclude Include="..\..\Chess_code\Pawn_Upgrader.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="..\..\Chess_code\Straight_Line.h" />
     <ClInclude Include="..\..\Chess_code\Team.h" />
     <ClInclude Include="..\..\Chess_code\Teamname.h" />
+    <ClInclude Include="..\..\SaveTests.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

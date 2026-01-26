@@ -2,7 +2,8 @@ Made by Aaron Glave.
 
 I am trying to make a command-line Chess program. 
 
-**Note that a bug exists: reloading a save file right after upgrading a pawn deletes it, but you can get it back my quitting the game and then restarting it.**
+**I'm done! Have fun typing out your chess moves!**
+Make sure to put TestChess.exe in a different folder than PlayChess.exe  so that your save file isn't overwritten by any of the tests!
 
 Bat files associated with the game are in the [Chess2/PlayChess2](https://github.com/Aaron-Glave/Chess/tree/main/Chess2/PlayChess2) folder.
 
