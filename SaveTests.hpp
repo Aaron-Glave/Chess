@@ -21,7 +21,7 @@ TEST_CASE("All saved pieces have their starting columns right", "[test_saving][s
 
     //Save the game.
     Team* current_team_pointer = &whiteteam;
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
     printf("Players saved the game before making any moves.\n");
 
     /* Remember to use the index lookup function! */

@@ -91,6 +91,11 @@ void Piece::place(int b_row, int b_column) {
     column = b_column;
 }
 
+int Piece::get_starting_column()
+{
+    return starting_column;
+}
+
 char Piece::team_character() const {
     if (team == COLOR::WHITE) {
         return 'w';
@@ -158,6 +163,7 @@ bool Piece::do_team_match(Piece* team_there) const {
     return true;
 }
 
+//Set your data to equal that of the passed argument.
 void Piece::AssignSavedData(Piece* pPc)
 {
     //UPDATE FROM Aaron: Save the piece's knowledge of when it first moved.

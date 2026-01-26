@@ -8,7 +8,6 @@ private:
     const char* Saver_savefile;
 public:
     Saver();
-    int GetPieceCount(Piece* pPc);
     bool Dads_SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team* blackteam);
     
     bool Dads_LoadStandardPieces(FILE *fp, Team* pTeam, Board* mainboard);
@@ -18,7 +17,8 @@ public:
     bool Aaron_LoadOnePiece(FILE* fp, Piece* pPc, Board* mainboard);
     void Aaron_SaveStandardPieces(FILE* fp, Team* team_to_save, Board* active_board);
     bool Aaron_LoadStandardPieces(FILE* fp, Team* team_to_load, Board* mainboard);
-    bool SaveGame(Board* active_board, Team* current_team, Team* whiteteam, Team* blackteam);
+    void Aaron_LoadUpgradedPieces(FILE* fp, Board* mainboard, Team *whiteteam, Team *blackteam, int upgraded_pawn_count);
+    bool SaveGame(Board* mainboard, Team* current_team, Team* whiteteam, Team* blackteam);
     int LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** current_team_p, int* test = NULL);
     
 };
