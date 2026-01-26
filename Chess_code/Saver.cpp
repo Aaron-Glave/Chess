@@ -18,6 +18,7 @@ const unsigned char bit_black_in_check = (unsigned char)0x01;
 * Dad still deserves credit for giving me code to adjust.
 * The contents of the save file are this, in order:
 * Step 0 for loading only: Empty the board and clear any promoted pawns.
+*        - Also reset all your piece pointers.
 * Step 1: Save the current turn number (int)
 * Step 2: Save the number of upgraded pawns on either team; 1 byte is plenty (char)
 * Step 3: Save all the standard pieces on each team.
@@ -138,6 +139,11 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
 
         whiteteam->upgraded_pieces[nRow] = blackteam->upgraded_pieces[nRow] = NULL;
     }
+    //Also clear the piece pointer array of each team.
+    for (int i = 0; i < 16; i++) {
+        whiteteam->pieces[i] = NULL;
+        blackteam->pieces[i] = NULL;
+    }
 
     // Step 1
     // Load the current turn count HERE.
@@ -215,49 +221,6 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
     // Because we saved how many upgraded pawns there are,
     // we know exactly how many pieces we have to read in.
     Aaron_LoadUpgradedPieces(fp, mainboard, whiteteam, blackteam, upgraded_pawn_count);
-    /*for (int i = 0; i < upgraded_pawn_count; i++)
-    {
-        memset(data, 0, sizeof(data));
-        nRC = fread(data, sizeof(Piece), 1, fp);
-        if (nRC != 1) {
-            // This happens when the file is empty or EOF is reached.
-            break;
-        }
-
-        pPc = (Piece*)&data;
-
-        Team* TheTeam = (pPc->team == COLOR::WHITE) ? whiteteam : blackteam;
-        int n = pPc->count;
-
-        try {
-            pNewPiece = NULL;
-            switch (pPc->piecetype)
-            {
-            case TYPE::QUEEN:  pNewPiece = new Queen(pPc->team, pPc->row, pPc->column, n);  break;
-            case TYPE::ROOK:   pNewPiece = new Rook(pPc->team, pPc->row, pPc->column, n);   break;
-            case TYPE::KNIGHT: pNewPiece = new Knight(pPc->team, pPc->row, pPc->column, n); break;
-            case TYPE::BISHOP: pNewPiece = new Bishop(pPc->team, pPc->row, pPc->column, n); break;
-            }
-        }
-        catch (const char* pszEx) {
-            printf("EXCEPTION: while allocating %s\n%s\n", pPc->name, pszEx);
-        }
-        catch (...) {
-            printf("EXCEPTION: failed to allocate %s\n", pPc->name);
-        }
-
-        if (pNewPiece != NULL)
-        {
-            strcpy(pNewPiece->name, pPc->name); // Update defaulted values of the new piece
-            pNewPiece->alive = pPc->alive;
-
-            TheTeam->upgraded_pieces[n - 1] = pNewPiece;
-            TheTeam->pieces[n + 7] = pNewPiece;
-            // Important: Place the upgraded piece on the board if it's alive!
-            if (pPc->alive)
-                mainboard->spaces[pPc->row - 1][pPc->column - 1] = pNewPiece;
-        }
-    }*/
     // End Step 5
 
     // Step 6
@@ -279,9 +242,6 @@ int Saver::LoadGame(Board* mainboard, Team* whiteteam, Team* blackteam, Team** c
     }
     mainboard->passantpawn = saved_passant; // Set the mainboard's passant pawn to the saved one.
     // End Step 6
-
-    //Place all living pieces?
-    0;
 
     // Final step: You can run a test to prove that the upgraded pieces do not half to be saved last.
     int score = 0;
@@ -370,6 +330,8 @@ bool Saver::Aaron_LoadStandardPieces(FILE* fp, Team* team_to_load, Board* mainbo
     memset(data, 0, sizeof(data));
     for (int i = 0; i < 16; i++) {
         if (!Aaron_LoadOnePiece(fp, pieces_to_load[i], mainboard)) return false;
+        //Re-assign your piece pointer to the loaded piece.
+        team_to_load->pieces[i] = pieces_to_load[i];
     }
     
     return true;
