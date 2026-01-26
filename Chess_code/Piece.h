@@ -56,18 +56,18 @@ public: // public functions
     //b_row and b_column are 1 at minimun.
     //This function should not edit the state!!
     virtual bool can_classmove(int b_row, int b_column, Board *board_to_move_on);
+    
     bool do_team_match(Piece* team_there) const;
     void be_safe(COLOR color);
-    // void can_move(Board *pBoard);
-    // void setupnullpiece();
     void sayspace() const;
     void know_i_change_position(int b_row, int b_column, int on_turn);
-   // virtual void setup(char b_team, int b_column, int b_row, int b_count);
     void setspace(COLOR b_team, int b_row, int b_column, int b_count);
     void set_up_full_name();
     bool is_on_board(int b_row, int b_column);
     bool same_team(COLOR piece_team) const;
     void place(int b_row, int b_column);
+
+    //Starting column is protected, but we still need read access.
     int get_starting_column();
 
     //Set your data to equal that of the passed argument.

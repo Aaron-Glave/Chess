@@ -102,7 +102,6 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
     bool did_try_castle = false;
     bool done_loading_man = !should_load_man;
     bool did_load = false;
-    //You cannot load the game twice. TODO: FOLLOW THAT RULE.
     bool has_loaded_file = false;
     bool did_fail_loading = false;
     bool swapped_or_done = false;
@@ -160,7 +159,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         
         clean_chess_input(nameofpiecetomove);
         //Alternative commands other than moving 1 piece
-        //TODO: Make options to kill a selected piece.
+        //For example, you can kill a piece by typing the word "execute".
         if (should_load_man) {
             if (strcmp(nameofpiecetomove, ("eXecute")) == 0) {
                 did_custom_command = true;
@@ -215,7 +214,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
 
         if (strcmp(nameofpiecetomove, "sAve") == 0) {
             did_custom_command = true;
-            if (game_saver.Dads_SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
+            if (game_saver.SaveGame(&mainboard, current_team, &whiteteam, &blackteam)) {
                 printf("Game saved.\n");
             }
             else {
@@ -364,7 +363,7 @@ int chess(bool talk_hug, bool show_debugging, bool should_load_man)
         //The game looks at the board when searching for pieces, so if your piece is dead it WON'T be found and it will be called invalid.
         if (piecefound && wrong_team(piecetomove, current_team->color)) {
             printf("Wrong team, dummy!\n");
-        } else if /*TODO: TEST THIS IF STATEMENT*/ (!piecefound && !did_custom_command) {
+        } else if(!piecefound && !did_custom_command) {
             printf("That piece is either dead, or non-existent.\n");
         }
         

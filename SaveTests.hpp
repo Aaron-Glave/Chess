@@ -66,7 +66,7 @@ TEST_CASE("Loading a game with a passant pawn works", "[test_saving][load][upgra
     //Save the game.
     Team* current_team_pointer = &blackteam;
 
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
 
     //Pretend I made a turn.
     current_team_pointer = current_team_pointer->enemy_team;
@@ -111,16 +111,22 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a white pa
 
     //Save the game.
     Team* current_team_pointer = &blackteam;
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    kill_piece(&mainboard, mainboard.passantpawn.get_piece());
     mainboard.passantpawn.test_kill_passant();
-    printf("We killed the passant pawn to see if loading restores it correctly.\n");
+    mainboard.print_board();
+    printf("We killed the passant pawn via test methods to see if loading restores it correctly.\n");
+    //Test to make sure we can't do a passant move anymore.
+    Move passant_move = Move(4, 2, 3, 1, &blackteam.pawns[column_2_index], NULL);
+    REQUIRE_FALSE(mainboard.human_move_piece(&passant_move));
     //Load the game.
     saver.LoadGame(&mainboard, &whiteteam, &blackteam, &current_team_pointer, NULL);
     REQUIRE(mainboard.passantpawn.get_piece() == &whiteteam.pawns[column_1_index]);
     printf("After loading, the passant pawn should be back.\n");
     mainboard.print_board();
+    printf("And we can do an en passant move again.\n");
     //Perform a passant;
-    Move passant_move = Move(4, 2, 3, 1, &blackteam.pawns[column_2_index], NULL);
+    
     mainboard.human_move_piece(&passant_move);
     mainboard.print_board();
     printf("Works for killing white pawns via en passant!\n");
@@ -152,7 +158,7 @@ TEST_CASE("The passant pawn status is saved and loaded correctly with a black pa
 
     //Save the game.
     Team* current_team_pointer = &blackteam;
-    saver.Dads_SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
+    saver.SaveGame(&mainboard, current_team_pointer, &whiteteam, &blackteam);
     mainboard.passantpawn.test_kill_passant();
     printf("We killed the passant pawn to see if loading restores it correctly.\n");
     mainboard.print_board();

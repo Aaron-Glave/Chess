@@ -114,8 +114,7 @@ Game_Status Board::try_to_escape(Team* my_team, Team* enemy_team, Board* mainboa
             tried_move.end_row = tryrow;
             for (int trycolumn = 1; trycolumn <= 8; trycolumn++) {
                 tried_move.end_column = trycolumn;
-                // We know we can go here, so we might as well try.
-                //TODO CHECK THAT YOU REALLY CAN MOVE HERE!
+                // We might as well try to move here in case in gets us out of check.
                 if (tried_move.piece_that_moved->can_classmove(tryrow, trycolumn, this)) {
                     bool did_i_move = human_move_piece(&tried_move);
 
@@ -479,8 +478,6 @@ const static void print_columns() {
 void Board::print_board() const {
     const int length_of_name = 12;
     const int number_of_spaces = 8;
-    // TODO MOVE THIS STATEMENT TO THE START OF THE GAME! JUST THIS 1 LINE
-    //printf("Here's the board. Row numbers are printed on the left-hand side of each row.\n");
     print_columns();
     //Draw a line after we print the column names.
     for (int i = 0; i < 11 + length_of_name * (number_of_spaces - 1); i++) {
